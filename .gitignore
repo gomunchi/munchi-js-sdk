@@ -33,8 +33,9 @@ yarn-error.*
 # local env files
 .env*.local
 
-# npm - don't commit .npmrc if it contains auth tokens
-# Current .npmrc only has registry config, so it's safe to commit
+# npm - .npmrc with NODE_AUTH_TOKEN is committed (uses env var)
+# .npmrc.template is the template for users to copy
+# If you create a .npmrc with hardcoded token, add it here!
 
 
 # typescript

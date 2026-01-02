@@ -129,8 +129,21 @@ git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https:/
 npm install github:gomunchi/munchi-js-sdk#core
 ```
 
+#### Option 3: GitHub Package Registry (Recommended)
+See **[Authentication Setup Guide](./AUTH_SETUP.md)** for detailed instructions on setting up `NODE_AUTH_TOKEN`.
+
+Quick setup:
+```bash
+# Set environment variable
+export NODE_AUTH_TOKEN=your_github_token
+
+# Then install normally
+npm install @munchi/core @munchi/payments
+```
+
 ## Documentation
 
+- **[Authentication Setup Guide](./AUTH_SETUP.md)** - Set up GitHub authentication for package installation
 - **[GitHub Installation Guide](./GITHUB_INSTALL.md)** - Detailed guide for installing from GitHub
 - **[Deployment Guide](./DEPLOYMENT.md)** - npm publishing guide (if needed in future)
 - **[Quick Publish Reference](./PUBLISH.md)** - Quick reference for publishing

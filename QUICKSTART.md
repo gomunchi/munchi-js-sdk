@@ -10,6 +10,29 @@ Make sure you have:
 - ✅ Access to the `gomunchi` GitHub organization
 - ✅ SSH key set up with GitHub (test with: `ssh -T git@github.com`)
 
+### Step 1.5: Set Up Authentication (Optional but Recommended)
+
+For easier package management, set up GitHub Package Registry authentication:
+
+**Quick Setup:**
+```bash
+# 1. Create GitHub token: https://github.com/settings/tokens
+#    Required scope: read:packages
+
+# 2. Add to your shell profile (~/.zshrc or ~/.bashrc)
+export NODE_AUTH_TOKEN=ghp_your_token_here
+
+# 3. Reload shell
+source ~/.zshrc  # or ~/.bashrc
+```
+
+**Or use the automated setup script:**
+```bash
+./scripts/setup-auth.sh
+```
+
+📖 **See [AUTH_SETUP.md](./AUTH_SETUP.md) for detailed authentication instructions**
+
 ### Step 2: Install Packages
 
 Add to your `package.json`:

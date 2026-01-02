@@ -1,0 +1,12 @@
+# GitHub Package Registry Configuration
+# This file is a template for setting up authentication with GitHub Packages
+
+# Registry for @munchi scoped packages
+@munchi:registry=https://npm.pkg.github.com
+
+# Authentication token for GitHub Packages
+# Replace YOUR_GITHUB_TOKEN with your personal access token
+//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
+
+# Alternative: Use environment variable (recommended for CI/CD)
+# //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
