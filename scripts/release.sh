@@ -72,8 +72,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo "🎉 Release $VERSION complete!"
   echo ""
   echo "📦 Install with:"
-  echo "   npm install github:YOUR_ORG/munchi-js-sdk#core-v$VERSION"
-  echo "   npm install github:YOUR_ORG/munchi-js-sdk#payments-v$VERSION"
+  echo "   npm install github:gomunchi/munchi-js-sdk#core-v$VERSION"
+  echo "   npm install github:gomunchi/munchi-js-sdk#payments-v$VERSION"
 else
   echo "⏸️  Skipped push. Run manually with:"
   echo "   git push origin main"

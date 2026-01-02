@@ -13,12 +13,12 @@ TypeScript SDK for Munchi services, providing core utilities and payment process
 
 ```bash
 # Install both packages
-npm install github:YOUR_ORG/munchi-js-sdk#core
-npm install github:YOUR_ORG/munchi-js-sdk#payments
+npm install github:gomunchi/munchi-js-sdk#core
+npm install github:gomunchi/munchi-js-sdk#payments
 
 # Or with pnpm
-pnpm add github:YOUR_ORG/munchi-js-sdk#core
-pnpm add github:YOUR_ORG/munchi-js-sdk#payments
+pnpm add github:gomunchi/munchi-js-sdk#core
+pnpm add github:gomunchi/munchi-js-sdk#payments
 ```
 
 ### In your package.json
@@ -26,13 +26,13 @@ pnpm add github:YOUR_ORG/munchi-js-sdk#payments
 ```json
 {
   "dependencies": {
-    "@munchi/core": "github:YOUR_ORG/munchi-js-sdk#core",
-    "@munchi/payments": "github:YOUR_ORG/munchi-js-sdk#payments"
+    "@munchi/core": "github:gomunchi/munchi-js-sdk#core",
+    "@munchi/payments": "github:gomunchi/munchi-js-sdk#payments"
   }
 }
 ```
 
-> **Note:** Replace `YOUR_ORG` with your actual GitHub organization name.
+> **Note:** Replace `gomunchi` with your actual GitHub organization name.
 
 ## Quick Start
 
@@ -104,7 +104,7 @@ git tag payments-v1.0.0
 git push origin --tags
 
 # Install specific version
-npm install github:YOUR_ORG/munchi-js-sdk#core-v1.0.0
+npm install github:gomunchi/munchi-js-sdk#core-v1.0.0
 ```
 
 ## Authentication
@@ -117,7 +117,7 @@ npm install github:YOUR_ORG/munchi-js-sdk#core-v1.0.0
 ssh -T git@github.com
 
 # Install using SSH
-npm install git+ssh://git@github.com/YOUR_ORG/munchi-js-sdk.git#core
+npm install git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#core
 ```
 
 #### Option 2: Personal Access Token (CI/CD)
@@ -126,7 +126,7 @@ npm install git+ssh://git@github.com/YOUR_ORG/munchi-js-sdk.git#core
 git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
 
 # Install normally
-npm install github:YOUR_ORG/munchi-js-sdk#core
+npm install github:gomunchi/munchi-js-sdk#core
 ```
 
 ## Documentation
