@@ -16,41 +16,41 @@ Install packages directly from GitHub using the repository URL:
 
 ```bash
 # Install @munchi/core
-npm install github:YOUR_ORG/munchi-js-sdk#core
+npm install github:gomunchi/munchi-js-sdk#core
 
 # Install @munchi/payments
-npm install github:YOUR_ORG/munchi-js-sdk#payments
+npm install github:gomunchi/munchi-js-sdk#payments
 ```
 
 Or with pnpm:
 ```bash
-pnpm add github:YOUR_ORG/munchi-js-sdk#core
-pnpm add github:YOUR_ORG/munchi-js-sdk#payments
+pnpm add github:gomunchi/munchi-js-sdk#core
+pnpm add github:gomunchi/munchi-js-sdk#payments
 ```
 
 ### Method 2: Install from Git URL
 
 ```bash
 # Using HTTPS
-npm install git+https://github.com/YOUR_ORG/munchi-js-sdk.git#core
-npm install git+https://github.com/YOUR_ORG/munchi-js-sdk.git#payments
+npm install git+https://github.com/gomunchi/munchi-js-sdk.git#core
+npm install git+https://github.com/gomunchi/munchi-js-sdk.git#payments
 
 # Using SSH (recommended for private repos)
-npm install git+ssh://git@github.com/YOUR_ORG/munchi-js-sdk.git#core
-npm install git+ssh://git@github.com/YOUR_ORG/munchi-js-sdk.git#payments
+npm install git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#core
+npm install git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#payments
 ```
 
 ### Method 3: Install Specific Version/Tag
 
 ```bash
 # Install specific tag
-npm install github:YOUR_ORG/munchi-js-sdk#v1.0.0
+npm install github:gomunchi/munchi-js-sdk#v1.0.0
 
 # Install specific commit
-npm install github:YOUR_ORG/munchi-js-sdk#abc1234
+npm install github:gomunchi/munchi-js-sdk#abc1234
 
 # Install specific branch
-npm install github:YOUR_ORG/munchi-js-sdk#main
+npm install github:gomunchi/munchi-js-sdk#main
 ```
 
 ## Package.json Configuration
@@ -60,8 +60,8 @@ Add to your `package.json`:
 ```json
 {
   "dependencies": {
-    "@munchi/core": "github:YOUR_ORG/munchi-js-sdk#core",
-    "@munchi/payments": "github:YOUR_ORG/munchi-js-sdk#payments"
+    "@munchi/core": "github:gomunchi/munchi-js-sdk#core",
+    "@munchi/payments": "github:gomunchi/munchi-js-sdk#payments"
   }
 }
 ```
@@ -70,8 +70,8 @@ Or with version tags:
 ```json
 {
   "dependencies": {
-    "@munchi/core": "github:YOUR_ORG/munchi-js-sdk#core-v1.0.0",
-    "@munchi/payments": "github:YOUR_ORG/munchi-js-sdk#payments-v1.0.0"
+    "@munchi/core": "github:gomunchi/munchi-js-sdk#core-v1.0.0",
+    "@munchi/payments": "github:gomunchi/munchi-js-sdk#payments-v1.0.0"
   }
 }
 ```
@@ -80,7 +80,7 @@ Or with version tags:
 
 ### Option 1: SSH Key (Recommended)
 1. Set up SSH key with GitHub: https://docs.github.com/en/authentication/connecting-to-github-with-ssh
-2. Use SSH URLs: `git+ssh://git@github.com/YOUR_ORG/munchi-js-sdk.git#core`
+2. Use SSH URLs: `git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#core`
 
 ### Option 2: Personal Access Token
 1. Create a GitHub Personal Access Token with `repo` scope
@@ -115,8 +115,8 @@ npm update @munchi/core
 npm update @munchi/payments
 
 # Or reinstall
-npm install github:YOUR_ORG/munchi-js-sdk#core
-npm install github:YOUR_ORG/munchi-js-sdk#payments
+npm install github:gomunchi/munchi-js-sdk#core
+npm install github:gomunchi/munchi-js-sdk#payments
 ```
 
 ## Version Management with Git Tags
@@ -135,8 +135,8 @@ git push origin payments-v1.0.0
 
 Then install specific versions:
 ```bash
-npm install github:YOUR_ORG/munchi-js-sdk#core-v1.0.0
-npm install github:YOUR_ORG/munchi-js-sdk#payments-v1.0.0
+npm install github:gomunchi/munchi-js-sdk#core-v1.0.0
+npm install github:gomunchi/munchi-js-sdk#payments-v1.0.0
 ```
 
 ## CI/CD Integration
@@ -220,8 +220,8 @@ jobs:
   "name": "my-app",
   "version": "1.0.0",
   "dependencies": {
-    "@munchi/core": "github:YOUR_ORG/munchi-js-sdk#core-v1.0.0",
-    "@munchi/payments": "github:YOUR_ORG/munchi-js-sdk#payments-v1.0.0",
+    "@munchi/core": "github:gomunchi/munchi-js-sdk#core-v1.0.0",
+    "@munchi/payments": "github:gomunchi/munchi-js-sdk#payments-v1.0.0",
     "axios": "^1.6.0"
   }
 }
@@ -230,5 +230,5 @@ jobs:
 ## Need Help?
 
 - Check repository access permissions
-- Verify git authentication is working: `git ls-remote git@github.com:YOUR_ORG/munchi-js-sdk.git`
+- Verify git authentication is working: `git ls-remote git@github.com:gomunchi/munchi-js-sdk.git`
 - Review GitHub documentation: https://docs.github.com/en/packages

@@ -20,17 +20,17 @@ Users can install in multiple ways:
 
 ```bash
 # Method 1: GitHub shorthand (recommended)
-npm install github:YOUR_ORG/munchi-js-sdk#core
-npm install github:YOUR_ORG/munchi-js-sdk#payments
+npm install github:gomunchi/munchi-js-sdk#core
+npm install github:gomunchi/munchi-js-sdk#payments
 
 # Method 2: Git URL with HTTPS
-npm install git+https://github.com/YOUR_ORG/munchi-js-sdk.git#core
+npm install git+https://github.com/gomunchi/munchi-js-sdk.git#core
 
 # Method 3: Git URL with SSH (for private repos)
-npm install git+ssh://git@github.com/YOUR_ORG/munchi-js-sdk.git#core
+npm install git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#core
 
 # Method 4: Specific version tag
-npm install github:YOUR_ORG/munchi-js-sdk#core-v1.0.0
+npm install github:gomunchi/munchi-js-sdk#core-v1.0.0
 ```
 
 ### 3. Version Management ✅
@@ -90,8 +90,8 @@ Add to `package.json`:
 ```json
 {
   "dependencies": {
-    "@munchi/core": "github:YOUR_ORG/munchi-js-sdk#core",
-    "@munchi/payments": "github:YOUR_ORG/munchi-js-sdk#payments"
+    "@munchi/core": "github:gomunchi/munchi-js-sdk#core",
+    "@munchi/payments": "github:gomunchi/munchi-js-sdk#payments"
   }
 }
 ```
@@ -188,10 +188,10 @@ npm install
 
 ## Next Steps
 
-1. **Replace `YOUR_ORG`** in all documentation with your actual GitHub organization name
+1. **Replace `gomunchi`** in all documentation with your actual GitHub organization name
 2. **Test installation** in a separate project:
    ```bash
-   npm install github:YOUR_ORG/munchi-js-sdk#core
+   npm install github:gomunchi/munchi-js-sdk#core
    ```
 3. **Create first release**:
    ```bash
