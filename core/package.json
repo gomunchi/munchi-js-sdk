@@ -1,0 +1,39 @@
+{
+  "name": "@munchi/core",
+  "version": "1.0.0",
+  "description": "Munchi Core SDK - Core utilities and types",
+  "license": "UNLICENSED",
+  "publishConfig": {
+    "access": "restricted"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "version:sync": "node scripts/sync-version.mjs",
+    "prebuild": "pnpm version:sync",
+    "build": "tsup index.ts --format cjs,esm --dts --clean",
+    "dev": "tsup index.ts --format cjs,esm --watch --dts",
+    "prepare": "npm run build",
+    "prepublishOnly": "pnpm build",
+    "publish": "npm publish"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.10"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "spaces": 2,
+  "generator-cli": {
+    "version": "6.6.0",
+    "storageDir": "openapistorage",
+    "generators": {
+      "muncoreapi": {
+        "generatorName": "typescript-axios",
+        "output": "#{cwd}/core/generated",
+        "inputSpec": "swagger/mun-core.yml",
+        "additionalProperties": {
+          "supportsES6": true,
+          "withInterfaces": true,
+          "withoutPrefixEnums": true
+        }
+      }
+    }
+  }
+}
