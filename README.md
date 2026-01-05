@@ -9,16 +9,16 @@ TypeScript SDK for Munchi services, providing core utilities and payment process
 
 ## Installation
 
-### Install from GitHub (Recommended for Organization Members)
+✨ **No authentication required!** This is a public repository.
+
+### Quick Install
 
 ```bash
 # Install both packages
-npm install github:gomunchi/munchi-js-sdk#core
-npm install github:gomunchi/munchi-js-sdk#payments
+npm install github:gomunchi/munchi-js-sdk#core github:gomunchi/munchi-js-sdk#payments
 
 # Or with pnpm
-pnpm add github:gomunchi/munchi-js-sdk#core
-pnpm add github:gomunchi/munchi-js-sdk#payments
+pnpm add github:gomunchi/munchi-js-sdk#core github:gomunchi/munchi-js-sdk#payments
 ```
 
 ### In your package.json
@@ -32,7 +32,7 @@ pnpm add github:gomunchi/munchi-js-sdk#payments
 }
 ```
 
-> **Note:** Replace `gomunchi` with your actual GitHub organization name.
+Then simply run `npm install` - no authentication setup needed!
 
 ## Quick Start
 
@@ -107,46 +107,51 @@ git push origin --tags
 npm install github:gomunchi/munchi-js-sdk#core-v1.0.0
 ```
 
-## Authentication
+## Contributing
 
-### For Private Repositories
+This repository is public but protected with branch protection rules.
 
-#### Option 1: SSH (Recommended for Development)
-```bash
-# Ensure SSH key is set up with GitHub
-ssh -T git@github.com
+### Development Workflow
 
-# Install using SSH
-npm install git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#core
-```
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/gomunchi/munchi-js-sdk.git
+   cd munchi-js-sdk
+   ```
 
-#### Option 2: Personal Access Token (CI/CD)
-```bash
-# Set up git credentials
-git config --global url."https://${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
+2. **Create a feature branch**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
 
-# Install normally
-npm install github:gomunchi/munchi-js-sdk#core
-```
+3. **Make your changes and commit**
+   ```bash
+   git add .
+   git commit -m "Description of changes"
+   ```
 
-#### Option 3: GitHub Package Registry (Recommended)
-See **[Authentication Setup Guide](./AUTH_SETUP.md)** for detailed instructions on setting up `NODE_AUTH_TOKEN`.
+4. **Push to your branch**
+   ```bash
+   git push origin feature/your-feature-name
+   ```
 
-Quick setup:
-```bash
-# Set environment variable
-export NODE_AUTH_TOKEN=your_github_token
+5. **Create a Pull Request**
+   - Go to GitHub
+   - Click "Compare & pull request"
+   - Add description and request review
+   - Wait for approval and merge
 
-# Then install normally
-npm install @munchi/core @munchi/payments
-```
+**Note:** Direct pushes to `main` are blocked. All changes must go through pull requests.
+
+See **[Branch Protection Guide](./BRANCH_PROTECTION.md)** for details.
 
 ## Documentation
 
-- **[Authentication Setup Guide](./AUTH_SETUP.md)** - Set up GitHub authentication for package installation
-- **[GitHub Installation Guide](./GITHUB_INSTALL.md)** - Detailed guide for installing from GitHub
+- **[Public Installation Guide](./PUBLIC_INSTALL.md)** - Simple installation without authentication
+- **[Branch Protection Guide](./BRANCH_PROTECTION.md)** - How to contribute with branch protection
+- **[Quick Start](./QUICKSTART.md)** - Get started quickly
+- **[GitHub Installation Guide](./GITHUB_INSTALL.md)** - Alternative installation methods (legacy)
 - **[Deployment Guide](./DEPLOYMENT.md)** - npm publishing guide (if needed in future)
-- **[Quick Publish Reference](./PUBLISH.md)** - Quick reference for publishing
 
 ## Features
 

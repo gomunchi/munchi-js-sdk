@@ -25,17 +25,17 @@
     "build": "tsup index.ts --format cjs,esm --dts --clean",
     "dev": "tsup index.ts --format cjs,esm --watch --dts",
     "prepare": "npm run build",
-    "prepublishOnly": "pnpm build",
-    "publish": "npm publish"
+    "prepublishOnly": "pnpm build"
   },
   "dependencies": {
-    "@munchi/core": "workspace:*",
     "dayjs": "^1.11.10"
   },
   "peerDependencies": {
+    "@munchi/core": ">=1.0.0",
     "axios": ">=1.0.0"
   },
   "devDependencies": {
+    "@munchi/core": "workspace:*",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0"
   }

@@ -34,7 +34,7 @@ importers:
   payments:
     dependencies:
       '@munchi/core':
-        specifier: workspace:*
+        specifier: file:../core
         version: link:../core
       axios:
         specifier: '>=1.0.0'
