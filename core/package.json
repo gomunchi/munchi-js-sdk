@@ -1,6 +1,6 @@
 {
   "name": "@munchi/core",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Munchi Core SDK - Core utilities and types",
   "license": "UNLICENSED",
   "publishConfig": {
@@ -31,6 +31,9 @@
   "devDependencies": {
     "tsup": "^8.0.0",
     "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "axios": ">=1.0.0"
   },
   "dependencies": {
     "dayjs": "^1.11.10"
