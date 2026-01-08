@@ -5,11 +5,10 @@ export default defineConfig({
   format: ["cjs", "esm"],
   dts: true,
   clean: true,
-  tsconfig: "./tsconfig.json",
   splitting: false,
-  sourcemap: true,
   external: [
     // Don't bundle dependencies - let the consuming project install them
+    "@munchi/core",
     "axios",
     "dayjs",
   ],

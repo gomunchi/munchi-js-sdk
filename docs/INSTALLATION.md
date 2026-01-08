@@ -2,53 +2,22 @@
 
 ## Installing from GitHub
 
-This package is installed directly from GitHub monorepo subdirectories.
+This package is installed directly from GitHub. When updating to a new version, pnpm may keep old versions in its store.
 
 ### Installation
 
-**Important**: Use the `&path:/subdirectory` syntax to install from monorepo subdirectories:
-
 ```bash
-pnpm add "@munchi/core@github:gomunchi/munchi-js-sdk#v1.0.7&path:/core"
-pnpm add "@munchi/payments@github:gomunchi/munchi-js-sdk#v1.0.7&path:/payments"
-```
-
-Or in your `package.json`:
-
-```json
-{
-  "dependencies": {
-    "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.0.7&path:/core",
-    "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.0.7&path:/payments"
-  }
-}
+pnpm add github:gomunchi/munchi-js-sdk#core-v1.0.4
+pnpm add github:gomunchi/munchi-js-sdk#payments-v1.0.4
 ```
 
 ### Updating to a New Version
 
-When a new version is released, update the version tag in your `package.json`:
+Due to how pnpm handles GitHub packages, old versions may accumulate in the store. Here's the recommended approach:
 
-```json
-{
-  "dependencies": {
-    "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.0.8&path:/core",
-    "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.0.8&path:/payments"
-  }
-}
-```
+#### Option 1: Manual Cleanup (Recommended)
 
-Then run:
-
-```bash
-pnpm install
-pnpm store prune
-```
-
-The `pnpm store prune` command removes old versions from your pnpm store.
-
-#### Manual Cleanup (If Needed)
-
-If old versions accumulate in the store:
+After updating, manually prune the store:
 
 ```bash
 pnpm update
