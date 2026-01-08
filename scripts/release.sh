@@ -18,16 +18,42 @@ fi
 echo "🚀 Releasing version $VERSION"
 echo ""
 
-# Update version in version.ts
-echo "📝 Updating version.ts..."
+# Update version in root version.ts
+echo "📝 Updating root version.ts..."
 cat > version.ts << EOF
 export const VERSION = '$VERSION';
 EOF
 
-echo "✅ Updated version.ts to $VERSION"
+echo "✅ Updated root version.ts to $VERSION"
 echo ""
 
-# Build all packages
+# Update version in core/package.json
+echo "📝 Updating core/package.json..."
+node -e "
+const fs = require('fs');
+const path = require('path');
+const pkgPath = path.join(__dirname, 'core', 'package.json');
+const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+pkg.version = '$VERSION';
+fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf-8');
+console.log('✅ Updated core/package.json to $VERSION');
+"
+
+# Update version in payments/package.json
+echo "📝 Updating payments/package.json..."
+node -e "
+const fs = require('fs');
+const path = require('path');
+const pkgPath = path.join(__dirname, 'payments', 'package.json');
+const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+pkg.version = '$VERSION';
+fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf-8');
+console.log('✅ Updated payments/package.json to $VERSION');
+"
+
+echo ""
+
+# Build all packages (this will trigger version:sync via prebuild)
 echo "🔨 Building packages..."
 pnpm -r build
 
@@ -41,7 +67,7 @@ echo ""
 
 # Commit changes
 echo "📦 Committing changes..."
-git add version.ts core/src/version.ts payments/src/version.ts
+git add version.ts core/package.json core/src/version.ts payments/package.json payments/src/version.ts
 git commit -m "chore: bump version to $VERSION"
 
 echo "✅ Changes committed"
