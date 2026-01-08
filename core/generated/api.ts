@@ -428,7 +428,8 @@ export interface AmountDto {
 
 export const BusinessBackgroundType = {
     Image: 'image',
-    Video: 'video'
+    Video: 'video',
+    Animation: 'animation'
 } as const;
 
 export type BusinessBackgroundType = typeof BusinessBackgroundType[keyof typeof BusinessBackgroundType];
@@ -471,6 +472,12 @@ export interface BusinessConfigResponseDto {
      * @memberof BusinessConfigResponseDto
      */
     'currency': string;
+    /**
+     * 
+     * @type {BusinessConfigResponseDtoBusiness}
+     * @memberof BusinessConfigResponseDto
+     */
+    'business': BusinessConfigResponseDtoBusiness;
     /**
      * 
      * @type {string}
@@ -528,6 +535,97 @@ export interface BusinessConfigResponseDto {
 }
 
 
+/**
+ * Business data attached
+ * @export
+ * @interface BusinessConfigResponseDtoBusiness
+ */
+export interface BusinessConfigResponseDtoBusiness {
+    /**
+     * Unique identifier of the business
+     * @type {string}
+     * @memberof BusinessConfigResponseDtoBusiness
+     */
+    'id': string;
+    /**
+     * Name of the business
+     * @type {string}
+     * @memberof BusinessConfigResponseDtoBusiness
+     */
+    'name': string;
+    /**
+     * Logo of the business
+     * @type {string}
+     * @memberof BusinessConfigResponseDtoBusiness
+     */
+    'logo': string;
+    /**
+     * Email of the business
+     * @type {string}
+     * @memberof BusinessConfigResponseDtoBusiness
+     */
+    'email'?: string;
+    /**
+     * Address of the business
+     * @type {string}
+     * @memberof BusinessConfigResponseDtoBusiness
+     */
+    'address'?: string;
+    /**
+     * Creation date of the business
+     * @type {string}
+     * @memberof BusinessConfigResponseDtoBusiness
+     */
+    'createdAt': string;
+    /**
+     * Time zone of the business
+     * @type {string}
+     * @memberof BusinessConfigResponseDtoBusiness
+     */
+    'timeZone': string;
+    /**
+     * Currency used by the business
+     * @type {string}
+     * @memberof BusinessConfigResponseDtoBusiness
+     */
+    'currency': string;
+    /**
+     * Phone number of the business
+     * @type {string}
+     * @memberof BusinessConfigResponseDtoBusiness
+     */
+    'phone'?: string;
+    /**
+     * Ordering business identifier
+     * @type {number}
+     * @memberof BusinessConfigResponseDtoBusiness
+     */
+    'orderingBusinessId': number;
+    /**
+     * BIC/SWIFT code of the business
+     * @type {string}
+     * @memberof BusinessConfigResponseDtoBusiness
+     */
+    'bic': string | null;
+    /**
+     * Whether the business is enabled
+     * @type {boolean}
+     * @memberof BusinessConfigResponseDtoBusiness
+     */
+    'enabled': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof BusinessConfigResponseDtoBusiness
+     */
+    'chainId'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof BusinessConfigResponseDtoBusiness
+     */
+    'merchantId'?: string;
+}
 /**
  * 
  * @export
@@ -702,7 +800,9 @@ export interface BusinessDto {
  */
 
 export const BusinessEventType = {
-    BusinessstatusUpdated: 'business:status-updated'
+    StatusUpdated: 'business:status-updated',
+    MenuUpdated: 'business:menu-updated',
+    ConfigUpdated: 'business:config-updated'
 } as const;
 
 export type BusinessEventType = typeof BusinessEventType[keyof typeof BusinessEventType];
@@ -2477,6 +2577,12 @@ export interface CheckInResponseDtoKiosk {
      */
     'name': string;
     /**
+     * 
+     * @type {Status}
+     * @memberof CheckInResponseDtoKiosk
+     */
+    'status': Status;
+    /**
      * The prefix used by the kiosk when creating orders.
      * @type {string}
      * @memberof CheckInResponseDtoKiosk
@@ -2500,7 +2606,15 @@ export interface CheckInResponseDtoKiosk {
      * @memberof CheckInResponseDtoKiosk
      */
     'updatedAt': string;
+    /**
+     * 
+     * @type {KioskDetailsDtoPaymentTerminal}
+     * @memberof CheckInResponseDtoKiosk
+     */
+    'paymentTerminal': KioskDetailsDtoPaymentTerminal | null;
 }
+
+
 /**
  * Details of the Payment Terminal connected to the Kiosk.
  * @export
@@ -3514,6 +3628,43 @@ export interface CreateRoleDto {
      * @memberof CreateRoleDto
      */
     'permissionRules': Array<PermissionRuleDto>;
+}
+/**
+ * 
+ * @export
+ * @interface CreateTransactionPayloadDto
+ */
+export interface CreateTransactionPayloadDto {
+    /**
+     * The ordering business ID for this transaction.
+     * @type {number}
+     * @memberof CreateTransactionPayloadDto
+     */
+    'orderingBusinessId': number;
+    /**
+     * The order ID for this transaction.
+     * @type {string}
+     * @memberof CreateTransactionPayloadDto
+     */
+    'orderId': string;
+    /**
+     * The amount for this transaction in cents.
+     * @type {number}
+     * @memberof CreateTransactionPayloadDto
+     */
+    'amount': number;
+    /**
+     * The currency code for this transaction.
+     * @type {string}
+     * @memberof CreateTransactionPayloadDto
+     */
+    'currencyCode': string;
+    /**
+     * The identity ID for this transaction.
+     * @type {string}
+     * @memberof CreateTransactionPayloadDto
+     */
+    'identityId': string;
 }
 /**
  * 
@@ -4815,6 +4966,12 @@ export interface ExternalBusinessConfigDto {
     'currency': string;
     /**
      * 
+     * @type {BusinessConfigResponseDtoBusiness}
+     * @memberof ExternalBusinessConfigDto
+     */
+    'business': BusinessConfigResponseDtoBusiness;
+    /**
+     * 
      * @type {string}
      * @memberof ExternalBusinessConfigDto
      */
@@ -5438,6 +5595,12 @@ export interface KioskDetailsDto {
      */
     'name': string;
     /**
+     * 
+     * @type {Status}
+     * @memberof KioskDetailsDto
+     */
+    'status': Status;
+    /**
      * The prefix used by the kiosk when creating orders.
      * @type {string}
      * @memberof KioskDetailsDto
@@ -5461,7 +5624,142 @@ export interface KioskDetailsDto {
      * @memberof KioskDetailsDto
      */
     'updatedAt': string;
+    /**
+     * 
+     * @type {KioskDetailsDtoPaymentTerminal}
+     * @memberof KioskDetailsDto
+     */
+    'paymentTerminal': KioskDetailsDtoPaymentTerminal | null;
 }
+
+
+/**
+ * The payment terminal connected to this kiosk, or null if unassigned.
+ * @export
+ * @interface KioskDetailsDtoPaymentTerminal
+ */
+export interface KioskDetailsDtoPaymentTerminal {
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof KioskDetailsDtoPaymentTerminal
+     */
+    'id': string;
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof KioskDetailsDtoPaymentTerminal
+     */
+    'hardwareId': string;
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof KioskDetailsDtoPaymentTerminal
+     */
+    'label': string | null;
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof KioskDetailsDtoPaymentTerminal
+     */
+    'orderingBusinessId': string;
+    /**
+     * 
+     * @type {PaymentProvider}
+     * @memberof KioskDetailsDtoPaymentTerminal
+     */
+    'provider': PaymentProvider;
+    /**
+     * Timestamp when the payment terminal record was last updated.
+     * @type {string}
+     * @memberof KioskDetailsDtoPaymentTerminal
+     */
+    'updatedAt': string;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface KioskResponseDto
+ */
+export interface KioskResponseDto {
+    /**
+     * 
+     * @type {KioskResponseDtoKiosk}
+     * @memberof KioskResponseDto
+     */
+    'kiosk': KioskResponseDtoKiosk | null;
+}
+/**
+ * The kiosk details.
+ * @export
+ * @interface KioskResponseDtoKiosk
+ */
+export interface KioskResponseDtoKiosk {
+    /**
+     * The unique ID of the Kiosk.
+     * @type {string}
+     * @memberof KioskResponseDtoKiosk
+     */
+    'id': string;
+    /**
+     * The unique ID of the Kiosk hardware.
+     * @type {string}
+     * @memberof KioskResponseDtoKiosk
+     */
+    'hardwareId': string;
+    /**
+     * The unique ID of the payment terminal connected to this kiosk, or null if unassigned.
+     * @type {string}
+     * @memberof KioskResponseDtoKiosk
+     */
+    'paymentTerminalId': string | null;
+    /**
+     * The display name of the Kiosk.
+     * @type {string}
+     * @memberof KioskResponseDtoKiosk
+     */
+    'name': string;
+    /**
+     * 
+     * @type {Status}
+     * @memberof KioskResponseDtoKiosk
+     */
+    'status': Status;
+    /**
+     * The prefix used by the kiosk when creating orders.
+     * @type {string}
+     * @memberof KioskResponseDtoKiosk
+     */
+    'prefix': string;
+    /**
+     * The business ID the kiosk is registered to.
+     * @type {number}
+     * @memberof KioskResponseDtoKiosk
+     */
+    'orderingBusinessId': number;
+    /**
+     * Timestamp when the kiosk record was created.
+     * @type {string}
+     * @memberof KioskResponseDtoKiosk
+     */
+    'createdAt': string;
+    /**
+     * Timestamp when the kiosk record was last updated.
+     * @type {string}
+     * @memberof KioskResponseDtoKiosk
+     */
+    'updatedAt': string;
+    /**
+     * 
+     * @type {KioskDetailsDtoPaymentTerminal}
+     * @memberof KioskResponseDtoKiosk
+     */
+    'paymentTerminal': KioskDetailsDtoPaymentTerminal | null;
+}
+
+
 /**
  * 
  * @export
@@ -10154,6 +10452,51 @@ export interface PaymentStatusDto {
 /**
  * 
  * @export
+ * @interface PaymentTerminalDto
+ */
+export interface PaymentTerminalDto {
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof PaymentTerminalDto
+     */
+    'id': string;
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof PaymentTerminalDto
+     */
+    'hardwareId': string;
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof PaymentTerminalDto
+     */
+    'label': string | null;
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof PaymentTerminalDto
+     */
+    'orderingBusinessId': string;
+    /**
+     * 
+     * @type {PaymentProvider}
+     * @memberof PaymentTerminalDto
+     */
+    'provider': PaymentProvider;
+    /**
+     * Timestamp when the payment terminal record was last updated.
+     * @type {string}
+     * @memberof PaymentTerminalDto
+     */
+    'updatedAt': string;
+}
+
+
+/**
+ * 
+ * @export
  * @enum {string}
  */
 
@@ -11780,6 +12123,12 @@ export interface PosSubOptionDto {
      * @memberof PosSubOptionDto
      */
     'price': number;
+    /**
+     * Sub-option quantity
+     * @type {number}
+     * @memberof PosSubOptionDto
+     */
+    'quantity': number;
 }
 /**
  * 
@@ -17351,6 +17700,244 @@ export interface WechatPayDetailsDto {
 }
 
 /**
+ * AblyApi - axios parameter creator
+ * @export
+ */
+export const AblyApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        refreshConfig: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/ably/refresh-config`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        refreshTax: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/ably/refresh-tax`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        requestSettings: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/ably/request-settings`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * AblyApi - functional programming interface
+ * @export
+ */
+export const AblyApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = AblyApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async refreshConfig(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.refreshConfig(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async refreshTax(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.refreshTax(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async requestSettings(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.requestSettings(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * AblyApi - factory interface
+ * @export
+ */
+export const AblyApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = AblyApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        refreshConfig(options?: any): AxiosPromise<void> {
+            return localVarFp.refreshConfig(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        refreshTax(options?: any): AxiosPromise<void> {
+            return localVarFp.refreshTax(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        requestSettings(options?: any): AxiosPromise<void> {
+            return localVarFp.requestSettings(options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * AblyApi - interface
+ * @export
+ * @interface AblyApi
+ */
+export interface AblyApiInterface {
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AblyApiInterface
+     */
+    refreshConfig(options?: AxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AblyApiInterface
+     */
+    refreshTax(options?: AxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AblyApiInterface
+     */
+    requestSettings(options?: AxiosRequestConfig): AxiosPromise<void>;
+
+}
+
+/**
+ * AblyApi - object-oriented interface
+ * @export
+ * @class AblyApi
+ * @extends {BaseAPI}
+ */
+export class AblyApi extends BaseAPI implements AblyApiInterface {
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AblyApi
+     */
+    public refreshConfig(options?: AxiosRequestConfig) {
+        return AblyApiFp(this.configuration).refreshConfig(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AblyApi
+     */
+    public refreshTax(options?: AxiosRequestConfig) {
+        return AblyApiFp(this.configuration).refreshTax(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof AblyApi
+     */
+    public requestSettings(options?: AxiosRequestConfig) {
+        return AblyApiFp(this.configuration).requestSettings(options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
  * AuthApi - axios parameter creator
  * @export
  */
@@ -22650,6 +23237,39 @@ export const KiosksApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
+         * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getKiosk: async (kioskId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'kioskId' is not null or undefined
+            assertParamExists('getKiosk', 'kioskId', kioskId)
+            const localVarPath = `/api/v1/kiosk/{kioskId}`
+                .replace(`{${"kioskId"}}`, encodeURIComponent(String(kioskId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {string} orderId The unique ID of the order to validate against the system.
          * @param {string} businessId The unique ID of the business to validate against the system.
          * @param {*} [options] Override http request option.
@@ -22786,6 +23406,16 @@ export const KiosksApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getKiosk(kioskId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<KioskResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getKiosk(kioskId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @param {string} orderId The unique ID of the order to validate against the system.
          * @param {string} businessId The unique ID of the business to validate against the system.
          * @param {*} [options] Override http request option.
@@ -22837,6 +23467,15 @@ export const KiosksApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
+         * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getKiosk(kioskId: string, options?: any): AxiosPromise<KioskResponseDto> {
+            return localVarFp.getKiosk(kioskId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {string} orderId The unique ID of the order to validate against the system.
          * @param {string} businessId The unique ID of the business to validate against the system.
          * @param {*} [options] Override http request option.
@@ -22881,6 +23520,15 @@ export interface KiosksApiInterface {
      * @memberof KiosksApiInterface
      */
     checkIn(createKioskDto: CreateKioskDto, options?: AxiosRequestConfig): AxiosPromise<CheckInResponseDto>;
+
+    /**
+     * 
+     * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof KiosksApiInterface
+     */
+    getKiosk(kioskId: string, options?: AxiosRequestConfig): AxiosPromise<KioskResponseDto>;
 
     /**
      * 
@@ -22929,6 +23577,17 @@ export class KiosksApi extends BaseAPI implements KiosksApiInterface {
      */
     public checkIn(createKioskDto: CreateKioskDto, options?: AxiosRequestConfig) {
         return KiosksApiFp(this.configuration).checkIn(createKioskDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof KiosksApi
+     */
+    public getKiosk(kioskId: string, options?: AxiosRequestConfig) {
+        return KiosksApiFp(this.configuration).getKiosk(kioskId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -24192,6 +24851,131 @@ export class NotificationApi extends BaseAPI implements NotificationApiInterface
      */
     public removeVenueSubscriptions(body: object, options?: AxiosRequestConfig) {
         return NotificationApiFp(this.configuration).removeVenueSubscriptions(body, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * OrderingCoApi - axios parameter creator
+ * @export
+ */
+export const OrderingCoApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @summary Update tax rate for businesses
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateTaxRate: async (body: object, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'body' is not null or undefined
+            assertParamExists('updateTaxRate', 'body', body)
+            const localVarPath = `/api/v1/ordering/update-tax-rate`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * OrderingCoApi - functional programming interface
+ * @export
+ */
+export const OrderingCoApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = OrderingCoApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @summary Update tax rate for businesses
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateTaxRate(body: object, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateTaxRate(body, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * OrderingCoApi - factory interface
+ * @export
+ */
+export const OrderingCoApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = OrderingCoApiFp(configuration)
+    return {
+        /**
+         * 
+         * @summary Update tax rate for businesses
+         * @param {object} body 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateTaxRate(body: object, options?: any): AxiosPromise<void> {
+            return localVarFp.updateTaxRate(body, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * OrderingCoApi - interface
+ * @export
+ * @interface OrderingCoApi
+ */
+export interface OrderingCoApiInterface {
+    /**
+     * 
+     * @summary Update tax rate for businesses
+     * @param {object} body 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OrderingCoApiInterface
+     */
+    updateTaxRate(body: object, options?: AxiosRequestConfig): AxiosPromise<void>;
+
+}
+
+/**
+ * OrderingCoApi - object-oriented interface
+ * @export
+ * @class OrderingCoApi
+ * @extends {BaseAPI}
+ */
+export class OrderingCoApi extends BaseAPI implements OrderingCoApiInterface {
+    /**
+     * 
+     * @summary Update tax rate for businesses
+     * @param {object} body 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof OrderingCoApi
+     */
+    public updateTaxRate(body: object, options?: AxiosRequestConfig) {
+        return OrderingCoApiFp(this.configuration).updateTaxRate(body, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -26917,6 +27701,42 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * Creates a new Viva transaction.
+         * @summary Create Viva payment
+         * @param {CreateTransactionPayloadDto} createTransactionPayloadDto Viva payment creation payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createVivaTransactionV3: async (createTransactionPayloadDto: CreateTransactionPayloadDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createTransactionPayloadDto' is not null or undefined
+            assertParamExists('createVivaTransactionV3', 'createTransactionPayloadDto', createTransactionPayloadDto)
+            const localVarPath = `/api/v3/payment/viva/create`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createTransactionPayloadDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Disconnect Nets terminal
          * @summary Disconnect nets device
          * @param {ConnectTerminalPayloadDto} connectTerminalPayloadDto Payload to specify connect criteria for Nets device.
@@ -27649,6 +28469,17 @@ export const PaymentApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Creates a new Viva transaction.
+         * @summary Create Viva payment
+         * @param {CreateTransactionPayloadDto} createTransactionPayloadDto Viva payment creation payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createVivaTransactionV3(createTransactionPayloadDto: CreateTransactionPayloadDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VivaPaymentIntent>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createVivaTransactionV3(createTransactionPayloadDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Disconnect Nets terminal
          * @summary Disconnect nets device
          * @param {ConnectTerminalPayloadDto} connectTerminalPayloadDto Payload to specify connect criteria for Nets device.
@@ -27945,6 +28776,16 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.createVivaPaymentV3(vivaCreatePaymentDto, options).then((request) => request(axios, basePath));
         },
         /**
+         * Creates a new Viva transaction.
+         * @summary Create Viva payment
+         * @param {CreateTransactionPayloadDto} createTransactionPayloadDto Viva payment creation payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createVivaTransactionV3(createTransactionPayloadDto: CreateTransactionPayloadDto, options?: any): AxiosPromise<VivaPaymentIntent> {
+            return localVarFp.createVivaTransactionV3(createTransactionPayloadDto, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Disconnect Nets terminal
          * @summary Disconnect nets device
          * @param {ConnectTerminalPayloadDto} connectTerminalPayloadDto Payload to specify connect criteria for Nets device.
@@ -28221,6 +29062,16 @@ export interface PaymentApiInterface {
      * @memberof PaymentApiInterface
      */
     createVivaPaymentV3(vivaCreatePaymentDto: VivaCreatePaymentDto, options?: AxiosRequestConfig): AxiosPromise<VivaPaymentIntent>;
+
+    /**
+     * Creates a new Viva transaction.
+     * @summary Create Viva payment
+     * @param {CreateTransactionPayloadDto} createTransactionPayloadDto Viva payment creation payload
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PaymentApiInterface
+     */
+    createVivaTransactionV3(createTransactionPayloadDto: CreateTransactionPayloadDto, options?: AxiosRequestConfig): AxiosPromise<VivaPaymentIntent>;
 
     /**
      * Disconnect Nets terminal
@@ -28518,6 +29369,18 @@ export class PaymentApi extends BaseAPI implements PaymentApiInterface {
      */
     public createVivaPaymentV3(vivaCreatePaymentDto: VivaCreatePaymentDto, options?: AxiosRequestConfig) {
         return PaymentApiFp(this.configuration).createVivaPaymentV3(vivaCreatePaymentDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Creates a new Viva transaction.
+     * @summary Create Viva payment
+     * @param {CreateTransactionPayloadDto} createTransactionPayloadDto Viva payment creation payload
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PaymentApi
+     */
+    public createVivaTransactionV3(createTransactionPayloadDto: CreateTransactionPayloadDto, options?: AxiosRequestConfig) {
+        return PaymentApiFp(this.configuration).createVivaTransactionV3(createTransactionPayloadDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -31486,6 +32349,146 @@ export class ShiftTrackingApi extends BaseAPI implements ShiftTrackingApiInterfa
      */
     public unlock(businessId: string, unlockTerminalDto: UnlockTerminalDto, options?: AxiosRequestConfig) {
         return ShiftTrackingApiFp(this.configuration).unlock(businessId, unlockTerminalDto, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * TerminalApi - axios parameter creator
+ * @export
+ */
+export const TerminalApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {number} businessId The id of the business
+         * @param {PaymentProvider} provider The payment gateway or hardware provider handling the transaction.
+         * @param {string} terminalId The unique hardware identifier of the physical terminal mapped to this kiosk.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getTerminalStatus: async (businessId: number, provider: PaymentProvider, terminalId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'businessId' is not null or undefined
+            assertParamExists('getTerminalStatus', 'businessId', businessId)
+            // verify required parameter 'provider' is not null or undefined
+            assertParamExists('getTerminalStatus', 'provider', provider)
+            // verify required parameter 'terminalId' is not null or undefined
+            assertParamExists('getTerminalStatus', 'terminalId', terminalId)
+            const localVarPath = `/api/v1/terminal/status/{businessId}`
+                .replace(`{${"businessId"}}`, encodeURIComponent(String(businessId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (provider !== undefined) {
+                localVarQueryParameter['provider'] = provider;
+            }
+
+            if (terminalId !== undefined) {
+                localVarQueryParameter['terminalId'] = terminalId;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * TerminalApi - functional programming interface
+ * @export
+ */
+export const TerminalApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = TerminalApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {number} businessId The id of the business
+         * @param {PaymentProvider} provider The payment gateway or hardware provider handling the transaction.
+         * @param {string} terminalId The unique hardware identifier of the physical terminal mapped to this kiosk.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getTerminalStatus(businessId: number, provider: PaymentProvider, terminalId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getTerminalStatus(businessId, provider, terminalId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * TerminalApi - factory interface
+ * @export
+ */
+export const TerminalApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = TerminalApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {number} businessId The id of the business
+         * @param {PaymentProvider} provider The payment gateway or hardware provider handling the transaction.
+         * @param {string} terminalId The unique hardware identifier of the physical terminal mapped to this kiosk.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getTerminalStatus(businessId: number, provider: PaymentProvider, terminalId: string, options?: any): AxiosPromise<void> {
+            return localVarFp.getTerminalStatus(businessId, provider, terminalId, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * TerminalApi - interface
+ * @export
+ * @interface TerminalApi
+ */
+export interface TerminalApiInterface {
+    /**
+     * 
+     * @param {number} businessId The id of the business
+     * @param {PaymentProvider} provider The payment gateway or hardware provider handling the transaction.
+     * @param {string} terminalId The unique hardware identifier of the physical terminal mapped to this kiosk.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof TerminalApiInterface
+     */
+    getTerminalStatus(businessId: number, provider: PaymentProvider, terminalId: string, options?: AxiosRequestConfig): AxiosPromise<void>;
+
+}
+
+/**
+ * TerminalApi - object-oriented interface
+ * @export
+ * @class TerminalApi
+ * @extends {BaseAPI}
+ */
+export class TerminalApi extends BaseAPI implements TerminalApiInterface {
+    /**
+     * 
+     * @param {number} businessId The id of the business
+     * @param {PaymentProvider} provider The payment gateway or hardware provider handling the transaction.
+     * @param {string} terminalId The unique hardware identifier of the physical terminal mapped to this kiosk.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof TerminalApi
+     */
+    public getTerminalStatus(businessId: number, provider: PaymentProvider, terminalId: string, options?: AxiosRequestConfig) {
+        return TerminalApiFp(this.configuration).getTerminalStatus(businessId, provider, terminalId, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

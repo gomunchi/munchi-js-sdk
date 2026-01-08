@@ -26,8 +26,8 @@ export class MockStrategy implements IPaymentStrategy {
     };
   }
 
-  async cancelTransaction(id: string): Promise<boolean> {
-    console.log("[MockSDK] Cancelled", id);
+  async cancelTransaction(): Promise<boolean> {
+    console.log("[MockSDK] Cancelled");
     return true;
   }
 }

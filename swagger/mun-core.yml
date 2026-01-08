@@ -1,5 +1,21 @@
 openapi: 3.0.0
 paths:
+  /api/v1/ordering/update-tax-rate:
+    put:
+      operationId: updateTaxRate
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTaxRateDto"
+      responses:
+        "200":
+          description: Tax rates updated
+      summary: Update tax rate for businesses
+      tags:
+        - OrderingCo
   /api/v1/auth/register:
     post:
       operationId: registerUser
@@ -820,6 +836,50 @@ paths:
         "201":
           description: ""
       tags: *a9
+  /api/v1/kiosk/{kioskId}:
+    get:
+      operationId: getKiosk
+      parameters:
+        - name: kioskId
+          required: true
+          in: path
+          description: The unique ID of the kiosk device to validate against the system.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful get kiosk. The Kiosk was either created or updated, and
+            is now confirmed to be connected to the specified terminal.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KioskResponseDto"
+      tags: *a9
+  /api/v1/ably/request-settings:
+    post:
+      operationId: requestSettings
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags: &a10
+        - Ably
+  /api/v1/ably/refresh-config:
+    post:
+      operationId: refreshConfig
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags: *a10
+  /api/v1/ably/refresh-tax:
+    post:
+      operationId: refreshTax
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags: *a10
   /api/v2/orders:
     get:
       operationId: getAllOrders V2
@@ -853,7 +913,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get all orders across all statuses
-      tags: &a10
+      tags: &a11
         - orders
   /api/v2/orders/{status}:
     get:
@@ -929,7 +989,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get orders by status
-      tags: *a10
+      tags: *a11
   /api/v2/orders/pos/park:
     get:
       operationId: getParkedPosOrder V2
@@ -963,7 +1023,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get all Pos park order
-      tags: *a10
+      tags: *a11
     delete:
       operationId: deletePosParkedOrder V2
       parameters: []
@@ -990,7 +1050,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Remove a parked pos order
-      tags: *a10
+      tags: *a11
   /api/v2/orders/pos/update:
     post:
       operationId: updatePosOrder V2
@@ -1021,7 +1081,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Update a POS order status
-      tags: *a10
+      tags: *a11
   /api/v2/orders/pos/ticket:
     post:
       operationId: sendPosOrderTicket V2
@@ -1052,7 +1112,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Send a POS order ticket
-      tags: *a10
+      tags: *a11
   /api/v2/orders/pos/place:
     post:
       operationId: placePosOrder V2
@@ -1083,7 +1143,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Place an POS order
-      tags: *a10
+      tags: *a11
   /api/plugin/config.json:
     get:
       operationId: loadConfigFile
@@ -1091,7 +1151,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: &a11
+      tags: &a12
         - Plugin
   /api/plugin/business/upsert:
     post:
@@ -1100,7 +1160,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: *a11
+      tags: *a12
   /api/v1/business/{businessId}/validate:
     get:
       operationId: validateBusiness
@@ -1118,9 +1178,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BusinessValidationResponseDto"
-      security: &a12
+      security: &a13
         - JWT-auth: []
-      tags: &a13
+      tags: &a14
         - Business
   /api/v1/business/{businessId}/menu/{menuType}:
     get:
@@ -1149,8 +1209,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/MenuDto"
-      security: *a12
-      tags: *a13
+      security: *a13
+      tags: *a14
   /api/v1/business/{businessId}/menu/categories:
     post:
       operationId: getBusinessCategoriesByMenuId
@@ -1176,8 +1236,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CategoryDto"
-      security: *a12
-      tags: *a13
+      security: *a13
+      tags: *a14
   /api/v1/business/{businessId}/configs:
     get:
       operationId: getBusinessConfig
@@ -1201,8 +1261,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BusinessConfigResponseDto"
-      security: *a12
-      tags: *a13
+      security: *a13
+      tags: *a14
   /api/v1/business/{businessId}/internal/configs:
     get:
       operationId: getBusinessConfiguration
@@ -1226,8 +1286,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BusinessConfigResponseDto"
-      security: *a12
-      tags: *a13
+      security: *a13
+      tags: *a14
   /api/v1/business/{businessId}/external/configs:
     get:
       operationId: getBusinessConfigById
@@ -1251,8 +1311,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ExternalBusinessConfigResponseDto"
-      security: *a12
-      tags: *a13
+      security: *a13
+      tags: *a14
   /api/v1/business/{businessId}/status:
     patch:
       operationId: setBusinessStatus
@@ -1289,8 +1349,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-      security: *a12
-      tags: *a13
+      security: *a13
+      tags: *a14
   /api/v1/business/{businessId}/status/schedule:
     patch:
       operationId: setBusinessStatusSchedule
@@ -1309,8 +1369,8 @@ paths:
       responses:
         "200":
           description: ""
-      security: *a12
-      tags: *a13
+      security: *a13
+      tags: *a14
   /api/v1/business/{businessId}/provider/status:
     get:
       operationId: getBusinessProviderStatus
@@ -1342,8 +1402,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-      security: *a12
-      tags: *a13
+      security: *a13
+      tags: *a14
   /api/v1/business/{businessId}/{provider}/{externalId}/status:
     get:
       operationId: getSingleBusinessProviderStatus
@@ -1385,8 +1445,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-      security: *a12
-      tags: *a13
+      security: *a13
+      tags: *a14
   /api/v1/business/{businessId}/provider/status/external:
     get:
       operationId: getBusinessProviderStatusExternal
@@ -1424,8 +1484,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-      security: *a12
-      tags: *a13
+      security: *a13
+      tags: *a14
   /api/v1/business/tax:
     get:
       operationId: getBusinessTax
@@ -1439,8 +1499,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/BusinessTaxResponseDto"
-      security: *a12
-      tags: *a13
+      security: *a13
+      tags: *a14
   /api/v1/business/{businessId}/discount:
     get:
       operationId: getUnifiedDiscounts
@@ -1457,8 +1517,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/UnifiedDiscountsResponseDto"
-      security: *a12
-      tags: *a13
+      security: *a13
+      tags: *a14
   /api/v1/business/{businessId}/permissions:
     post:
       operationId: createBusinessPermission
@@ -1482,9 +1542,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BusinessPermissionResponseDto"
-      security: *a12
+      security: *a13
       summary: Create single business permission
-      tags: *a13
+      tags: *a14
   /api/v1/business/{businessId}/permissions/{permissionId}:
     put:
       operationId: updateBusinessPermission
@@ -1513,9 +1573,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BusinessPermissionResponseDto"
-      security: *a12
+      security: *a13
       summary: Update single business permission
-      tags: *a13
+      tags: *a14
     delete:
       operationId: deleteBusinessPermission
       parameters:
@@ -1533,9 +1593,9 @@ paths:
       responses:
         "200":
           description: Permission deleted
-      security: *a12
+      security: *a13
       summary: Delete business permission
-      tags: *a13
+      tags: *a14
   /api/webhook/wolt-drive/event:
     post:
       operationId: handleWoltDriveEvent
@@ -1543,7 +1603,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: &a14
+      tags: &a15
         - Webhook
   /api/webhook/wolt-drive/{country}/event:
     post:
@@ -1557,7 +1617,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: *a14
+      tags: *a15
   /api/webhook/ship-day:
     post:
       operationId: handleWebhook
@@ -1565,7 +1625,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: *a14
+      tags: *a15
   /api/webhook/preorder-reminder:
     post:
       operationId: handlePreorderReminder
@@ -1582,7 +1642,7 @@ paths:
         "401":
           description: Unauthorized - Invalid API key
       summary: Handle preorder reminder (triggered by scheduler)
-      tags: *a14
+      tags: *a15
   /api/webhook/order/event:
     post:
       operationId: handleFoodoraEvent
@@ -1596,7 +1656,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: *a14
+      tags: *a15
   /api/webhook/wolt/product/edit:
     post:
       operationId: updateWoltProduct
@@ -1604,7 +1664,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: *a14
+      tags: *a15
   /api/webhook/nets:
     post:
       operationId: handleNetsEvents
@@ -1612,7 +1672,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: *a14
+      tags: *a15
   /api/webhook/nets/refund:
     post:
       operationId: handleNetsRefundEvents
@@ -1620,7 +1680,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: *a14
+      tags: *a15
   /api/webhook/viva/verification:
     get:
       operationId: verifyVivaWebhook
@@ -1628,7 +1688,7 @@ paths:
       responses:
         "200":
           description: ""
-      tags: *a14
+      tags: *a15
     post:
       operationId: handleVivaEvents
       parameters: []
@@ -1642,7 +1702,7 @@ paths:
         "200":
           description: Viva webhook processed successfully
       summary: Handle Viva payment webhook events
-      tags: *a14
+      tags: *a15
   /api/webhook/load-employee:
     post:
       operationId: handleLoadEmployee
@@ -1651,7 +1711,7 @@ paths:
         "200":
           description: Employee webhook processed successfully
       summary: Handle Supabase employee sync webhook
-      tags: *a14
+      tags: *a15
   /api/webhook/add-roles:
     post:
       operationId: handleRoleWebhook
@@ -1659,7 +1719,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: *a14
+      tags: *a15
   /api/webhook/add-employee-assignments:
     post:
       operationId: handleAssignmentWebhook
@@ -1667,7 +1727,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: *a14
+      tags: *a15
   /api/webhook/add-employee-shifts:
     post:
       operationId: handleShiftWebhook
@@ -1675,7 +1735,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: *a14
+      tags: *a15
   /api/webhook/add-business:
     post:
       operationId: handleBusinessWebhook
@@ -1683,7 +1743,7 @@ paths:
       responses:
         "201":
           description: ""
-      tags: *a14
+      tags: *a15
   /api/v1/menu/{businessId}/categories:
     get:
       operationId: getProductsByCategories
@@ -1723,7 +1783,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get products by categories
-      tags: &a15
+      tags: &a16
         - menu
   /api/v1/menu/{businessId}/extras:
     get:
@@ -1757,7 +1817,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get business product extras
-      tags: *a15
+      tags: *a16
   /api/v1/menu/{businessId}/product:
     patch:
       operationId: editBusinessProduct
@@ -1797,7 +1857,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Update product status (enabled/disabled) for a business
-      tags: *a15
+      tags: *a16
   /api/v1/report/email:
     post:
       operationId: sendReportEmail
@@ -1840,7 +1900,7 @@ paths:
         "400":
           description: Bad Request
       summary: Send end-of-day report via email
-      tags: &a16
+      tags: &a17
         - Report
   /api/v1/report/pos/end-of-day:
     get:
@@ -1892,7 +1952,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get end-of-day financial report for POS
-      tags: *a16
+      tags: *a17
   /api/v1/passcode/create:
     post:
       operationId: createPasscode
@@ -1911,7 +1971,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/CreatePasscodeResponseDto"
       summary: Create new passcode
-      tags: &a17
+      tags: &a18
         - Passcode
   /api/v1/passcode/{passcodeId}:
     delete:
@@ -1926,7 +1986,7 @@ paths:
         "200":
           description: ""
       summary: Delete passcode
-      tags: *a17
+      tags: *a18
   /api/v1/passcode/options/{businessId}:
     get:
       description: Returns all available passcodes (business + chain) and permissions
@@ -1948,7 +2008,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/PasscodeOptionsResponseDto"
       summary: Get passcode options and permissions for business
-      tags: *a17
+      tags: *a18
   /api/v1/passcode/validate:
     post:
       description: Validates passcode against business/chain passcodes and returns
@@ -1969,7 +2029,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ValidatePasscodeResponseDto"
       summary: Validate passcode (optional server-side validation)
-      tags: *a17
+      tags: *a18
   /api/v1/refunds/businesses/{businessId}/orders/{orderId}/plan:
     post:
       operationId: createRefundPlan
@@ -1997,7 +2057,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RefundPlanDto"
-      tags: &a18
+      tags: &a19
         - Refunds
   /api/v1/refunds/businesses/{businessId}/orders/{orderId}/refunds:
     get:
@@ -2026,7 +2086,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/RefundPlanDto"
-      tags: *a18
+      tags: *a19
   /api/v1/refunds/businesses/{businessId}/orders/{orderId}/plan/{refundId}/record:
     post:
       operationId: recordRefundPlan
@@ -2059,7 +2119,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RefundPlanDto"
-      tags: *a18
+      tags: *a19
   /api/v1/refunds/businesses/{businessId}/orders/{orderId}/plan/{refundId}/start:
     post:
       operationId: startProcessPlan
@@ -2086,7 +2146,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RefundPlanDto"
-      tags: *a18
+      tags: *a19
   /api/v1/refunds/businesses/{businessId}/orders/{orderId}/plan/{refundId}/cancel:
     delete:
       operationId: cancelPlan
@@ -2109,7 +2169,7 @@ paths:
       responses:
         "202":
           description: ""
-      tags: *a18
+      tags: *a19
   /api/v1/refunds/businesses/{businessId}/orders/{orderId}/plan/{refundId}/resolve-choice:
     post:
       operationId: resolveRefundChoice
@@ -2143,7 +2203,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RefundPlanDto"
-      tags: *a18
+      tags: *a19
   /api/v1/giftcard/validate:
     post:
       operationId: validateGiftCard
@@ -2162,7 +2222,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ValidateGiftCardResponseDto"
       summary: Validate gift card
-      tags: &a19
+      tags: &a20
         - Giftcard
   /api/v1/giftcard/redeem:
     post:
@@ -2182,7 +2242,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/RedeemGiftCardResponseDto"
       summary: Redeem gift card
-      tags: *a19
+      tags: *a20
   /api/v1/loyalty/info:
     get:
       operationId: getLoyaltyInfo
@@ -2200,11 +2260,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/LoyaltyInfoResponseDto"
-      security: &a20
-        - &a22
+      security: &a21
+        - &a23
           JWT-auth: []
       summary: Get loyalty program info
-      tags: &a21
+      tags: &a22
         - Loyalty Integerations
   /api/v1/loyalty/users/search:
     get:
@@ -2241,9 +2301,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SearchUserInfoResponseDto"
-      security: *a20
+      security: *a21
       summary: Search user by phone or email
-      tags: *a21
+      tags: *a22
   /api/v1/loyalty/users/info:
     get:
       operationId: getUserById
@@ -2268,10 +2328,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/LoyaltyUserInfoResponseDto"
       security:
-        - *a22
+        - *a23
         - JWT-auth: []
       summary: Get user by ID
-      tags: *a21
+      tags: *a22
   /api/v1/loyalty/update-user-points:
     post:
       operationId: updatePoints
@@ -2296,10 +2356,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/PointsUpdateResponseDto"
       security:
-        - *a22
+        - *a23
         - JWT-auth: []
       summary: Update user points
-      tags: *a21
+      tags: *a22
   /api/v1/loyalty/admin/transactions:
     get:
       operationId: getAdminTransactions
@@ -2329,9 +2389,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/AdminTransactionResponseDto"
-      security: *a20
+      security: *a21
       summary: Get admin transaction history
-      tags: *a21
+      tags: *a22
   /api/v1/history/orders:
     get:
       operationId: getOrderHistoryOnline
@@ -2455,7 +2515,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get order history
-      tags: &a23
+      tags: &a24
         - History
   /api/v1/history/internal/orders:
     get:
@@ -2580,7 +2640,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get order history
-      tags: *a23
+      tags: *a24
   /api/v1/history/orders/pos:
     get:
       operationId: getOrderHistoryPOS
@@ -2704,7 +2764,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get order history for POS
-      tags: *a23
+      tags: *a24
   /api/v1/payment/stripe/connectionToken:
     get:
       description: Retrieves a Stripe Terminal connection token for the specified
@@ -2731,7 +2791,7 @@ paths:
         "404":
           description: Business configuration not found
       summary: Get Stripe Terminal connection token
-      tags: &a24
+      tags: &a25
         - Payment
   /api/v1/payment/stripe/capture:
     post:
@@ -2759,7 +2819,7 @@ paths:
         "404":
           description: Payment intent not found
       summary: Capture a Stripe payment intent
-      tags: *a24
+      tags: *a25
   /api/v1/payment/stripe/cancel:
     post:
       description: Cancels a payment intent that has not yet been captured, releasing
@@ -2786,7 +2846,7 @@ paths:
         "404":
           description: Payment intent not found
       summary: Cancel a Stripe payment intent
-      tags: *a24
+      tags: *a25
   /api/v1/payment/stripe/stimulate/confirm:
     post:
       operationId: stimulateWipeCardAction
@@ -2801,11 +2861,11 @@ paths:
       responses:
         "201":
           description: ""
-        "400": &a25
+        "400": &a26
           description: Bad request - Invalid payload
-        "404": &a26
+        "404": &a27
           description: Business configuration not found
-      tags: *a24
+      tags: *a25
   /api/v1/payment/connectionToken:
     post:
       description: Retrieves a connection token for the specified business.
@@ -2825,10 +2885,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ConnectionTokenResponseDto"
-        "400": *a25
-        "404": *a26
+        "400": *a26
+        "404": *a27
       summary: Get connection token
-      tags: *a24
+      tags: *a25
   /api/v1/payment/viva/createPayment:
     post:
       description: Creates a new Viva payment intent.
@@ -2848,10 +2908,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VivaPaymentIntent"
-        "400": *a25
-        "404": *a26
+        "400": *a26
+        "404": *a27
       summary: Create Viva payment
-      tags: *a24
+      tags: *a25
   /api/v1/payment/refund:
     post:
       description: Creates a new Viva payment intent.
@@ -2867,10 +2927,10 @@ paths:
       responses:
         "200":
           description: The Viva payment intent was successfully created
-        "400": *a25
-        "404": *a26
+        "400": *a26
+        "404": *a27
       summary: Create Viva payment
-      tags: *a24
+      tags: *a25
   /api/v1/payment/viva/discoverDevices:
     post:
       description: Retrieves a list of available Viva payment devices for the
@@ -2893,10 +2953,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/VivaDevice"
-        "400": *a25
-        "404": *a26
+        "400": *a26
+        "404": *a27
       summary: Discover Viva payment devices
-      tags: *a24
+      tags: *a25
   /api/v1/payment/viva/cancelTransaction:
     delete:
       description: Cancels a Viva transaction.
@@ -2912,10 +2972,10 @@ paths:
       responses:
         "200":
           description: The Viva transaction was successfully canceled
-        "400": *a25
-        "404": *a26
+        "400": *a26
+        "404": *a27
       summary: Cancel a Viva transaction
-      tags: *a24
+      tags: *a25
   /api/v1/payment/online-orders/refund:
     post:
       description: Handles refund processing for orders placed through online channels
@@ -2931,10 +2991,10 @@ paths:
       responses:
         "202":
           description: Refund processed successfully
-        "400": *a25
-        "404": *a26
+        "400": *a26
+        "404": *a27
       summary: Process refund for online orders
-      tags: *a24
+      tags: *a25
   /api/v1/employees:
     post:
       operationId: createEmployee
@@ -2956,7 +3016,7 @@ paths:
           description: Bad Request. Validation failed.
         "401":
           description: Unauthorized.
-      tags: &a27
+      tags: &a28
         - Employees
     get:
       operationId: getEmployees
@@ -2985,7 +3045,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaginatedEmployeesResponseDto"
-      tags: *a27
+      tags: *a28
   /api/v1/merchants:
     post:
       operationId: createMerchant
@@ -3148,7 +3208,7 @@ paths:
           description: Employee not found.
         "409":
           description: Employee is clocked in at another business.
-      tags: &a28
+      tags: &a29
         - Shift Tracking
   /api/v1/businesses/{businessId}/shifts/clock-in:
     post:
@@ -3180,7 +3240,7 @@ paths:
                 $ref: "#/components/schemas/EmployeeShiftResponseDto"
         "404":
           description: Employee not found.
-      tags: *a28
+      tags: *a29
   /api/v1/businesses/{businessId}/shifts/clock-out:
     put:
       operationId: clockOut
@@ -3205,7 +3265,7 @@ paths:
                 $ref: "#/components/schemas/EmployeeShiftResponseDto"
         "404":
           description: Shift not found.
-      tags: *a28
+      tags: *a29
   /api/v1/businesses/{businessId}/shifts:
     get:
       operationId: getShifts
@@ -3235,7 +3295,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaginatedResponseDto"
-      tags: *a28
+      tags: *a29
   /api/v1/businesses/{businessId}/shifts/unlock:
     post:
       operationId: unlock
@@ -3263,7 +3323,7 @@ paths:
           description: Employee not found.
         "409":
           description: Employee is already clocked in at another location.
-      tags: *a28
+      tags: *a29
   /api/v1/business/{businessId}/categories/{categoryId}/products/{productId}/pos-inventory:
     put:
       operationId: updatePosInventory
@@ -3341,7 +3401,7 @@ paths:
           description: Unauthorized.
         "404":
           description: Business not found.
-      tags: &a29
+      tags: &a30
         - CashManagement
   /api/v1/cash-management/{businessId}/create:
     post:
@@ -3371,7 +3431,7 @@ paths:
           description: Unauthorized.
         "404":
           description: Business not found.
-      tags: *a29
+      tags: *a30
   /api/v1/cash-management/{businessId}/log:
     post:
       operationId: recordCashLog
@@ -3400,7 +3460,7 @@ paths:
           description: Unauthorized.
         "404":
           description: Active Cash Session not found.
-      tags: *a29
+      tags: *a30
   /api/v1/invoice-companies:
     post:
       operationId: createInvoiceCompany
@@ -3425,7 +3485,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/InvoiceCompanyResponseDto"
       summary: Create a new invoice company
-      tags: &a30
+      tags: &a31
         - Invoice Companies
     get:
       operationId: getInvoiceCompanies
@@ -3446,7 +3506,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/InvoiceCompanyResponseDto"
       summary: List all invoice companies for a business
-      tags: *a30
+      tags: *a31
   /api/v1/invoice-companies/search:
     get:
       operationId: searchInvoiceCompanies
@@ -3473,7 +3533,7 @@ paths:
                 items:
                   $ref: "#/components/schemas/InvoiceCompanyResponseDto"
       summary: Search invoice companies by name, email, or ytunnus
-      tags: *a30
+      tags: *a31
   /api/v1/invoice-companies/{id}:
     get:
       operationId: getInvoiceCompanyById
@@ -3497,7 +3557,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/InvoiceCompanyResponseDto"
       summary: Get a single invoice company by ID
-      tags: *a30
+      tags: *a31
     patch:
       operationId: updateInvoiceCompany
       parameters:
@@ -3526,7 +3586,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/InvoiceCompanyResponseDto"
       summary: Update an invoice company
-      tags: *a30
+      tags: *a31
     delete:
       operationId: deleteInvoiceCompany
       parameters:
@@ -3545,7 +3605,36 @@ paths:
         "204":
           description: ""
       summary: Delete an invoice company
-      tags: *a30
+      tags: *a31
+  /api/v1/terminal/status/{businessId}:
+    get:
+      operationId: getTerminalStatus
+      parameters:
+        - name: businessId
+          required: true
+          in: path
+          description: The id of the business
+          schema:
+            type: number
+        - name: provider
+          required: true
+          in: query
+          description: The payment gateway or hardware provider handling the transaction.
+          schema:
+            $ref: "#/components/schemas/PaymentProvider"
+        - name: terminalId
+          required: true
+          in: query
+          description: The unique hardware identifier of the physical terminal mapped to
+            this kiosk.
+          schema:
+            example: TID-99203-AX
+            type: string
+      responses:
+        "200":
+          description: ""
+      tags:
+        - Terminal
   /api/v2/history/orders/pos:
     get:
       operationId: getOrderHistoryPOS V2
@@ -3692,12 +3781,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VivaPaymentIntent"
-        "400": &a31
+        "400": &a32
           description: Bad request - Invalid payload
-        "404": &a32
+        "404": &a33
           description: Business configuration not found
       summary: Create Viva payment
-      tags: &a33
+      tags: &a34
         - Payment
   /api/v2/payment/nets/createPayment:
     post:
@@ -3718,10 +3807,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreateNetsTransactionResponseDto"
-        "400": *a31
-        "404": *a32
+        "400": *a32
+        "404": *a33
       summary: Create Nets payment
-      tags: *a33
+      tags: *a34
   /api/v2/payment/nets/cancelTransaction:
     post:
       description: Initiates a request to cancel a Nets payment on a specified terminal.
@@ -3738,10 +3827,10 @@ paths:
         "202":
           description: The request to cancel the Nets payment has been successfully
             accepted for processing. No response body is returned.
-        "400": *a31
-        "404": *a32
+        "400": *a32
+        "404": *a33
       summary: Request Nets payment cancellation
-      tags: *a33
+      tags: *a34
   /api/v2/payment/nets/discoverDevices:
     post:
       description: Retrieves a list of available Nets payment devices for the
@@ -3764,10 +3853,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/DiscoveredNetsTerminalDto"
-        "400": *a31
-        "404": *a32
+        "400": *a32
+        "404": *a33
       summary: Discover Nets devices
-      tags: *a33
+      tags: *a34
   /api/v2/payment/nets/connectTerminal:
     post:
       description: Connect Nets terminal
@@ -3789,10 +3878,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ConnectTerminaldDto"
-        "400": *a31
-        "404": *a32
+        "400": *a32
+        "404": *a33
       summary: Connect nets device
-      tags: *a33
+      tags: *a34
   /api/v2/payment/nets/disconnectTerminal:
     post:
       description: Disconnect Nets terminal
@@ -3808,10 +3897,10 @@ paths:
       responses:
         "200":
           description: Successfully disconnect with Nets device.
-        "400": *a31
-        "404": *a32
+        "400": *a32
+        "404": *a33
       summary: Disconnect nets device
-      tags: *a33
+      tags: *a34
   /api/v2/payment/refund:
     post:
       description: Refund a pos order
@@ -3833,10 +3922,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": *a31
-        "404": *a32
+        "400": *a32
+        "404": *a33
       summary: Refund a pos order
-      tags: *a33
+      tags: *a34
   /api/v2/payment/nets/refund:
     post:
       description: Refund a pos order
@@ -3856,10 +3945,10 @@ paths:
             application/json:
               schema:
                 type: string
-        "400": *a31
-        "404": *a32
+        "400": *a32
+        "404": *a33
       summary: Refund a pos order with nets
-      tags: *a33
+      tags: *a34
   /api/v2/payment/nets/cleanupTransaction:
     post:
       description: Requests the cleanup or removal of a Nets transaction, typically
@@ -3885,10 +3974,10 @@ paths:
             application/json:
               schema:
                 type: string
-        "400": *a31
-        "404": *a32
+        "400": *a32
+        "404": *a33
       summary: Initiate cleanup or removal of a Nets transaction
-      tags: *a33
+      tags: *a34
   /api/v2/payment/cash/refund:
     post:
       description: Process a cash refund for a previous cash payment transaction.
@@ -3910,10 +3999,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": *a31
-        "404": *a32
+        "400": *a32
+        "404": *a33
       summary: Refund a cash payment
-      tags: *a33
+      tags: *a34
   /api/v2/payment/manual/refund:
     post:
       description: Process a manual refund for a previous cash payment transaction.
@@ -3935,10 +4024,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": *a31
-        "404": *a32
+        "400": *a32
+        "404": *a33
       summary: Refund a manual payment
-      tags: *a33
+      tags: *a34
   /api/v2/report/email:
     post:
       operationId: sendReportEmailV2
@@ -3991,7 +4080,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Send end-of-day report via email (V2)
-      tags: &a34
+      tags: &a35
         - Report
   /api/v2/report/pos/end-of-day:
     get:
@@ -4043,7 +4132,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get end-of-day financial report for POS (V2)
-      tags: *a34
+      tags: *a35
   /api/v2/business/{businessId}/external/configs:
     get:
       operationId: getBusinessConfigByIdV2
@@ -4067,10 +4156,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BusinessResponseDto"
-      security: &a35
+      security: &a36
         - JWT-auth: []
       summary: ""
-      tags: &a36
+      tags: &a37
         - Business
   /api/v2/business/{businessId}/menu/{menuType}:
     get:
@@ -4099,9 +4188,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/MenuDto"
-      security: *a35
+      security: *a36
       summary: Get business menu by type V2
-      tags: *a36
+      tags: *a37
   /api/v2/business/{businessId}/menu/categories:
     post:
       operationId: getBusinessCategoriesByMenuId V2
@@ -4127,9 +4216,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ExtendedCategoryDto"
-      security: *a35
+      security: *a36
       summary: Get business menu categories V2
-      tags: *a36
+      tags: *a37
   /api/v2/menu/{businessId}/categories:
     get:
       operationId: getProductsByCategoriesV2
@@ -4228,7 +4317,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Send end-of-day report via email (V3)
-      tags: &a37
+      tags: &a38
         - Report
   /api/v3/report/pos/end-of-day:
     get:
@@ -4286,7 +4375,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get end-of-day financial report for POS (V3)
-      tags: *a37
+      tags: *a38
   /api/v3/orders:
     get:
       description: Returns paginated orders sorted by status-specific logic. Database
@@ -4321,20 +4410,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaginatedOrderResponseDto"
-        "400": &a38
+        "400": &a39
           description: Bad request
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-        "500": &a39
+        "500": &a40
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get all orders across all statuses with pagination
-      tags: &a40
+      tags: &a41
         - orders
   /api/v3/orders/{status}:
     get:
@@ -4412,10 +4501,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaginatedOrderResponseDto"
-        "400": *a38
-        "500": *a39
+        "400": *a39
+        "500": *a40
       summary: Get orders by status with pagination
-      tags: *a40
+      tags: *a41
   /api/v3/orders/pos/place:
     post:
       operationId: placePosOrder V3
@@ -4433,10 +4522,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PosOrderDto"
-        "400": *a38
-        "500": *a39
+        "400": *a39
+        "500": *a40
       summary: Place an POS order
-      tags: *a40
+      tags: *a41
   /api/v3/payment/refund:
     post:
       description: Refund a pos order
@@ -4458,12 +4547,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": &a41
+        "400": &a42
           description: Bad request - Invalid payload
-        "404": &a42
+        "404": &a43
           description: Business configuration not found
       summary: Refund a pos order
-      tags: &a43
+      tags: &a44
         - Payment
   /api/v3/payment/cash/refund:
     post:
@@ -4486,10 +4575,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": *a41
-        "404": *a42
+        "400": *a42
+        "404": *a43
       summary: Refund a cash payment
-      tags: *a43
+      tags: *a44
   /api/v3/payment/manual/refund:
     post:
       description: Process a manual refund for a previous payment transaction of any
@@ -4512,10 +4601,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": *a41
-        "404": *a42
+        "400": *a42
+        "404": *a43
       summary: Refund a manual payment
-      tags: *a43
+      tags: *a44
   /api/v3/payment/nets/refund:
     post:
       description: Refund a pos order
@@ -4535,10 +4624,10 @@ paths:
             application/json:
               schema:
                 type: string
-        "400": *a41
-        "404": *a42
+        "400": *a42
+        "404": *a43
       summary: Refund a pos order with nets
-      tags: *a43
+      tags: *a44
   /api/v3/payment/viva/createPayment:
     post:
       description: Creates a new Viva payment intent.
@@ -4558,10 +4647,33 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VivaPaymentIntent"
-        "400": *a41
-        "404": *a42
+        "400": *a42
+        "404": *a43
       summary: Create Viva payment
-      tags: *a43
+      tags: *a44
+  /api/v3/payment/viva/create:
+    post:
+      description: Creates a new Viva transaction.
+      operationId: createVivaTransactionV3
+      parameters: []
+      requestBody:
+        required: true
+        description: Viva payment creation payload
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTransactionPayloadDto"
+      responses:
+        "200":
+          description: The Viva payment intent was successfully created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VivaPaymentIntent"
+        "400": *a42
+        "404": *a43
+      summary: Create Viva payment
+      tags: *a44
   /api/v3/history/orders/pos:
     get:
       operationId: getOrderHistoryPOS V3
@@ -4712,14 +4824,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-        "500": &a44
+        "500": &a45
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Place an POS order
-      tags: &a45
+      tags: &a46
         - orders
   /api/v4/orders/pos/actions:
     post:
@@ -4743,9 +4855,9 @@ paths:
           description: Invalid request
         "404":
           description: Order not found
-        "500": *a44
+        "500": *a45
       summary: Process pos order actions
-      tags: *a45
+      tags: *a46
   /api/v4/payment/refund:
     post:
       description: Refund a pos order
@@ -4828,7 +4940,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get end-of-day financial report for POS (V4)
-      tags: &a46
+      tags: &a47
         - Report
   /api/v4/report/email:
     post:
@@ -4887,7 +4999,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Send end-of-day report via email (V4)
-      tags: *a46
+      tags: *a47
   /api/v4/history/orders/pos:
     get:
       operationId: getOrderHistoryPOS V4
@@ -5137,10 +5249,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-      security: &a47
+      security: &a48
         - JWT-auth: []
       summary: Get order history for POS V5
-      tags: &a48
+      tags: &a49
         - History
   /api/v5/history/internal/orders/pos:
     get:
@@ -5264,9 +5376,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-      security: *a47
+      security: *a48
       summary: Get order history for POS V5
-      tags: *a48
+      tags: *a49
 info:
   title: Munchi Super Server Api
   description: The Munchi API description
@@ -5286,6 +5398,9 @@ components:
       description: Enter JWT token
       in: header
   schemas:
+    UpdateTaxRateDto:
+      type: object
+      properties: {}
     UserDto:
       type: object
       properties:
@@ -6050,10 +6165,14 @@ components:
         price:
           type: number
           description: Sub-option price
+        quantity:
+          type: number
+          description: Sub-option quantity
       required:
         - subOptionId
         - name
         - price
+        - quantity
     PosSelectedOptionDto:
       type: object
       properties:
@@ -8314,6 +8433,46 @@ components:
         - prefix
         - paymentTerminalId
         - provider
+    Status:
+      type: string
+      enum:
+        - ACTIVE
+        - INACTIVE
+    PaymentTerminalDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID of the Payment Terminal.
+          example: terminal-xyz-7890
+        hardwareId:
+          type: string
+          description: The unique ID of the Payment Terminal.
+          example: terminal-xyz-7890
+        label:
+          type: string
+          description: The unique ID of the Payment Terminal.
+          example: terminal-xyz-7890
+          nullable: true
+        orderingBusinessId:
+          type: string
+          description: The unique ID of the Payment Terminal.
+          example: terminal-xyz-7890
+        provider:
+          description: The unique ID of the Payment Terminal.
+          example: terminal-xyz-7890
+          allOf:
+            - $ref: "#/components/schemas/PaymentProvider"
+        updatedAt:
+          type: string
+          description: Timestamp when the payment terminal record was last updated.
+      required:
+        - id
+        - hardwareId
+        - label
+        - orderingBusinessId
+        - provider
+        - updatedAt
     KioskDetailsDto:
       type: object
       properties:
@@ -8335,6 +8494,11 @@ components:
           type: string
           description: The display name of the Kiosk.
           example: Main Entrance Kiosk
+        status:
+          description: The status of the Kiosk.
+          example: ACTIVE
+          allOf:
+            - $ref: "#/components/schemas/Status"
         prefix:
           type: string
           description: The prefix used by the kiosk when creating orders.
@@ -8351,15 +8515,22 @@ components:
           type: string
           description: Timestamp when the kiosk record was last updated.
           format: date-time
+        paymentTerminal:
+          description: The payment terminal connected to this kiosk, or null if unassigned.
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/PaymentTerminalDto"
       required:
         - id
         - hardwareId
         - paymentTerminalId
         - name
+        - status
         - prefix
         - orderingBusinessId
         - createdAt
         - updatedAt
+        - paymentTerminal
     TerminalDetailsDto:
       type: object
       properties:
@@ -8415,6 +8586,16 @@ components:
       required:
         - kiosk
         - terminal
+    KioskResponseDto:
+      type: object
+      properties:
+        kiosk:
+          description: The kiosk details.
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/KioskDetailsDto"
+      required:
+        - kiosk
     BusinessValidationResponseDto:
       type: object
       properties:
@@ -8541,7 +8722,7 @@ components:
           example: true
           description: Whether the product is restricted
         tax:
-          allOf: &a49
+          allOf: &a50
             - $ref: "#/components/schemas/BusinessTaxResponseDto"
           nullable: true
         colorCode:
@@ -8686,7 +8867,7 @@ components:
           example: true
           description: Whether the product is restricted
         tax:
-          allOf: *a49
+          allOf: *a50
           nullable: true
       required:
         - id
@@ -9004,6 +9185,10 @@ components:
         currency:
           type: string
           example: EUR
+        business:
+          description: Business data attached
+          allOf:
+            - $ref: "#/components/schemas/BusinessDto"
         locationId:
           type: string
           example: "1234"
@@ -9044,6 +9229,7 @@ components:
         - id
         - timeZone
         - currency
+        - business
         - locationId
         - orderingBusinessId
         - paymentProviders
@@ -9062,6 +9248,10 @@ components:
         currency:
           type: string
           example: EUR
+        business:
+          description: Business data attached
+          allOf:
+            - $ref: "#/components/schemas/BusinessDto"
         locationId:
           type: string
           example: "1234"
@@ -9090,6 +9280,7 @@ components:
         - id
         - timeZone
         - currency
+        - business
         - locationId
         - paymentProviders
         - hasLoyaltyProgram
@@ -9806,7 +9997,7 @@ components:
           example: true
           description: Whether the product is restricted
         tax:
-          allOf: *a49
+          allOf: *a50
           nullable: true
         categoryName:
           type: string
@@ -11618,11 +11809,6 @@ components:
         - name
         - merchantId
         - pin
-    Status:
-      type: string
-      enum:
-        - ACTIVE
-        - INACTIVE
     EmployeeResponseDto:
       type: object
       properties:
@@ -13363,6 +13549,30 @@ components:
         - orderId
         - businessId
         - terminalId
+    CreateTransactionPayloadDto:
+      type: object
+      properties:
+        orderingBusinessId:
+          type: number
+          description: The ordering business ID for this transaction.
+        orderId:
+          type: string
+          description: The order ID for this transaction.
+        amount:
+          type: number
+          description: The amount for this transaction in cents.
+        currencyCode:
+          type: string
+          description: The currency code for this transaction.
+        identityId:
+          type: string
+          description: The identity ID for this transaction.
+      required:
+        - orderingBusinessId
+        - orderId
+        - amount
+        - currencyCode
+        - identityId
     OrderActionDataDto:
       type: object
       properties:
@@ -14346,7 +14556,7 @@ components:
         rawData:
           type: object
           description: The raw, unparsed response object received from the payment provider.
-          example: &a50
+          example: &a51
             failure:
               error: ...
         requestId:
@@ -14384,7 +14594,7 @@ components:
         rawData:
           type: object
           description: The raw, unparsed response object received from the payment provider.
-          example: *a50
+          example: *a51
         sessionId:
           type: string
           description: A unique identifier for the request, used for tracking.
@@ -14599,6 +14809,8 @@ components:
       type: string
       enum:
         - business:status-updated
+        - business:menu-updated
+        - business:config-updated
     KioskStatusDto:
       type: object
       properties:
@@ -14617,6 +14829,7 @@ components:
       enum:
         - image
         - video
+        - animation
     ImageBackgroundConfig:
       type: object
       properties:

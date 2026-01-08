@@ -1,8 +1,8 @@
+import { PaymentProvider } from "@munchi/core";
 import type { AxiosInstance } from "axios";
 import dayjs from "dayjs";
 import { version } from "../package.json";
 import { PaymentErrorCode, PaymentSDKError } from "./error";
-import { PaymentProvider } from "@munchi/core";
 import type { IPaymentStrategy } from "./strategies/IPaymentStrategy";
 import { MockStrategy } from "./strategies/MockStrategy";
 import { VivaStrategy } from "./strategies/VivaStrategy";
@@ -29,7 +29,7 @@ export class MunchiPaymentSDK {
     axios: AxiosInstance,
     messaging: IMessagingAdapter,
     config: PaymentTerminalConfig,
-    options: SDKOptions = {},
+    options: SDKOptions = {}
   ) {
     this.axios = axios;
     this.messaging = messaging;
@@ -44,15 +44,11 @@ export class MunchiPaymentSDK {
   }
 
   private resolveStrategy(config: PaymentTerminalConfig): IPaymentStrategy {
-    const strategyConfig = {
-      terminalId: config.terminalId,
-      businessId: config.storeId || this.config.storeId || "0",
-    };
     switch (config.provider) {
       case PaymentProvider.Nets:
         return new MockStrategy();
       case PaymentProvider.Viva:
-        return new VivaStrategy(this.axios, this.messaging, strategyConfig);
+        return new VivaStrategy(this.axios, this.messaging, config);
       default:
         return new MockStrategy();
     }
@@ -68,7 +64,7 @@ export class MunchiPaymentSDK {
 
   public async initiateTransaction(
     params: PaymentRequest,
-    onStateChange: (state: PaymentInteractionState) => void,
+    onStateChange: (state: PaymentInteractionState) => void
   ): Promise<PaymentResult> {
     const startTime = dayjs();
 
@@ -85,7 +81,7 @@ export class MunchiPaymentSDK {
     try {
       const transactionPromise = this.strategy.processPayment(
         params,
-        onStateChange,
+        onStateChange
       );
 
       const timeoutPromise = new Promise<never>((_, reject) => {
@@ -93,8 +89,8 @@ export class MunchiPaymentSDK {
           reject(
             new PaymentSDKError(
               PaymentErrorCode.TIMEOUT,
-              "Transaction timed out",
-            ),
+              "Transaction timed out"
+            )
           );
         }, this.timeoutMs);
       });
@@ -132,13 +128,15 @@ export class MunchiPaymentSDK {
     }
   }
 
-  public async cancel(transactionId: string): Promise<boolean> {
-    this.logger?.info("Attempting cancellation", { transactionId });
+  public async cancel(
+    onStateChange: (state: PaymentInteractionState) => void
+  ): Promise<boolean> {
+    this.logger?.info("Attempting cancellation");
     try {
-      const result = await this.strategy.cancelTransaction(transactionId);
+      const result = await this.strategy.cancelTransaction(onStateChange);
       return result;
     } catch (error) {
-      this.logger?.error("Cancellation failed", error, { transactionId });
+      this.logger?.error("Cancellation failed", error);
       return false;
     }
   }

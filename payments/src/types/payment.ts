@@ -42,7 +42,7 @@ export interface PaymentRequest {
 
 export interface PaymentTerminalConfig {
   provider: PaymentProvider;
-  terminalId: string;
+  kioskId: string;
   storeId: string;
 }
 
@@ -58,6 +58,6 @@ export interface IMessagingAdapter {
   subscribe<T>(
     channel: string,
     event: string,
-    onMessage: (data: T) => void,
+    onMessage: (data: T) => void
   ): () => void;
 }
