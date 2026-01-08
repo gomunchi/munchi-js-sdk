@@ -20,6 +20,7 @@ export enum PaymentInteractionState {
   PROCESSING = "PROCESSING",
   SUCCESS = "SUCCESS",
   FAILED = "FAILED",
+  INTERNAL_ERROR = "INTERNAL_ERROR",
 }
 
 export interface VivaOptions {
