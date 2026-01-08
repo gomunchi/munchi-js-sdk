@@ -90,6 +90,6 @@ interface AppReader {
     providerRawData?: unknown;
 }
 
-declare const VERSION = "1.0.5";
+declare const VERSION = "1.0.6";
 
 export { type AppReader, AppReaderStatus, type ILogger, type IMessagingAdapter, MunchiPaymentSDK, type NetsOptions, PaymentInteractionState, type PaymentRequest, type PaymentResult, type PaymentTerminalConfig, type SDKOptions, SdkPaymentStatus, type TransactionDetails, VERSION, type VivaOptions };

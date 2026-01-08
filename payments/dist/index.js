@@ -43,7 +43,7 @@ var import_core2 = require("@munchi/core");
 var import_dayjs = __toESM(require("dayjs"));
 
 // package.json
-var version = "1.0.5";
+var version = "1.0.6";
 
 // src/error.ts
 var PaymentSDKError = class _PaymentSDKError extends Error {
@@ -385,7 +385,7 @@ var AppReaderStatus = /* @__PURE__ */ ((AppReaderStatus2) => {
 })(AppReaderStatus || {});
 
 // src/version.ts
-var VERSION = "1.0.5";
+var VERSION = "1.0.6";
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   AppReaderStatus,

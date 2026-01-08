@@ -27972,7 +27972,7 @@ var Configuration = class {
 };
 
 // src/version.ts
-var VERSION3 = "1.0.5";
+var VERSION3 = "1.0.6";
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   AblyApi,

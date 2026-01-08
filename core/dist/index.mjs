@@ -27792,7 +27792,7 @@ var Configuration = class {
 };
 
 // src/version.ts
-var VERSION3 = "1.0.5";
+var VERSION3 = "1.0.6";
 export {
   AblyApi,
   AblyApiAxiosParamCreator,
