@@ -1,6 +1,6 @@
 {
   "name": "@munchi/core",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Munchi Core SDK - Core utilities and types",
   "license": "UNLICENSED",
   "publishConfig": {
@@ -25,7 +25,6 @@
     "prebuild": "pnpm version:sync",
     "build": "tsup index.ts --format cjs,esm --dts --clean",
     "dev": "tsup index.ts --format cjs,esm --watch --dts",
-    "prepare": "npm run build",
     "prepublishOnly": "pnpm build"
   },
   "devDependencies": {
