@@ -27,6 +27,18 @@ EOF
 echo "✅ Updated root version.ts to $VERSION"
 echo ""
 
+# Update version in root package.json
+echo "📝 Updating root package.json..."
+node -e "
+const fs = require('fs');
+const path = require('path');
+const pkgPath = path.join(__dirname, 'package.json');
+const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+pkg.version = '$VERSION';
+fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf-8');
+console.log('✅ Updated root package.json to $VERSION');
+"
+
 # Update version in core/package.json
 echo "📝 Updating core/package.json..."
 node -e "
@@ -67,7 +79,7 @@ echo ""
 
 # Commit changes
 echo "📦 Committing changes..."
-git add version.ts core/package.json core/src/version.ts payments/package.json payments/src/version.ts
+git add package.json version.ts core/package.json core/src/version.ts payments/package.json payments/src/version.ts
 git commit -m "chore: bump version to $VERSION"
 
 echo "✅ Changes committed"
