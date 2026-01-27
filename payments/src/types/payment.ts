@@ -1,4 +1,4 @@
-import type { PaymentProvider, TransactionDto } from "@munchi/core";
+import type { CurrencyCode, PaymentProvider, TransactionDto } from "@munchi/core";
 
 export type TransactionDetails = Omit<
   TransactionDto,
@@ -8,6 +8,7 @@ export type TransactionDetails = Omit<
 export enum SdkPaymentStatus {
   PENDING = "PENDING",
   SUCCESS = "SUCCESS",
+  APPROVED = "APPROVED",
   FAILED = "FAILED",
   CANCELLED = "CANCELLED",
   ERROR = "ERROR",
@@ -21,6 +22,7 @@ export enum PaymentInteractionState {
   SUCCESS = "SUCCESS",
   FAILED = "FAILED",
   INTERNAL_ERROR = "INTERNAL_ERROR",
+  VERIFYING = "VERIFYING",
 }
 
 export interface VivaOptions {
@@ -37,12 +39,12 @@ export interface NetsOptions {
 export interface PaymentRequest {
   orderRef: string;
   amountCents: number;
-  currency: string;
+  currency: CurrencyCode;
   options?: VivaOptions | NetsOptions;
 }
 
 export interface PaymentTerminalConfig {
-  provider: PaymentProvider;
+  provider?: PaymentProvider;
   kioskId: string;
   storeId: string;
 }
@@ -51,6 +53,7 @@ export interface PaymentResult {
   success: boolean;
   status: SdkPaymentStatus;
   orderId: string;
+  transactionId?: string;
   errorCode?: string;
   errorMessage?: string;
 }

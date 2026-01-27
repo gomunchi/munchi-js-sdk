@@ -8,22 +8,27 @@ import { MockStrategy } from "./strategies/MockStrategy";
 import { VivaStrategy } from "./strategies/VivaStrategy";
 import {
   type IMessagingAdapter,
-  type PaymentInteractionState,
+  PaymentInteractionState,
   type PaymentRequest,
   type PaymentResult,
   type PaymentTerminalConfig,
   SdkPaymentStatus,
 } from "./types/payment";
 import type { ILogger, SDKOptions } from "./types/sdk";
-// import { NetsStrategy } from "./strategies/NetsStrategy";
+
+type StateListener = (state: PaymentInteractionState) => void;
 
 export class MunchiPaymentSDK {
   private strategy: IPaymentStrategy;
-  private config: PaymentTerminalConfig;
   private axios: AxiosInstance;
   private messaging: IMessagingAdapter;
   private timeoutMs: number;
-  private logger?: ILogger | undefined;
+  private logger: ILogger | undefined;
+
+  private _currentState: PaymentInteractionState = PaymentInteractionState.IDLE;
+  private _listeners: StateListener[] = [];
+
+  private _cancellationIntent = false;
 
   constructor(
     axios: AxiosInstance,
@@ -33,7 +38,6 @@ export class MunchiPaymentSDK {
   ) {
     this.axios = axios;
     this.messaging = messaging;
-    this.config = config;
     this.logger = options.logger;
     this.timeoutMs = options.timeoutMs || 60000;
     this.strategy = this.resolveStrategy(config);
@@ -43,101 +47,205 @@ export class MunchiPaymentSDK {
     return version;
   }
 
+  public subscribe(listener: StateListener): () => void {
+    this._listeners.push(listener);
+    listener(this._currentState);
+
+    return () => {
+      this._listeners = this._listeners.filter((l) => l !== listener);
+    };
+  }
+
+  private transitionTo(newState: PaymentInteractionState) {
+    if (this._currentState === newState) return;
+
+    const isTerminal = [
+      PaymentInteractionState.SUCCESS,
+      PaymentInteractionState.FAILED,
+      PaymentInteractionState.INTERNAL_ERROR,
+    ].includes(this._currentState);
+
+    if (newState === PaymentInteractionState.IDLE) {
+      this._currentState = newState;
+      this._listeners.forEach((l) => l(newState));
+      return;
+    }
+
+    if (isTerminal) {
+      const errorMsg = `Invalid State Transition: Attempted to move from terminal state ${this._currentState} to ${newState}`;
+      this.logger?.error(errorMsg);
+
+      if (this._currentState !== PaymentInteractionState.INTERNAL_ERROR) {
+        this._currentState = PaymentInteractionState.INTERNAL_ERROR;
+        this._listeners.forEach((l) => l(this._currentState));
+      }
+
+      throw new PaymentSDKError(PaymentErrorCode.UNKNOWN, errorMsg);
+    }
+
+    this._currentState = newState;
+
+    this._listeners.forEach((listener) => listener(newState));
+  }
+
   private resolveStrategy(config: PaymentTerminalConfig): IPaymentStrategy {
     switch (config.provider) {
       case PaymentProvider.Nets:
         return new MockStrategy();
-      case PaymentProvider.Viva:
-        return new VivaStrategy(this.axios, this.messaging, config);
       default:
-        return new MockStrategy();
+        return new VivaStrategy(this.axios, this.messaging, config);
     }
   }
 
   public async connect(): Promise<void> {
-    await this.strategy.initialize();
+    this.transitionTo(PaymentInteractionState.CONNECTING);
+    try {
+      await this.strategy.initialize();
+      this.transitionTo(PaymentInteractionState.IDLE);
+    } catch (error) {
+      this.transitionTo(PaymentInteractionState.FAILED);
+      throw error;
+    }
   }
 
   public async disconnect(): Promise<void> {
     await this.strategy.disconnect();
+    this.transitionTo(PaymentInteractionState.IDLE);
   }
 
-  public async initiateTransaction(
-    params: PaymentRequest,
-    onStateChange: (state: PaymentInteractionState) => void
-  ): Promise<PaymentResult> {
+  public async initiateTransaction(params: PaymentRequest): Promise<PaymentResult> {
+    const isRestingState = [
+      PaymentInteractionState.IDLE,
+      PaymentInteractionState.SUCCESS,
+      PaymentInteractionState.FAILED,
+      PaymentInteractionState.INTERNAL_ERROR,
+    ].includes(this._currentState);
+
+    if (!isRestingState) {
+      return this.generateErrorResult(
+        params.orderRef,
+        PaymentErrorCode.UNKNOWN,
+        "A transaction is already in progress"
+      );
+    }
+
     const startTime = dayjs();
+    this._cancellationIntent = false;
+
+    this.transitionTo(PaymentInteractionState.IDLE);
 
     if (params.amountCents <= 0) {
-      return {
-        orderId: params.orderRef,
-        success: false,
-        status: SdkPaymentStatus.ERROR,
-        errorCode: PaymentErrorCode.INVALID_AMOUNT,
-        errorMessage: "Amount must be greater than 0",
-      };
+      return this.generateErrorResult(
+        params.orderRef,
+        PaymentErrorCode.INVALID_AMOUNT,
+        "Amount must be greater than 0"
+      );
     }
 
     try {
+      const internalStateCallback = (state: PaymentInteractionState) => {
+        if (state !== PaymentInteractionState.FAILED) {
+          this.transitionTo(state);
+        }
+      };
+
       const transactionPromise = this.strategy.processPayment(
         params,
-        onStateChange
+        internalStateCallback
       );
 
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => {
-          reject(
-            new PaymentSDKError(
-              PaymentErrorCode.TIMEOUT,
-              "Transaction timed out"
-            )
-          );
+          reject(new PaymentSDKError(PaymentErrorCode.TIMEOUT, "Transaction timed out"));
         }, this.timeoutMs);
       });
 
       const result = await Promise.race([transactionPromise, timeoutPromise]);
-      const duration = dayjs().diff(startTime, "millisecond");
+
+      if (result.success) {
+        this.transitionTo(PaymentInteractionState.SUCCESS);
+      } else if (this._cancellationIntent) {
+        return await this.handleTransactionError(params, new Error("Aborted after resolution"));
+      } else {
+        this.transitionTo(PaymentInteractionState.FAILED);
+      }
+
       this.logger?.info("Transaction completed successfully", {
         orderId: params.orderRef,
-        durationMs: duration,
+        durationMs: dayjs().diff(startTime, "millisecond"),
       });
 
       return result;
-    } catch (error: unknown) {
-      if (error instanceof PaymentSDKError) {
-        return {
-          success: false,
-          status:
-            error.code === PaymentErrorCode.DECLINED
-              ? SdkPaymentStatus.FAILED
-              : SdkPaymentStatus.ERROR,
-          errorCode: error.code,
-          errorMessage: error.message,
-          orderId: params.orderRef,
-        };
-      }
 
-      return {
-        success: false,
-        status: SdkPaymentStatus.ERROR,
-        errorCode: PaymentErrorCode.UNKNOWN,
-        errorMessage:
-          error instanceof Error ? error.message : "Unknown fatal error",
-        orderId: params.orderRef,
-      };
+    } catch (error: unknown) {
+      this.logger?.warn("Transaction interrupted. Handling final status...", { error });
+
+      return await this.handleTransactionError(params, error);
     }
   }
 
-  public async cancel(
-    onStateChange: (state: PaymentInteractionState) => void
-  ): Promise<boolean> {
+  private async handleTransactionError(params: PaymentRequest, originalError: unknown): Promise<PaymentResult> {
+    this.transitionTo(PaymentInteractionState.VERIFYING);
+
+    if (this._cancellationIntent) {
+      try {
+        const finalStatus = await this.strategy.verifyFinalStatus(params);
+        if (finalStatus.success) {
+          this.transitionTo(PaymentInteractionState.SUCCESS);
+          return finalStatus;
+        }
+      } catch (err) {
+        this.logger?.warn("Final status verification failed during cancellation", { err });
+      }
+
+      this.transitionTo(PaymentInteractionState.IDLE);
+      return {
+        success: false,
+        status: SdkPaymentStatus.CANCELLED,
+        errorCode: PaymentErrorCode.CANCELLED,
+        orderId: params.orderRef
+      };
+    }
+
+    this.transitionTo(PaymentInteractionState.FAILED);
+
+    if (originalError instanceof PaymentSDKError) {
+      return this.generateErrorResult(
+        params.orderRef,
+        originalError.code,
+        originalError.message
+      );
+    }
+
+    return this.generateErrorResult(
+      params.orderRef,
+      PaymentErrorCode.UNKNOWN,
+      originalError instanceof Error ? originalError.message : "Unknown fatal error"
+    );
+  }
+
+  public async cancel(): Promise<boolean> {
     this.logger?.info("Attempting cancellation");
+    this._cancellationIntent = true;
+
+    this.transitionTo(PaymentInteractionState.VERIFYING);
+
     try {
-      const result = await this.strategy.cancelTransaction(onStateChange);
-      return result;
+      return await this.strategy.cancelTransaction(() => {
+      });
     } catch (error) {
-      this.logger?.error("Cancellation failed", error);
+      this.logger?.error("Cancellation command failed", error);
       return false;
     }
+  }
+
+  private generateErrorResult(orderRef: string, code: PaymentErrorCode, message: string): PaymentResult {
+    return {
+      success: false,
+      status: SdkPaymentStatus.ERROR,
+      errorCode: code,
+      errorMessage: message,
+      orderId: orderRef,
+    };
   }
 }

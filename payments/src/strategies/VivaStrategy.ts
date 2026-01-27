@@ -1,6 +1,8 @@
-import type {
-  CreateTransactionPayloadDto,
-  PaymentStatusDto,
+import {
+  VivaCurrencyCode,
+  type CreateTransactionPayloadDto,
+  type CurrencyCode,
+  type PaymentStatusDto,
 } from "@munchi/core";
 import { KiosksApi, PaymentApi, SimplePaymentStatus } from "@munchi/core";
 import type { AxiosInstance } from "axios";
@@ -30,7 +32,7 @@ export class VivaStrategy implements IPaymentStrategy {
     this.kioskApi = new KiosksApi(undefined, "", axios);
   }
 
-  async initialize() {}
+  async initialize() { }
   async disconnect() {
     this.abortController?.abort();
     this.currentSessionId = null;
@@ -47,7 +49,7 @@ export class VivaStrategy implements IPaymentStrategy {
       amount: request.amountCents,
       orderId: request.orderRef,
       orderingBusinessId: parseInt(this.config.storeId),
-      currencyCode: "978",
+      currencyCode: this.mapCurrencyToViva(request.currency),
       identityId: this.config.kioskId,
     };
 
@@ -56,10 +58,7 @@ export class VivaStrategy implements IPaymentStrategy {
       this.currentSessionId = data.sessionId;
 
       if (this.abortController.signal.aborted) {
-        throw new PaymentSDKError(
-          PaymentErrorCode.CANCELLED,
-          "Payment cancelled during setup"
-        );
+        throw new Error("Aborted");
       }
 
       onStateChange(PaymentInteractionState.REQUIRES_INPUT);
@@ -98,18 +97,15 @@ export class VivaStrategy implements IPaymentStrategy {
 
       const cleanup = () => {
         isResolved = true;
-        unsubscribe();
+        if (typeof unsubscribe === "function") {
+          unsubscribe();
+        }
         clearTimeout(timer);
       };
 
       const onAbort = () => {
         cleanup();
-        reject(
-          new PaymentSDKError(
-            PaymentErrorCode.CANCELLED,
-            "User cancelled the operation"
-          )
-        );
+        reject(new Error("Aborted"));
       };
 
       signal.addEventListener("abort", onAbort);
@@ -165,10 +161,7 @@ export class VivaStrategy implements IPaymentStrategy {
 
     while (Date.now() < deadline) {
       if (signal.aborted) {
-        throw new PaymentSDKError(
-          PaymentErrorCode.CANCELLED,
-          "Polling aborted by user"
-        );
+        throw new Error("Aborted");
       }
 
       try {
@@ -219,13 +212,64 @@ export class VivaStrategy implements IPaymentStrategy {
       });
       return true;
     } catch (error) {
+      this.currentSessionId = null;
       throw new PaymentSDKError(
         PaymentErrorCode.NETWORK_ERROR,
         "Failed to cancel Viva transaction",
         error
       );
-    } finally {
-      onStateChange(PaymentInteractionState.FAILED);
     }
   }
+
+  async verifyFinalStatus(request: PaymentRequest): Promise<PaymentResult> {
+    try {
+      const { data } = await this.kioskApi.getOrderStatus(
+        request.orderRef,
+        this.config.storeId
+      );
+
+      const isSuccess = data.status === SimplePaymentStatus.Success;
+
+      return {
+        success: isSuccess,
+        status: isSuccess ? SdkPaymentStatus.SUCCESS : SdkPaymentStatus.FAILED,
+        orderId: data.orderId,
+        errorCode: data.error?.code ?? "",
+        errorMessage: data.error?.message ?? "",
+      };
+    } catch (error) {
+      throw new PaymentSDKError(
+        PaymentErrorCode.NETWORK_ERROR,
+        "Failed to verify final transaction status",
+        error
+      );
+    }
+  }
+
+  private mapCurrencyToViva(currency: CurrencyCode): VivaCurrencyCode {
+    const mapping: Partial<Record<CurrencyCode, VivaCurrencyCode>> = {
+      EUR: VivaCurrencyCode._978,
+      GBP: VivaCurrencyCode._826,
+      CHF: VivaCurrencyCode._756,
+      SEK: VivaCurrencyCode._752,
+      NOK: VivaCurrencyCode._578,
+      DKK: VivaCurrencyCode._208,
+      PLN: VivaCurrencyCode._985,
+      CZK: VivaCurrencyCode._203,
+      HUF: VivaCurrencyCode._348,
+      RON: VivaCurrencyCode._946,
+      TRY: VivaCurrencyCode._949,
+      RUB: VivaCurrencyCode._643,
+      AED: VivaCurrencyCode._784,
+    };
+
+    const vivaCode = mapping[currency];
+    if (!vivaCode) {
+      throw new PaymentSDKError(
+        PaymentErrorCode.NETWORK_ERROR,
+        `Currency ${currency} is not supported by Viva payment terminal`,
+      );
+    }
+    return vivaCode;
+  };
 }

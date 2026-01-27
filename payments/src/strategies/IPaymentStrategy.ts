@@ -14,4 +14,5 @@ export interface IPaymentStrategy {
   cancelTransaction(
     onStateChange: (state: PaymentInteractionState) => void
   ): Promise<boolean>;
+  verifyFinalStatus(request: PaymentRequest): Promise<PaymentResult>;
 }

@@ -30,4 +30,12 @@ export class MockStrategy implements IPaymentStrategy {
     console.log("[MockSDK] Cancelled");
     return true;
   }
+
+  async verifyFinalStatus(request: PaymentRequest): Promise<PaymentResult> {
+    return {
+      success: false,
+      status: SdkPaymentStatus.FAILED,
+      orderId: request.orderRef,
+    };
+  }
 }
