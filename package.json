@@ -10,7 +10,9 @@
     "test:coverage": "jest --coverage",
     "test:core": "jest --selectProject @munchi/core",
     "test:payments": "jest --selectProject @munchi/payments",
-    "generate": "openapi-generator-cli generate"
+    "generate": "openapi-generator-cli generate",
+    "version:sync": "pnpm -r version:sync",
+    "build": "pnpm -r build"
   },
   "dependencies": {
     "@openapitools/openapi-generator-cli": "^2.25.2",
