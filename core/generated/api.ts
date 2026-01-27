@@ -26,6 +26,84 @@ import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError } from './base';
 /**
  * 
  * @export
+ * @interface AblyBusinessEventPayloadDto
+ */
+export interface AblyBusinessEventPayloadDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof AblyBusinessEventPayloadDto
+     */
+    'action': ActionEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof AblyBusinessEventPayloadDto
+     */
+    'entityType': EntityTypeEnum;
+    /**
+     * 
+     * @type {object}
+     * @memberof AblyBusinessEventPayloadDto
+     */
+    'entityId': object;
+    /**
+     * 
+     * @type {object}
+     * @memberof AblyBusinessEventPayloadDto
+     */
+    'businessId': object;
+    /**
+     * 
+     * @type {ProviderEnum}
+     * @memberof AblyBusinessEventPayloadDto
+     */
+    'channel': ProviderEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof AblyBusinessEventPayloadDto
+     */
+    'timestamp': string;
+    /**
+     * 
+     * @type {object}
+     * @memberof AblyBusinessEventPayloadDto
+     */
+    'productUpdates'?: object;
+}
+
+export const ActionEnum = {
+    ProductUpdated: 'PRODUCT_UPDATED',
+    ProductDeleted: 'PRODUCT_DELETED',
+    MenuUpdated: 'MENU_UPDATED',
+    CategoryUpdated: 'CATEGORY_UPDATED',
+    ExtraUpdated: 'EXTRA_UPDATED',
+    ExtraDeleted: 'EXTRA_DELETED',
+    OptionUpdated: 'OPTION_UPDATED',
+    OptionDeleted: 'OPTION_DELETED',
+    SuboptionUpdated: 'SUBOPTION_UPDATED',
+    SuboptionDeleted: 'SUBOPTION_DELETED',
+    SiteUpdated: 'SITE_UPDATED',
+    CategoryDeleted: 'CATEGORY_DELETED',
+    ProductCreated: 'PRODUCT_CREATED',
+    BusinessConfigUpdated: 'BUSINESS_CONFIG_UPDATED'
+} as const;
+
+export type ActionEnum = typeof ActionEnum[keyof typeof ActionEnum];
+export const EntityTypeEnum = {
+    Product: 'product',
+    Menu: 'menu',
+    Category: 'category',
+    Extra: 'extra',
+    Option: 'option'
+} as const;
+
+export type EntityTypeEnum = typeof EntityTypeEnum[keyof typeof EntityTypeEnum];
+
+/**
+ * 
+ * @export
  * @interface AcceptOrderDto
  */
 export interface AcceptOrderDto {
@@ -793,6 +871,32 @@ export interface BusinessDto {
      */
     'merchantId'?: string;
 }
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const BusinessEventAction = {
+    ProductUpdated: 'PRODUCT_UPDATED',
+    ProductDeleted: 'PRODUCT_DELETED',
+    MenuUpdated: 'MENU_UPDATED',
+    CategoryUpdated: 'CATEGORY_UPDATED',
+    ExtraUpdated: 'EXTRA_UPDATED',
+    ExtraDeleted: 'EXTRA_DELETED',
+    OptionUpdated: 'OPTION_UPDATED',
+    OptionDeleted: 'OPTION_DELETED',
+    SuboptionUpdated: 'SUBOPTION_UPDATED',
+    SuboptionDeleted: 'SUBOPTION_DELETED',
+    SiteUpdated: 'SITE_UPDATED',
+    CategoryDeleted: 'CATEGORY_DELETED',
+    ProductCreated: 'PRODUCT_CREATED',
+    BusinessConfigUpdated: 'BUSINESS_CONFIG_UPDATED'
+} as const;
+
+export type BusinessEventAction = typeof BusinessEventAction[keyof typeof BusinessEventAction];
+
+
 /**
  * 
  * @export
@@ -2450,6 +2554,136 @@ export interface CategoryDto {
 /**
  * 
  * @export
+ * @interface ChannelConfig
+ */
+export interface ChannelConfig {
+    /**
+     * 
+     * @type {string}
+     * @memberof ChannelConfig
+     */
+    'channel': ChannelEnum;
+    /**
+     * 
+     * @type {number}
+     * @memberof ChannelConfig
+     */
+    'quantity': number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ChannelConfig
+     */
+    'inventoried': boolean;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ChannelConfig
+     */
+    'enabled': boolean;
+    /**
+     * 
+     * @type {string}
+     * @memberof ChannelConfig
+     */
+    'external_id'?: string | null;
+}
+
+export const ChannelEnum = {
+    Wolt: 'Wolt',
+    MunchiOnline: 'MunchiOnline',
+    MunchiKiosk: 'MunchiKiosk',
+    MunchiPos: 'MunchiPos',
+    UberEats: 'UberEats',
+    Foodora: 'Foodora',
+    Bolt: 'Bolt',
+    MunchiKioskV2: 'MunchiKioskV2',
+    Kiosk: 'Kiosk'
+} as const;
+
+export type ChannelEnum = typeof ChannelEnum[keyof typeof ChannelEnum];
+
+/**
+ * 
+ * @export
+ * @interface ChannelInventoryResponseDto
+ */
+export interface ChannelInventoryResponseDto {
+    /**
+     * 
+     * @type {ProviderEnum}
+     * @memberof ChannelInventoryResponseDto
+     */
+    'channel': ProviderEnum;
+    /**
+     * 
+     * @type {number}
+     * @memberof ChannelInventoryResponseDto
+     */
+    'product_id': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof ChannelInventoryResponseDto
+     */
+    'category_id': number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ChannelInventoryResponseDto
+     */
+    'pos_inventoried': boolean;
+    /**
+     * 
+     * @type {number}
+     * @memberof ChannelInventoryResponseDto
+     */
+    'pos_quantity': number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof ChannelInventoryResponseDto
+     */
+    'enabled': boolean;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface ChannelInventoryUpdateDto
+ */
+export interface ChannelInventoryUpdateDto {
+    /**
+     * 
+     * @type {ProviderEnum}
+     * @memberof ChannelInventoryUpdateDto
+     */
+    'channel': ProviderEnum;
+    /**
+     * Whether inventory tracking is enabled for this channel
+     * @type {boolean}
+     * @memberof ChannelInventoryUpdateDto
+     */
+    'inventoried': boolean;
+    /**
+     * Current quantity for this channel
+     * @type {number}
+     * @memberof ChannelInventoryUpdateDto
+     */
+    'quantity': number;
+    /**
+     * Whether the product is enabled for this channel
+     * @type {boolean}
+     * @memberof ChannelInventoryUpdateDto
+     */
+    'enabled'?: boolean;
+}
+
+
+/**
+ * 
+ * @export
  * @interface ChargeDto
  */
 export interface ChargeDto {
@@ -2772,17 +3006,11 @@ export interface ConfigDto {
      */
     'id': string;
     /**
-     * Time zone for the business, e.g., Europe/Helsinki
-     * @type {string}
+     * 
+     * @type {CurrencyCode}
      * @memberof ConfigDto
      */
-    'timeZone': string;
-    /**
-     * Currency code, e.g., EUR
-     * @type {string}
-     * @memberof ConfigDto
-     */
-    'currency': string;
+    'currency': CurrencyCode;
     /**
      * Creation date and time in ISO 8601 format
      * @type {string}
@@ -2802,23 +3030,11 @@ export interface ConfigDto {
      */
     'orderingBusinessId': number;
     /**
-     * The sales channel, e.g., Kiosk
-     * @type {string}
+     * 
+     * @type {ProviderEnum}
      * @memberof ConfigDto
      */
-    'channel': string;
-    /**
-     * The selected payment provider
-     * @type {object}
-     * @memberof ConfigDto
-     */
-    'selectedPaymentProvider': object | null;
-    /**
-     * Company name, can be null
-     * @type {string}
-     * @memberof ConfigDto
-     */
-    'companyName'?: string | null;
+    'channel': ProviderEnum;
     /**
      * Whether automatic rejection of orders is enabled
      * @type {boolean}
@@ -2826,83 +3042,35 @@ export interface ConfigDto {
      */
     'autoRejectEnabled': boolean;
     /**
-     * Unique POS device ID, can be null
-     * @type {string}
+     * 
+     * @type {KioskLayout}
      * @memberof ConfigDto
      */
-    'uniquePosDeviceId'?: string | null;
+    'layout': KioskLayout;
     /**
-     * Operating mode of the business, e.g., STANDARD
-     * @type {string}
+     * 
+     * @type {UpsellMode}
      * @memberof ConfigDto
      */
-    'operatingMode': string;
-    /**
-     * Layout setting, e.g., vertical
-     * @type {string}
-     * @memberof ConfigDto
-     */
-    'layout': string | null;
-    /**
-     * Product detail screen layout, e.g., SCREEN
-     * @type {string}
-     * @memberof ConfigDto
-     */
-    'productDetailLayout': string;
-    /**
-     * Whether the franchise feature is in use
-     * @type {string}
-     * @memberof ConfigDto
-     */
-    'useFranchise': string;
-    /**
-     * Store Android ID, can be null
-     * @type {string}
-     * @memberof ConfigDto
-     */
-    'storeAndroidId'?: string | null;
-    /**
-     * Store Apple ID, can be null
-     * @type {string}
-     * @memberof ConfigDto
-     */
-    'storeAppleId'?: string | null;
-    /**
-     * Store Kindle ID, can be null
-     * @type {string}
-     * @memberof ConfigDto
-     */
-    'storeKindleId'?: string | null;
-    /**
-     * Business slug for URLs, can be null
-     * @type {string}
-     * @memberof ConfigDto
-     */
-    'businessSlug'?: string | null;
-    /**
-     * Franchise slug for URLs, can be null
-     * @type {string}
-     * @memberof ConfigDto
-     */
-    'franchiseSlug'?: string | null;
-    /**
-     * Whether upsell is enabled after adding a product
-     * @type {boolean}
-     * @memberof ConfigDto
-     */
-    'upsellAfterAddProduct': boolean;
-    /**
-     * Whether upsell is enabled before checkout
-     * @type {boolean}
-     * @memberof ConfigDto
-     */
-    'upsellBeforeCheckout': boolean;
+    'upsellMode': UpsellMode;
     /**
      * Default config for kiosk auto print
      * @type {boolean}
      * @memberof ConfigDto
      */
     'kioskAutoPrintReceipt': boolean;
+    /**
+     * 
+     * @type {ProductDetailLayout}
+     * @memberof ConfigDto
+     */
+    'productDetailLayout': ProductDetailLayout;
+    /**
+     * 
+     * @type {PaymentProvider}
+     * @memberof ConfigDto
+     */
+    'selectedPaymentProvider': PaymentProvider | null;
     /**
      * Show if business has loyalty program
      * @type {boolean}
@@ -2922,12 +3090,26 @@ export interface ConfigDto {
      */
     'showLocator': boolean;
     /**
+     * Company name for the business
+     * @type {string}
+     * @memberof ConfigDto
+     */
+    'companyName': string | null;
+    /**
+     * Timezone for the business
+     * @type {string}
+     * @memberof ConfigDto
+     */
+    'timezone': string | null;
+    /**
      * Configuration for the theme
      * @type {object}
      * @memberof ConfigDto
      */
     'theme': object;
 }
+
+
 /**
  * 
  * @export
@@ -3685,6 +3867,40 @@ export interface CredentialDto {
      */
     'password': string;
 }
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const CurrencyCode = {
+    Eur: 'EUR',
+    Gbp: 'GBP',
+    Chf: 'CHF',
+    Sek: 'SEK',
+    Nok: 'NOK',
+    Dkk: 'DKK',
+    Pln: 'PLN',
+    Czk: 'CZK',
+    Huf: 'HUF',
+    Ron: 'RON',
+    Bgn: 'BGN',
+    Hrk: 'HRK',
+    Isk: 'ISK',
+    Rsd: 'RSD',
+    Try: 'TRY',
+    Uah: 'UAH',
+    Rub: 'RUB',
+    All: 'ALL',
+    Mkd: 'MKD',
+    Mdl: 'MDL',
+    Bam: 'BAM',
+    Aed: 'AED'
+} as const;
+
+export type CurrencyCode = typeof CurrencyCode[keyof typeof CurrencyCode];
+
+
 /**
  * 
  * @export
@@ -4668,6 +4884,23 @@ export interface EndOfDayReportDtoV4SalesSummary {
 /**
  * 
  * @export
+ * @enum {string}
+ */
+
+export const EntityType = {
+    Product: 'product',
+    Menu: 'menu',
+    Category: 'category',
+    Extra: 'extra',
+    Option: 'option'
+} as const;
+
+export type EntityType = typeof EntityType[keyof typeof EntityType];
+
+
+/**
+ * 
+ * @export
  * @interface ErrorResponseDto
  */
 export interface ErrorResponseDto {
@@ -4937,6 +5170,12 @@ export interface ExtendedProductDto {
      * @memberof ExtendedProductDto
      */
     'pos_quantity': number;
+    /**
+     * Channel config of inventoried per product
+     * @type {Array<ChannelConfig>}
+     * @memberof ExtendedProductDto
+     */
+    'channel_configs': Array<ChannelConfig>;
 }
 
 
@@ -5239,6 +5478,19 @@ export interface GenerateCodeResponseDto {
 /**
  * 
  * @export
+ * @interface GetSupportedChannelsResponseDto
+ */
+export interface GetSupportedChannelsResponseDto {
+    /**
+     * 
+     * @type {Array<SupportedChannelDto>}
+     * @memberof GetSupportedChannelsResponseDto
+     */
+    'channels': Array<SupportedChannelDto>;
+}
+/**
+ * 
+ * @export
  * @interface GetUserInfoResponseDto
  */
 export interface GetUserInfoResponseDto {
@@ -5341,6 +5593,21 @@ export interface ImageBackgroundConfig {
      */
     'blurRadius'?: number;
 }
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const IntegrationType = {
+    Orders: 'ORDERS',
+    Menu: 'MENU',
+    Venue: 'VENUE'
+} as const;
+
+export type IntegrationType = typeof IntegrationType[keyof typeof IntegrationType];
 
 
 /**
@@ -5681,6 +5948,34 @@ export interface KioskDetailsDtoPaymentTerminal {
 /**
  * 
  * @export
+ * @enum {string}
+ */
+
+export const KioskEventType = {
+    StatusUpdated: 'kiosk.status.updated',
+    ConfigUpdated: 'kiosk.config.updated'
+} as const;
+
+export type KioskEventType = typeof KioskEventType[keyof typeof KioskEventType];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const KioskLayout = {
+    Vertical: 'VERTICAL',
+    Horizontal: 'HORIZONTAL'
+} as const;
+
+export type KioskLayout = typeof KioskLayout[keyof typeof KioskLayout];
+
+
+/**
+ * 
+ * @export
  * @interface KioskResponseDto
  */
 export interface KioskResponseDto {
@@ -5778,6 +6073,12 @@ export interface KioskStatusDto {
      * @memberof KioskStatusDto
      */
     'event': BusinessEventType;
+    /**
+     * 
+     * @type {KioskEventType}
+     * @memberof KioskStatusDto
+     */
+    'kiosk_event': KioskEventType;
 }
 
 
@@ -6538,10 +6839,10 @@ export interface ManualRefundPayload {
 export interface MenuDto {
     /**
      * 
-     * @type {number}
+     * @type {string}
      * @memberof MenuDto
      */
-    'id': number;
+    'id': string;
     /**
      * 
      * @type {string}
@@ -6580,6 +6881,39 @@ export interface MenuProductDto {
      */
     'enabled': boolean;
 }
+/**
+ * 
+ * @export
+ * @interface MenuProductDtoV2
+ */
+export interface MenuProductDtoV2 {
+    /**
+     * Product ID from Ordering
+     * @type {number}
+     * @memberof MenuProductDtoV2
+     */
+    'id': number;
+    /**
+     * Category ID in Ordering
+     * @type {number}
+     * @memberof MenuProductDtoV2
+     */
+    'categoryId': number;
+    /**
+     * Visibility flag
+     * @type {boolean}
+     * @memberof MenuProductDtoV2
+     */
+    'enabled': boolean;
+    /**
+     * 
+     * @type {ProductAvailability}
+     * @memberof MenuProductDtoV2
+     */
+    'availabilityStatus': ProductAvailability;
+}
+
+
 /**
  * 
  * @export
@@ -6858,6 +7192,25 @@ export interface MenuProductExtraSuboptionDto {
      * @memberof MenuProductExtraSuboptionDto
      */
     'snooze_until': string | null;
+}
+/**
+ * 
+ * @export
+ * @interface MenuReponseDto
+ */
+export interface MenuReponseDto {
+    /**
+     * Array of menu data
+     * @type {Array<MenuDto>}
+     * @memberof MenuReponseDto
+     */
+    'menus': Array<MenuDto>;
+    /**
+     * Array of integrations aligned with that business
+     * @type {Array<ProviderIntegrationDto>}
+     * @memberof MenuReponseDto
+     */
+    'integrations': Array<ProviderIntegrationDto>;
 }
 /**
  * 
@@ -9697,7 +10050,8 @@ export const PaymentMethod = {
     GiftCard: 'GiftCard',
     Debit: 'Debit',
     Credit: 'Credit',
-    GiftCardManual: 'GiftCardManual'
+    GiftCardManual: 'GiftCardManual',
+    WoltBenefit: 'WoltBenefit'
 } as const;
 
 export type PaymentMethod = typeof PaymentMethod[keyof typeof PaymentMethod];
@@ -10091,7 +10445,8 @@ export const TypeEnum = {
     GiftCard: 'GiftCard',
     Debit: 'Debit',
     Credit: 'Credit',
-    GiftCardManual: 'GiftCardManual'
+    GiftCardManual: 'GiftCardManual',
+    WoltBenefit: 'WoltBenefit'
 } as const;
 
 export type TypeEnum = typeof TypeEnum[keyof typeof TypeEnum];
@@ -11124,6 +11479,12 @@ export interface PosItemDto {
      */
     'pos_quantity': number;
     /**
+     * Channel config of inventoried per product
+     * @type {Array<ChannelConfig>}
+     * @memberof PosItemDto
+     */
+    'channel_configs': Array<ChannelConfig>;
+    /**
      * Order identifier
      * @type {string}
      * @memberof PosItemDto
@@ -11231,10 +11592,10 @@ export interface PosOrderDto {
     'businessId': string;
     /**
      * 
-     * @type {string}
+     * @type {CurrencyCode}
      * @memberof PosOrderDto
      */
-    'currency': string;
+    'currency': CurrencyCode;
     /**
      * 
      * @type {PosBusinessDto}
@@ -11709,10 +12070,10 @@ export interface PosOrderPayloadDtoOrder {
     'businessId': string;
     /**
      * 
-     * @type {string}
+     * @type {CurrencyCode}
      * @memberof PosOrderPayloadDtoOrder
      */
-    'currency': string;
+    'currency': CurrencyCode;
     /**
      * 
      * @type {PosBusinessDto}
@@ -12410,10 +12771,10 @@ export interface ProcessOrderActionsResponseDtoOrder {
     'businessId': string;
     /**
      * 
-     * @type {string}
+     * @type {CurrencyCode}
      * @memberof ProcessOrderActionsResponseDtoOrder
      */
-    'currency': string;
+    'currency': CurrencyCode;
     /**
      * 
      * @type {PosBusinessDto}
@@ -12571,6 +12932,35 @@ export interface ProcessOrderActionsResponseDtoOrder {
      */
     'lastPaymentError'?: object;
 }
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const ProductAvailability = {
+    Available: 'AVAILABLE',
+    UnavailableToday: 'UNAVAILABLE_TODAY',
+    UnavailableIndefinitely: 'UNAVAILABLE_INDEFINITELY'
+} as const;
+
+export type ProductAvailability = typeof ProductAvailability[keyof typeof ProductAvailability];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const ProductDetailLayout = {
+    Modal: 'MODAL',
+    Screen: 'SCREEN'
+} as const;
+
+export type ProductDetailLayout = typeof ProductDetailLayout[keyof typeof ProductDetailLayout];
 
 
 /**
@@ -12790,6 +13180,12 @@ export interface ProductWithCategoryDto {
      * @memberof ProductWithCategoryDto
      */
     'pos_quantity': number;
+    /**
+     * Channel config of inventoried per product
+     * @type {Array<ChannelConfig>}
+     * @memberof ProductWithCategoryDto
+     */
+    'channel_configs': Array<ChannelConfig>;
 }
 /**
  * 
@@ -12939,71 +13335,54 @@ export type ProviderEnum = typeof ProviderEnum[keyof typeof ProviderEnum];
 /**
  * 
  * @export
+ * @interface ProviderIntegrationDto
+ */
+export interface ProviderIntegrationDto {
+    /**
+     * Provider external ID (unique key used in integrations)
+     * @type {string}
+     * @memberof ProviderIntegrationDto
+     */
+    'externalId': string;
+    /**
+     * 
+     * @type {ProviderEnum}
+     * @memberof ProviderIntegrationDto
+     */
+    'provider': ProviderEnum;
+    /**
+     * Business orderingBusinessId
+     * @type {number}
+     * @memberof ProviderIntegrationDto
+     */
+    'orderingBusinessId': number;
+    /**
+     * Integrations this provider supports (capability)
+     * @type {Array<IntegrationType>}
+     * @memberof ProviderIntegrationDto
+     */
+    'supportedIntegrations': Array<IntegrationType>;
+    /**
+     * Whether this provider is internal (starts with \"Munchi\")
+     * @type {boolean}
+     * @memberof ProviderIntegrationDto
+     */
+    'isInternal': boolean;
+}
+
+
+/**
+ * 
+ * @export
  * @interface ProviderMapResponseDto
  */
 export interface ProviderMapResponseDto {
     /**
-     * 
-     * @type {ProviderMapResponseDtoMunchiOnline}
+     * Only providers configured for this business are included. Keys are ProviderEnum values.
+     * @type {{ [key: string]: ProviderResponseDto; }}
      * @memberof ProviderMapResponseDto
      */
-    'MunchiOnline': ProviderMapResponseDtoMunchiOnline;
-    /**
-     * 
-     * @type {ProviderMapResponseDtoWolt}
-     * @memberof ProviderMapResponseDto
-     */
-    'Wolt': ProviderMapResponseDtoWolt;
-}
-/**
- * Update result for MunchiOnline provider
- * @export
- * @interface ProviderMapResponseDtoMunchiOnline
- */
-export interface ProviderMapResponseDtoMunchiOnline {
-    /**
-     * Whether the update failed (true) or succeeded (false)
-     * @type {boolean}
-     * @memberof ProviderMapResponseDtoMunchiOnline
-     */
-    'error': boolean;
-    /**
-     * Status message for the provider
-     * @type {string}
-     * @memberof ProviderMapResponseDtoMunchiOnline
-     */
-    'message': string;
-    /**
-     * Time when the product will be updated
-     * @type {string}
-     * @memberof ProviderMapResponseDtoMunchiOnline
-     */
-    'timestamp': string;
-}
-/**
- * Update result for Wolt provider
- * @export
- * @interface ProviderMapResponseDtoWolt
- */
-export interface ProviderMapResponseDtoWolt {
-    /**
-     * Whether the update failed (true) or succeeded (false)
-     * @type {boolean}
-     * @memberof ProviderMapResponseDtoWolt
-     */
-    'error': boolean;
-    /**
-     * Status message for the provider
-     * @type {string}
-     * @memberof ProviderMapResponseDtoWolt
-     */
-    'message': string;
-    /**
-     * Time when the product will be updated
-     * @type {string}
-     * @memberof ProviderMapResponseDtoWolt
-     */
-    'timestamp': string;
+    'providers': { [key: string]: ProviderResponseDto; };
 }
 /**
  * 
@@ -13812,6 +14191,19 @@ export interface ReportingCategoryDto {
 /**
  * 
  * @export
+ * @interface ResetEodDto
+ */
+export interface ResetEodDto {
+    /**
+     * The unique binding ID for the business or device
+     * @type {string}
+     * @memberof ResetEodDto
+     */
+    'bindingId': string;
+}
+/**
+ * 
+ * @export
  * @interface ResolveChoiceDto
  */
 export interface ResolveChoiceDto {
@@ -14131,10 +14523,10 @@ export interface SendPosOrderTicketDtoData {
     'businessId': string;
     /**
      * 
-     * @type {string}
+     * @type {CurrencyCode}
      * @memberof SendPosOrderTicketDtoData
      */
-    'currency': string;
+    'currency': CurrencyCode;
     /**
      * 
      * @type {PosBusinessDto}
@@ -14885,6 +15277,27 @@ export interface SuboptionPriceBreakdownDto {
 /**
  * 
  * @export
+ * @interface SupportedChannelDto
+ */
+export interface SupportedChannelDto {
+    /**
+     * 
+     * @type {ProviderEnum}
+     * @memberof SupportedChannelDto
+     */
+    'channel': ProviderEnum;
+    /**
+     * 
+     * @type {string}
+     * @memberof SupportedChannelDto
+     */
+    'label': string;
+}
+
+
+/**
+ * 
+ * @export
  * @interface TaxBreakdownDto
  */
 export interface TaxBreakdownDto {
@@ -15540,6 +15953,19 @@ export interface UnlockTerminalDto {
 /**
  * 
  * @export
+ * @interface UpdateChannelInventoryDto
+ */
+export interface UpdateChannelInventoryDto {
+    /**
+     * Array of channel inventory updates
+     * @type {Array<ChannelInventoryUpdateDto>}
+     * @memberof UpdateChannelInventoryDto
+     */
+    'channels': Array<ChannelInventoryUpdateDto>;
+}
+/**
+ * 
+ * @export
  * @interface UpdateInvoiceCompanyDto
  */
 export interface UpdateInvoiceCompanyDto {
@@ -15637,6 +16063,21 @@ export interface UpdateStatusResponseDto {
      */
     'businessId': number;
 }
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const UpsellMode = {
+    AfterAddProduct: 'AfterAddProduct',
+    BeforeCheckout: 'BeforeCheckout',
+    Disabled: 'Disabled'
+} as const;
+
+export type UpsellMode = typeof UpsellMode[keyof typeof UpsellMode];
 
 
 /**
@@ -17319,11 +17760,11 @@ export interface VivaWebhookPayloadDto {
      */
     'Url': string;
     /**
-     * 
-     * @type {VivaWebhookPayloadDtoEventData}
+     * Event data containing transaction details
+     * @type {object}
      * @memberof VivaWebhookPayloadDto
      */
-    'EventData': VivaWebhookPayloadDtoEventData;
+    'EventData': object;
     /**
      * Event creation timestamp
      * @type {string}
@@ -17392,219 +17833,6 @@ export const EventTypeIdEnum = {
 } as const;
 
 export type EventTypeIdEnum = typeof EventTypeIdEnum[keyof typeof EventTypeIdEnum];
-
-/**
- * Event data containing transaction details
- * @export
- * @interface VivaWebhookPayloadDtoEventData
- */
-export interface VivaWebhookPayloadDtoEventData {
-    /**
-     * Application Identifier (AID)
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'Aid': string;
-    /**
-     * Terminal ID (Tid)
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'Tid': string;
-    /**
-     * Transaction amount in the smallest currency unit
-     * @type {number}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'Amount': number;
-    /**
-     * 
-     * @type {VivaEventId}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'EventId': VivaEventId;
-    /**
-     * Indicates if the transaction was a pre-authorization
-     * @type {boolean}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'Preauth': boolean;
-    /**
-     * Indicates if the transaction was successful
-     * @type {boolean}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'Success': boolean;
-    /**
-     * Message describing the transaction outcome
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'Message': string;
-    /**
-     * Tip amount
-     * @type {number}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'TipAmount': number;
-    /**
-     * Merchant ID (UUID)
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'MerchantId': string;
-    /**
-     * Reseller ID (UUID)
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'ResellerId': string;
-    /**
-     * Order Code
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'OrderCode': string;
-    /**
-     * Session ID
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'SessionId': string;
-    /**
-     * Number of installments
-     * @type {number}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'Installments': number;
-    /**
-     * Terminal ID
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'TerminalId': string;
-    /**
-     * Indicates if an abort success operation occurred
-     * @type {boolean}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'AbortSuccess': boolean;
-    /**
-     * Indicates if an abort operation occurred
-     * @type {boolean}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'AbortOperation': boolean;
-    /**
-     * 
-     * @type {VivaCurrencyCode}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'CurrencyCode': VivaCurrencyCode;
-    /**
-     * PAN Entry Mode
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'PanEntryMode': string;
-    /**
-     * Transaction ID (UUID)
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'TransactionId': string;
-    /**
-     * Reference Number
-     * @type {number}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'ReferenceNumber': number;
-    /**
-     * Cash Register ID
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'CashRegisterId': string;
-    /**
-     * DCC Details
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'DccDetails'?: string;
-    /**
-     * Short Order Code
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'ShortOrderCode': string;
-    /**
-     * Transaction Type ID
-     * @type {number}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'TransactionTypeId': number;
-    /**
-     * Authorization ID
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'AuthorizationId': string;
-    /**
-     * Application Label (e.g., Card Scheme)
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'ApplicationLabel': string;
-    /**
-     * Loyalty Information
-     * @type {object}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'LoyaltyInfo'?: object;
-    /**
-     * AADE Transaction ID
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'AadeTransactionId'?: string | null;
-    /**
-     * Merchant Reference
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'MerchantReference': string;
-    /**
-     * Cardholder Verification Method (CVM)
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'VerificationMethod': string;
-    /**
-     * Abort Acknowledge Time
-     * @type {object}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'AbortAckTime'?: object;
-    /**
-     * Retrieval Reference Number
-     * @type {number}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'RetrievalReferenceNumber': number;
-    /**
-     * Primary Account Number Masked
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'PrimaryAccountNumberMasked': string;
-    /**
-     * Transaction Date and Time (ISO 8601 format)
-     * @type {string}
-     * @memberof VivaWebhookPayloadDtoEventData
-     */
-    'TransactionDateTime': string;
-}
-
 
 /**
  * 
@@ -18960,6 +19188,48 @@ export const BusinessApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
+         * @summary Get business menu by type V3
+         * @param {string} businessId 
+         * @param {'pos' | 'kiosk'} menuType Type of menu (e.g., pos)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getBusinessMenuByTypeV3: async (businessId: string, menuType: 'pos' | 'kiosk', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'businessId' is not null or undefined
+            assertParamExists('getBusinessMenuByTypeV3', 'businessId', businessId)
+            // verify required parameter 'menuType' is not null or undefined
+            assertParamExists('getBusinessMenuByTypeV3', 'menuType', menuType)
+            const localVarPath = `/api/v3/business/{businessId}/menu/{menuType}`
+                .replace(`{${"businessId"}}`, encodeURIComponent(String(businessId)))
+                .replace(`{${"menuType"}}`, encodeURIComponent(String(menuType)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {string} businessId Id of the business
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -19450,6 +19720,18 @@ export const BusinessApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Get business menu by type V3
+         * @param {string} businessId 
+         * @param {'pos' | 'kiosk'} menuType Type of menu (e.g., pos)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getBusinessMenuByTypeV3(businessId: string, menuType: 'pos' | 'kiosk', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MenuReponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getBusinessMenuByTypeV3(businessId, menuType, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @param {string} businessId Id of the business
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -19662,6 +19944,17 @@ export const BusinessApiFactory = function (configuration?: Configuration, baseP
         },
         /**
          * 
+         * @summary Get business menu by type V3
+         * @param {string} businessId 
+         * @param {'pos' | 'kiosk'} menuType Type of menu (e.g., pos)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getBusinessMenuByTypeV3(businessId: string, menuType: 'pos' | 'kiosk', options?: any): AxiosPromise<MenuReponseDto> {
+            return localVarFp.getBusinessMenuByTypeV3(businessId, menuType, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {string} businessId Id of the business
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -19861,6 +20154,17 @@ export interface BusinessApiInterface {
      * @memberof BusinessApiInterface
      */
     getBusinessMenuByTypeV2(businessId: string, menuType: 'pos' | 'kiosk', options?: AxiosRequestConfig): AxiosPromise<Array<MenuDto>>;
+
+    /**
+     * 
+     * @summary Get business menu by type V3
+     * @param {string} businessId 
+     * @param {'pos' | 'kiosk'} menuType Type of menu (e.g., pos)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BusinessApiInterface
+     */
+    getBusinessMenuByTypeV3(businessId: string, menuType: 'pos' | 'kiosk', options?: AxiosRequestConfig): AxiosPromise<MenuReponseDto>;
 
     /**
      * 
@@ -20082,6 +20386,19 @@ export class BusinessApi extends BaseAPI implements BusinessApiInterface {
      */
     public getBusinessMenuByTypeV2(businessId: string, menuType: 'pos' | 'kiosk', options?: AxiosRequestConfig) {
         return BusinessApiFp(this.configuration).getBusinessMenuByTypeV2(businessId, menuType, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get business menu by type V3
+     * @param {string} businessId 
+     * @param {'pos' | 'kiosk'} menuType Type of menu (e.g., pos)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BusinessApi
+     */
+    public getBusinessMenuByTypeV3(businessId: string, menuType: 'pos' | 'kiosk', options?: AxiosRequestConfig) {
+        return BusinessApiFp(this.configuration).getBusinessMenuByTypeV3(businessId, menuType, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -24207,6 +24524,46 @@ export const MenuApiAxiosParamCreator = function (configuration?: Configuration)
         },
         /**
          * 
+         * @summary Update product status (enabled/disabled) for a business
+         * @param {string} businessId Unique identifier of the business
+         * @param {Array<MenuProductDtoV2>} menuProductDtoV2 List of products with updated status
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        editBusinessProductV2: async (businessId: string, menuProductDtoV2: Array<MenuProductDtoV2>, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'businessId' is not null or undefined
+            assertParamExists('editBusinessProductV2', 'businessId', businessId)
+            // verify required parameter 'menuProductDtoV2' is not null or undefined
+            assertParamExists('editBusinessProductV2', 'menuProductDtoV2', menuProductDtoV2)
+            const localVarPath = `/api/v2/menu/{businessId}/product`
+                .replace(`{${"businessId"}}`, encodeURIComponent(String(businessId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(menuProductDtoV2, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Get business product extras
          * @param {string} businessId Business ID
          * @param {*} [options] Override http request option.
@@ -24227,45 +24584,6 @@ export const MenuApiAxiosParamCreator = function (configuration?: Configuration)
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get products by categories
-         * @param {string} businessId Unique identifier of the business
-         * @param {'available' | 'unavailable'} [filter] Filter products by availability status
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getProductsByCategories: async (businessId: string, filter?: 'available' | 'unavailable', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'businessId' is not null or undefined
-            assertParamExists('getProductsByCategories', 'businessId', businessId)
-            const localVarPath = `/api/v1/menu/{businessId}/categories`
-                .replace(`{${"businessId"}}`, encodeURIComponent(String(businessId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (filter !== undefined) {
-                localVarQueryParameter['filter'] = filter;
-            }
 
 
     
@@ -24317,6 +24635,41 @@ export const MenuApiAxiosParamCreator = function (configuration?: Configuration)
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @param {ResetEodDto} resetEodDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetProductEod: async (resetEodDto: ResetEodDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'resetEodDto' is not null or undefined
+            assertParamExists('resetProductEod', 'resetEodDto', resetEodDto)
+            const localVarPath = `/api/v1/menu/availability/reset-eod`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(resetEodDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -24341,6 +24694,18 @@ export const MenuApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Update product status (enabled/disabled) for a business
+         * @param {string} businessId Unique identifier of the business
+         * @param {Array<MenuProductDtoV2>} menuProductDtoV2 List of products with updated status
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async editBusinessProductV2(businessId: string, menuProductDtoV2: Array<MenuProductDtoV2>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProviderMapResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.editBusinessProductV2(businessId, menuProductDtoV2, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @summary Get business product extras
          * @param {string} businessId Business ID
          * @param {*} [options] Override http request option.
@@ -24348,18 +24713,6 @@ export const MenuApiFp = function(configuration?: Configuration) {
          */
         async getBusinessExtras(businessId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<MenuProductExtraDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getBusinessExtras(businessId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Get products by categories
-         * @param {string} businessId Unique identifier of the business
-         * @param {'available' | 'unavailable'} [filter] Filter products by availability status
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getProductsByCategories(businessId: string, filter?: 'available' | 'unavailable', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProductsByCategoriesResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getProductsByCategories(businessId, filter, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -24372,6 +24725,16 @@ export const MenuApiFp = function(configuration?: Configuration) {
          */
         async getProductsByCategoriesV2(businessId: string, filter?: 'available' | 'unavailable', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProductsByCategoriesResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getProductsByCategoriesV2(businessId, filter, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {ResetEodDto} resetEodDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async resetProductEod(resetEodDto: ResetEodDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.resetProductEod(resetEodDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -24397,6 +24760,17 @@ export const MenuApiFactory = function (configuration?: Configuration, basePath?
         },
         /**
          * 
+         * @summary Update product status (enabled/disabled) for a business
+         * @param {string} businessId Unique identifier of the business
+         * @param {Array<MenuProductDtoV2>} menuProductDtoV2 List of products with updated status
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        editBusinessProductV2(businessId: string, menuProductDtoV2: Array<MenuProductDtoV2>, options?: any): AxiosPromise<ProviderMapResponseDto> {
+            return localVarFp.editBusinessProductV2(businessId, menuProductDtoV2, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Get business product extras
          * @param {string} businessId Business ID
          * @param {*} [options] Override http request option.
@@ -24404,17 +24778,6 @@ export const MenuApiFactory = function (configuration?: Configuration, basePath?
          */
         getBusinessExtras(businessId: string, options?: any): AxiosPromise<Array<MenuProductExtraDto>> {
             return localVarFp.getBusinessExtras(businessId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get products by categories
-         * @param {string} businessId Unique identifier of the business
-         * @param {'available' | 'unavailable'} [filter] Filter products by availability status
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getProductsByCategories(businessId: string, filter?: 'available' | 'unavailable', options?: any): AxiosPromise<ProductsByCategoriesResponseDto> {
-            return localVarFp.getProductsByCategories(businessId, filter, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -24426,6 +24789,15 @@ export const MenuApiFactory = function (configuration?: Configuration, basePath?
          */
         getProductsByCategoriesV2(businessId: string, filter?: 'available' | 'unavailable', options?: any): AxiosPromise<ProductsByCategoriesResponseDto> {
             return localVarFp.getProductsByCategoriesV2(businessId, filter, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {ResetEodDto} resetEodDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        resetProductEod(resetEodDto: ResetEodDto, options?: any): AxiosPromise<void> {
+            return localVarFp.resetProductEod(resetEodDto, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -24449,6 +24821,17 @@ export interface MenuApiInterface {
 
     /**
      * 
+     * @summary Update product status (enabled/disabled) for a business
+     * @param {string} businessId Unique identifier of the business
+     * @param {Array<MenuProductDtoV2>} menuProductDtoV2 List of products with updated status
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MenuApiInterface
+     */
+    editBusinessProductV2(businessId: string, menuProductDtoV2: Array<MenuProductDtoV2>, options?: AxiosRequestConfig): AxiosPromise<ProviderMapResponseDto>;
+
+    /**
+     * 
      * @summary Get business product extras
      * @param {string} businessId Business ID
      * @param {*} [options] Override http request option.
@@ -24456,17 +24839,6 @@ export interface MenuApiInterface {
      * @memberof MenuApiInterface
      */
     getBusinessExtras(businessId: string, options?: AxiosRequestConfig): AxiosPromise<Array<MenuProductExtraDto>>;
-
-    /**
-     * 
-     * @summary Get products by categories
-     * @param {string} businessId Unique identifier of the business
-     * @param {'available' | 'unavailable'} [filter] Filter products by availability status
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof MenuApiInterface
-     */
-    getProductsByCategories(businessId: string, filter?: 'available' | 'unavailable', options?: AxiosRequestConfig): AxiosPromise<ProductsByCategoriesResponseDto>;
 
     /**
      * 
@@ -24478,6 +24850,15 @@ export interface MenuApiInterface {
      * @memberof MenuApiInterface
      */
     getProductsByCategoriesV2(businessId: string, filter?: 'available' | 'unavailable', options?: AxiosRequestConfig): AxiosPromise<ProductsByCategoriesResponseDto>;
+
+    /**
+     * 
+     * @param {ResetEodDto} resetEodDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MenuApiInterface
+     */
+    resetProductEod(resetEodDto: ResetEodDto, options?: AxiosRequestConfig): AxiosPromise<void>;
 
 }
 
@@ -24503,6 +24884,19 @@ export class MenuApi extends BaseAPI implements MenuApiInterface {
 
     /**
      * 
+     * @summary Update product status (enabled/disabled) for a business
+     * @param {string} businessId Unique identifier of the business
+     * @param {Array<MenuProductDtoV2>} menuProductDtoV2 List of products with updated status
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MenuApi
+     */
+    public editBusinessProductV2(businessId: string, menuProductDtoV2: Array<MenuProductDtoV2>, options?: AxiosRequestConfig) {
+        return MenuApiFp(this.configuration).editBusinessProductV2(businessId, menuProductDtoV2, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @summary Get business product extras
      * @param {string} businessId Business ID
      * @param {*} [options] Override http request option.
@@ -24511,19 +24905,6 @@ export class MenuApi extends BaseAPI implements MenuApiInterface {
      */
     public getBusinessExtras(businessId: string, options?: AxiosRequestConfig) {
         return MenuApiFp(this.configuration).getBusinessExtras(businessId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get products by categories
-     * @param {string} businessId Unique identifier of the business
-     * @param {'available' | 'unavailable'} [filter] Filter products by availability status
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof MenuApi
-     */
-    public getProductsByCategories(businessId: string, filter?: 'available' | 'unavailable', options?: AxiosRequestConfig) {
-        return MenuApiFp(this.configuration).getProductsByCategories(businessId, filter, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -24537,6 +24918,17 @@ export class MenuApi extends BaseAPI implements MenuApiInterface {
      */
     public getProductsByCategoriesV2(businessId: string, filter?: 'available' | 'unavailable', options?: AxiosRequestConfig) {
         return MenuApiFp(this.configuration).getProductsByCategoriesV2(businessId, filter, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {ResetEodDto} resetEodDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof MenuApi
+     */
+    public resetProductEod(resetEodDto: ResetEodDto, options?: AxiosRequestConfig) {
+        return MenuApiFp(this.configuration).resetProductEod(resetEodDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -29769,6 +30161,54 @@ export class PluginApi extends BaseAPI implements PluginApiInterface {
 export const ProductApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
+         * Update inventory settings for multiple channels at once
+         * @summary Update channel inventory (POS, Kiosk, etc.)
+         * @param {string} businessId Business ID
+         * @param {string} categoryId Category ID
+         * @param {string} productId Product ID
+         * @param {UpdateChannelInventoryDto} updateChannelInventoryDto Channel inventory updates
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateChannelInventoryV2: async (businessId: string, categoryId: string, productId: string, updateChannelInventoryDto: UpdateChannelInventoryDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'businessId' is not null or undefined
+            assertParamExists('updateChannelInventoryV2', 'businessId', businessId)
+            // verify required parameter 'categoryId' is not null or undefined
+            assertParamExists('updateChannelInventoryV2', 'categoryId', categoryId)
+            // verify required parameter 'productId' is not null or undefined
+            assertParamExists('updateChannelInventoryV2', 'productId', productId)
+            // verify required parameter 'updateChannelInventoryDto' is not null or undefined
+            assertParamExists('updateChannelInventoryV2', 'updateChannelInventoryDto', updateChannelInventoryDto)
+            const localVarPath = `/api/v2/business/{businessId}/categories/{categoryId}/products/{productId}/channel-inventory`
+                .replace(`{${"businessId"}}`, encodeURIComponent(String(businessId)))
+                .replace(`{${"categoryId"}}`, encodeURIComponent(String(categoryId)))
+                .replace(`{${"productId"}}`, encodeURIComponent(String(productId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(updateChannelInventoryDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * 
          * @summary Update POS inventory settings
          * @param {string} businessId Business ID
@@ -29827,6 +30267,20 @@ export const ProductApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = ProductApiAxiosParamCreator(configuration)
     return {
         /**
+         * Update inventory settings for multiple channels at once
+         * @summary Update channel inventory (POS, Kiosk, etc.)
+         * @param {string} businessId Business ID
+         * @param {string} categoryId Category ID
+         * @param {string} productId Product ID
+         * @param {UpdateChannelInventoryDto} updateChannelInventoryDto Channel inventory updates
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async updateChannelInventoryV2(businessId: string, categoryId: string, productId: string, updateChannelInventoryDto: UpdateChannelInventoryDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ChannelInventoryResponseDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.updateChannelInventoryV2(businessId, categoryId, productId, updateChannelInventoryDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 
          * @summary Update POS inventory settings
          * @param {string} businessId Business ID
@@ -29851,6 +30305,19 @@ export const ProductApiFactory = function (configuration?: Configuration, basePa
     const localVarFp = ProductApiFp(configuration)
     return {
         /**
+         * Update inventory settings for multiple channels at once
+         * @summary Update channel inventory (POS, Kiosk, etc.)
+         * @param {string} businessId Business ID
+         * @param {string} categoryId Category ID
+         * @param {string} productId Product ID
+         * @param {UpdateChannelInventoryDto} updateChannelInventoryDto Channel inventory updates
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        updateChannelInventoryV2(businessId: string, categoryId: string, productId: string, updateChannelInventoryDto: UpdateChannelInventoryDto, options?: any): AxiosPromise<Array<ChannelInventoryResponseDto>> {
+            return localVarFp.updateChannelInventoryV2(businessId, categoryId, productId, updateChannelInventoryDto, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 
          * @summary Update POS inventory settings
          * @param {string} businessId Business ID
@@ -29872,6 +30339,19 @@ export const ProductApiFactory = function (configuration?: Configuration, basePa
  * @interface ProductApi
  */
 export interface ProductApiInterface {
+    /**
+     * Update inventory settings for multiple channels at once
+     * @summary Update channel inventory (POS, Kiosk, etc.)
+     * @param {string} businessId Business ID
+     * @param {string} categoryId Category ID
+     * @param {string} productId Product ID
+     * @param {UpdateChannelInventoryDto} updateChannelInventoryDto Channel inventory updates
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProductApiInterface
+     */
+    updateChannelInventoryV2(businessId: string, categoryId: string, productId: string, updateChannelInventoryDto: UpdateChannelInventoryDto, options?: AxiosRequestConfig): AxiosPromise<Array<ChannelInventoryResponseDto>>;
+
     /**
      * 
      * @summary Update POS inventory settings
@@ -29895,6 +30375,21 @@ export interface ProductApiInterface {
  */
 export class ProductApi extends BaseAPI implements ProductApiInterface {
     /**
+     * Update inventory settings for multiple channels at once
+     * @summary Update channel inventory (POS, Kiosk, etc.)
+     * @param {string} businessId Business ID
+     * @param {string} categoryId Category ID
+     * @param {string} productId Product ID
+     * @param {UpdateChannelInventoryDto} updateChannelInventoryDto Channel inventory updates
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProductApi
+     */
+    public updateChannelInventoryV2(businessId: string, categoryId: string, productId: string, updateChannelInventoryDto: UpdateChannelInventoryDto, options?: AxiosRequestConfig) {
+        return ProductApiFp(this.configuration).updateChannelInventoryV2(businessId, categoryId, productId, updateChannelInventoryDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 
      * @summary Update POS inventory settings
      * @param {string} businessId Business ID
@@ -29917,6 +30412,40 @@ export class ProductApi extends BaseAPI implements ProductApiInterface {
  */
 export const ProviderApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * 
+         * @summary Get supported channels for a business
+         * @param {number} businessId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSupportedChannels: async (businessId: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'businessId' is not null or undefined
+            assertParamExists('getSupportedChannels', 'businessId', businessId)
+            const localVarPath = `/api/v1/provider/supported-channels/{businessId}`
+                .replace(`{${"businessId"}}`, encodeURIComponent(String(businessId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * 
          * @param {object} body 
@@ -29999,6 +30528,17 @@ export const ProviderApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
+         * @summary Get supported channels for a business
+         * @param {number} businessId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getSupportedChannels(businessId: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetSupportedChannelsResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getSupportedChannels(businessId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @param {object} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -30029,6 +30569,16 @@ export const ProviderApiFactory = function (configuration?: Configuration, baseP
     return {
         /**
          * 
+         * @summary Get supported channels for a business
+         * @param {number} businessId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getSupportedChannels(businessId: number, options?: any): AxiosPromise<GetSupportedChannelsResponseDto> {
+            return localVarFp.getSupportedChannels(businessId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {object} body 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -30056,6 +30606,16 @@ export const ProviderApiFactory = function (configuration?: Configuration, baseP
 export interface ProviderApiInterface {
     /**
      * 
+     * @summary Get supported channels for a business
+     * @param {number} businessId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProviderApiInterface
+     */
+    getSupportedChannels(businessId: number, options?: AxiosRequestConfig): AxiosPromise<GetSupportedChannelsResponseDto>;
+
+    /**
+     * 
      * @param {object} body 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -30081,6 +30641,18 @@ export interface ProviderApiInterface {
  * @extends {BaseAPI}
  */
 export class ProviderApi extends BaseAPI implements ProviderApiInterface {
+    /**
+     * 
+     * @summary Get supported channels for a business
+     * @param {number} businessId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ProviderApi
+     */
+    public getSupportedChannels(businessId: number, options?: AxiosRequestConfig) {
+        return ProviderApiFp(this.configuration).getSupportedChannels(businessId, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @param {object} body 

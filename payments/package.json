@@ -20,6 +20,9 @@
     }
   },
   "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "version:sync": "node scripts/sync-version.mjs",
     "prebuild": "pnpm version:sync",
     "build": "tsup index.ts --format cjs,esm --dts --clean",
@@ -36,6 +39,7 @@
   },
   "devDependencies": {
     "@munchi/core": "workspace:*",
+    "@types/jest": "^30.0.0",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0"
   }
