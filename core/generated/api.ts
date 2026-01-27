@@ -9923,6 +9923,7 @@ export interface PaymentErrorDto {
  */
 
 export const PaymentFailureCode = {
+    PaymentAborted: 'payment.aborted',
     PaymentCancelledByUser: 'payment.cancelled_by_user',
     PaymentInsufficientFunds: 'payment.insufficient_funds',
     PaymentCardExpired: 'payment.card_expired',
@@ -27841,6 +27842,42 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * Initiates a request to cancel a Viva payment.
+         * @summary Request Viva payment cancellation
+         * @param {VivaCancelTransactionDto} vivaCancelTransactionDto Payload containing details for Viva payment cancellation.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        cancelVivaTransactionV2: async (vivaCancelTransactionDto: VivaCancelTransactionDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'vivaCancelTransactionDto' is not null or undefined
+            assertParamExists('cancelVivaTransactionV2', 'vivaCancelTransactionDto', vivaCancelTransactionDto)
+            const localVarPath = `/api/v2/payment/viva/cancel`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(vivaCancelTransactionDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Captures a previously authorized payment intent, transferring funds from the customer to your account.
          * @summary Capture a Stripe payment intent
          * @param {PaymentIntentIdDto} paymentIntentIdDto Payment intent ID to capture
@@ -28784,6 +28821,17 @@ export const PaymentApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Initiates a request to cancel a Viva payment.
+         * @summary Request Viva payment cancellation
+         * @param {VivaCancelTransactionDto} vivaCancelTransactionDto Payload containing details for Viva payment cancellation.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async cancelVivaTransactionV2(vivaCancelTransactionDto: VivaCancelTransactionDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.cancelVivaTransactionV2(vivaCancelTransactionDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Captures a previously authorized payment intent, transferring funds from the customer to your account.
          * @summary Capture a Stripe payment intent
          * @param {PaymentIntentIdDto} paymentIntentIdDto Payment intent ID to capture
@@ -29098,6 +29146,16 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.cancelTransaction(vivaCancelTransactionDto, options).then((request) => request(axios, basePath));
         },
         /**
+         * Initiates a request to cancel a Viva payment.
+         * @summary Request Viva payment cancellation
+         * @param {VivaCancelTransactionDto} vivaCancelTransactionDto Payload containing details for Viva payment cancellation.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        cancelVivaTransactionV2(vivaCancelTransactionDto: VivaCancelTransactionDto, options?: any): AxiosPromise<void> {
+            return localVarFp.cancelVivaTransactionV2(vivaCancelTransactionDto, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Captures a previously authorized payment intent, transferring funds from the customer to your account.
          * @summary Capture a Stripe payment intent
          * @param {PaymentIntentIdDto} paymentIntentIdDto Payment intent ID to capture
@@ -29384,6 +29442,16 @@ export interface PaymentApiInterface {
      * @memberof PaymentApiInterface
      */
     cancelTransaction(vivaCancelTransactionDto: VivaCancelTransactionDto, options?: AxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * Initiates a request to cancel a Viva payment.
+     * @summary Request Viva payment cancellation
+     * @param {VivaCancelTransactionDto} vivaCancelTransactionDto Payload containing details for Viva payment cancellation.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PaymentApiInterface
+     */
+    cancelVivaTransactionV2(vivaCancelTransactionDto: VivaCancelTransactionDto, options?: AxiosRequestConfig): AxiosPromise<void>;
 
     /**
      * Captures a previously authorized payment intent, transferring funds from the customer to your account.
@@ -29677,6 +29745,18 @@ export class PaymentApi extends BaseAPI implements PaymentApiInterface {
      */
     public cancelTransaction(vivaCancelTransactionDto: VivaCancelTransactionDto, options?: AxiosRequestConfig) {
         return PaymentApiFp(this.configuration).cancelTransaction(vivaCancelTransactionDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Initiates a request to cancel a Viva payment.
+     * @summary Request Viva payment cancellation
+     * @param {VivaCancelTransactionDto} vivaCancelTransactionDto Payload containing details for Viva payment cancellation.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PaymentApi
+     */
+    public cancelVivaTransactionV2(vivaCancelTransactionDto: VivaCancelTransactionDto, options?: AxiosRequestConfig) {
+        return PaymentApiFp(this.configuration).cancelVivaTransactionV2(vivaCancelTransactionDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

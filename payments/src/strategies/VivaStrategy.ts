@@ -206,7 +206,7 @@ export class VivaStrategy implements IPaymentStrategy {
       const sessionIdToCancel = this.currentSessionId;
       this.abortController?.abort();
       this.currentSessionId = null;
-      await this.api.cancelTransaction({
+      await this.api.cancelVivaTransactionV2({
         cashRegisterId: this.config.storeId,
         sessionId: sessionIdToCancel,
       });

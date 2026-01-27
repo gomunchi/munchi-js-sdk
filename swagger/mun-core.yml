@@ -4020,6 +4020,26 @@ paths:
         "404": *a33
       summary: Refund a manual payment
       tags: *a34
+  /api/v2/payment/viva/cancel:
+    post:
+      description: Initiates a request to cancel a Viva payment.
+      operationId: cancelVivaTransactionV2
+      parameters: []
+      requestBody:
+        required: true
+        description: Payload containing details for Viva payment cancellation.
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VivaCancelTransactionDto"
+      responses:
+        "202":
+          description: The request to cancel the Viva payment has been successfully
+            accepted for processing. No response body is returned.
+        "400": *a32
+        "404": *a33
+      summary: Request Viva payment cancellation
+      tags: *a34
   /api/v2/report/email:
     post:
       operationId: sendReportEmailV2
@@ -8564,6 +8584,7 @@ components:
     PaymentFailureCode:
       type: string
       enum:
+        - payment.aborted
         - payment.cancelled_by_user
         - payment.insufficient_funds
         - payment.card_expired
