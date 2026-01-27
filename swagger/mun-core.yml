@@ -743,6 +743,24 @@ paths:
         "201":
           description: ""
       tags: *a8
+  /api/v1/provider/supported-channels/{businessId}:
+    get:
+      operationId: getSupportedChannels
+      parameters:
+        - name: businessId
+          required: true
+          in: path
+          schema:
+            type: number
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetSupportedChannelsResponseDto"
+      summary: Get supported channels for a business
+      tags: *a8
   /api/v1/kiosk/terminal/validate:
     get:
       operationId: validate
@@ -1744,47 +1762,6 @@ paths:
         "201":
           description: ""
       tags: *a15
-  /api/v1/menu/{businessId}/categories:
-    get:
-      operationId: getProductsByCategories
-      parameters:
-        - name: businessId
-          required: true
-          in: path
-          description: Unique identifier of the business
-          schema:
-            type: string
-        - name: filter
-          required: false
-          in: query
-          description: Filter products by availability status
-          schema:
-            enum:
-              - available
-              - unavailable
-            type: string
-      responses:
-        "200":
-          description: Returns categories with their products
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ProductsByCategoriesResponseDto"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseDto"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseDto"
-      summary: Get products by categories
-      tags: &a16
-        - menu
   /api/v1/menu/{businessId}/extras:
     get:
       operationId: getBusinessExtras
@@ -1817,6 +1794,21 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get business product extras
+      tags: &a16
+        - menu
+  /api/v1/menu/availability/reset-eod:
+    post:
+      operationId: resetProductEod
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetEodDto"
+      responses:
+        "201":
+          description: ""
       tags: *a16
   /api/v1/menu/{businessId}/product:
     patch:
@@ -4258,8 +4250,106 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get products by categories from MongoDB
-      tags:
+      tags: &a38
         - menu
+  /api/v2/menu/{businessId}/product:
+    patch:
+      operationId: editBusinessProductV2
+      parameters:
+        - name: businessId
+          required: true
+          in: path
+          description: Unique identifier of the business
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: List of products with updated status
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/MenuProductDtoV2"
+      responses:
+        "200":
+          description: Provider-specific update results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProviderMapResponseDto"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDto"
+      summary: Update product status (enabled/disabled) for a business
+      tags: *a38
+  /api/v2/business/{businessId}/categories/{categoryId}/products/{productId}/channel-inventory:
+    put:
+      description: Update inventory settings for multiple channels at once
+      operationId: updateChannelInventoryV2
+      parameters:
+        - name: businessId
+          required: true
+          in: path
+          description: Business ID
+          schema:
+            example: "351"
+            type: string
+        - name: categoryId
+          required: true
+          in: path
+          description: Category ID
+          schema:
+            example: "2"
+            type: string
+        - name: productId
+          required: true
+          in: path
+          description: Product ID
+          schema:
+            example: "1"
+            type: string
+      requestBody:
+        required: true
+        description: Channel inventory updates
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateChannelInventoryDto"
+            examples:
+              pos-and-kiosk:
+                summary: Update POS and Kiosk
+                value:
+                  channels:
+                    - channel: MunchiPos
+                      inventoried: true
+                      quantity: 10
+                      enabled: true
+                    - channel: MunchiKiosk
+                      inventoried: true
+                      quantity: 5
+                      enabled: true
+      responses:
+        "200":
+          description: Channel inventory updated successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChannelInventoryResponseDto"
+      summary: Update channel inventory (POS, Kiosk, etc.)
+      tags:
+        - product
   /api/v3/report/email:
     post:
       operationId: sendReportEmailV3
@@ -4317,7 +4407,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Send end-of-day report via email (V3)
-      tags: &a38
+      tags: &a39
         - Report
   /api/v3/report/pos/end-of-day:
     get:
@@ -4375,7 +4465,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get end-of-day financial report for POS (V3)
-      tags: *a38
+      tags: *a39
   /api/v3/orders:
     get:
       description: Returns paginated orders sorted by status-specific logic. Database
@@ -4410,20 +4500,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaginatedOrderResponseDto"
-        "400": &a39
+        "400": &a40
           description: Bad request
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-        "500": &a40
+        "500": &a41
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get all orders across all statuses with pagination
-      tags: &a41
+      tags: &a42
         - orders
   /api/v3/orders/{status}:
     get:
@@ -4501,10 +4591,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaginatedOrderResponseDto"
-        "400": *a39
-        "500": *a40
+        "400": *a40
+        "500": *a41
       summary: Get orders by status with pagination
-      tags: *a41
+      tags: *a42
   /api/v3/orders/pos/place:
     post:
       operationId: placePosOrder V3
@@ -4522,10 +4612,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PosOrderDto"
-        "400": *a39
-        "500": *a40
+        "400": *a40
+        "500": *a41
       summary: Place an POS order
-      tags: *a41
+      tags: *a42
   /api/v3/payment/refund:
     post:
       description: Refund a pos order
@@ -4547,12 +4637,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": &a42
+        "400": &a43
           description: Bad request - Invalid payload
-        "404": &a43
+        "404": &a44
           description: Business configuration not found
       summary: Refund a pos order
-      tags: &a44
+      tags: &a45
         - Payment
   /api/v3/payment/cash/refund:
     post:
@@ -4575,10 +4665,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": *a42
-        "404": *a43
+        "400": *a43
+        "404": *a44
       summary: Refund a cash payment
-      tags: *a44
+      tags: *a45
   /api/v3/payment/manual/refund:
     post:
       description: Process a manual refund for a previous payment transaction of any
@@ -4601,10 +4691,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": *a42
-        "404": *a43
+        "400": *a43
+        "404": *a44
       summary: Refund a manual payment
-      tags: *a44
+      tags: *a45
   /api/v3/payment/nets/refund:
     post:
       description: Refund a pos order
@@ -4624,10 +4714,10 @@ paths:
             application/json:
               schema:
                 type: string
-        "400": *a42
-        "404": *a43
+        "400": *a43
+        "404": *a44
       summary: Refund a pos order with nets
-      tags: *a44
+      tags: *a45
   /api/v3/payment/viva/createPayment:
     post:
       description: Creates a new Viva payment intent.
@@ -4647,10 +4737,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VivaPaymentIntent"
-        "400": *a42
-        "404": *a43
+        "400": *a43
+        "404": *a44
       summary: Create Viva payment
-      tags: *a44
+      tags: *a45
   /api/v3/payment/viva/create:
     post:
       description: Creates a new Viva transaction.
@@ -4670,10 +4760,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VivaPaymentIntent"
-        "400": *a42
-        "404": *a43
+        "400": *a43
+        "404": *a44
       summary: Create Viva payment
-      tags: *a44
+      tags: *a45
   /api/v3/history/orders/pos:
     get:
       operationId: getOrderHistoryPOS V3
@@ -4801,6 +4891,36 @@ paths:
       summary: Get order history for POS V3
       tags:
         - History
+  /api/v3/business/{businessId}/menu/{menuType}:
+    get:
+      operationId: getBusinessMenuByType V3
+      parameters:
+        - name: businessId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: menuType
+          required: true
+          in: path
+          description: Type of menu (e.g., pos)
+          schema:
+            enum:
+              - pos
+              - kiosk
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenuReponseDto"
+      security:
+        - JWT-auth: []
+      summary: Get business menu by type V3
+      tags:
+        - Business
   /api/v4/orders/pos/place:
     post:
       operationId: placePosOrder V4
@@ -4824,14 +4944,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-        "500": &a45
+        "500": &a46
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Place an POS order
-      tags: &a46
+      tags: &a47
         - orders
   /api/v4/orders/pos/actions:
     post:
@@ -4855,9 +4975,9 @@ paths:
           description: Invalid request
         "404":
           description: Order not found
-        "500": *a45
+        "500": *a46
       summary: Process pos order actions
-      tags: *a46
+      tags: *a47
   /api/v4/payment/refund:
     post:
       description: Refund a pos order
@@ -4940,7 +5060,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get end-of-day financial report for POS (V4)
-      tags: &a47
+      tags: &a48
         - Report
   /api/v4/report/email:
     post:
@@ -4999,7 +5119,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Send end-of-day report via email (V4)
-      tags: *a47
+      tags: *a48
   /api/v4/history/orders/pos:
     get:
       operationId: getOrderHistoryPOS V4
@@ -5249,10 +5369,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-      security: &a48
+      security: &a49
         - JWT-auth: []
       summary: Get order history for POS V5
-      tags: &a49
+      tags: &a50
         - History
   /api/v5/history/internal/orders/pos:
     get:
@@ -5376,9 +5496,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-      security: *a48
+      security: *a49
       summary: Get order history for POS V5
-      tags: *a49
+      tags: *a50
 info:
   title: Munchi Super Server Api
   description: The Munchi API description
@@ -6153,6 +6273,40 @@ components:
         - index
         - created_at
         - updated_at
+    ChannelConfig:
+      type: object
+      properties:
+        channel:
+          type: string
+          example: Kiosk
+          enum:
+            - Wolt
+            - MunchiOnline
+            - MunchiKiosk
+            - MunchiPos
+            - UberEats
+            - Foodora
+            - Bolt
+            - MunchiKioskV2
+            - Kiosk
+        quantity:
+          type: number
+          example: 10
+        inventoried:
+          type: boolean
+          example: true
+        enabled:
+          type: boolean
+          example: true
+        external_id:
+          type: string
+          example: abc_1234
+          nullable: true
+      required:
+        - channel
+        - quantity
+        - inventoried
+        - enabled
     PosSubOptionDto:
       type: object
       properties:
@@ -6317,6 +6471,12 @@ components:
           type: number
           description: Quantity of the product in POS
           example: 10
+        channel_configs:
+          description: Channel config of inventoried per product
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelConfig"
+            minLength: 2
         orderId:
           type: string
           description: Order identifier
@@ -6374,6 +6534,7 @@ components:
         - tax
         - pos_inventoried
         - pos_quantity
+        - channel_configs
         - orderId
         - options
         - subTotal
@@ -6505,6 +6666,7 @@ components:
         - Debit
         - Credit
         - GiftCardManual
+        - WoltBenefit
     PaymentProvider:
       type: string
       enum:
@@ -6546,6 +6708,7 @@ components:
             - Debit
             - Credit
             - GiftCardManual
+            - WoltBenefit
         amount:
           type: number
           description: Payment amount
@@ -7610,6 +7773,31 @@ components:
       required:
         - data
         - businessId
+    CurrencyCode:
+      type: string
+      enum:
+        - EUR
+        - GBP
+        - CHF
+        - SEK
+        - NOK
+        - DKK
+        - PLN
+        - CZK
+        - HUF
+        - RON
+        - BGN
+        - HRK
+        - ISK
+        - RSD
+        - TRY
+        - UAH
+        - RUB
+        - ALL
+        - MKD
+        - MDL
+        - BAM
+        - AED
     PosBusinessDto:
       type: object
       properties:
@@ -8175,7 +8363,8 @@ components:
         businessId:
           type: string
         currency:
-          type: string
+          allOf:
+            - $ref: "#/components/schemas/CurrencyCode"
         business:
           $ref: "#/components/schemas/PosBusinessDto"
         createdAt:
@@ -8336,6 +8525,28 @@ components:
     RegisterCredentialDto:
       type: object
       properties: {}
+    SupportedChannelDto:
+      type: object
+      properties:
+        channel:
+          example: MunchiPos
+          allOf:
+            - $ref: "#/components/schemas/ProviderEnum"
+        label:
+          type: string
+          example: Munchi POS
+      required:
+        - channel
+        - label
+    GetSupportedChannelsResponseDto:
+      type: object
+      properties:
+        channels:
+          type: array
+          items:
+            $ref: "#/components/schemas/SupportedChannelDto"
+      required:
+        - channels
     TerminalValidationResponseDto:
       type: object
       properties:
@@ -8608,7 +8819,7 @@ components:
       type: object
       properties:
         id:
-          type: number
+          type: string
           example: 24223
         name:
           type: string
@@ -8722,7 +8933,7 @@ components:
           example: true
           description: Whether the product is restricted
         tax:
-          allOf: &a50
+          allOf: &a51
             - $ref: "#/components/schemas/BusinessTaxResponseDto"
           nullable: true
         colorCode:
@@ -8756,6 +8967,12 @@ components:
           type: number
           description: Quantity of the product in POS
           example: 10
+        channel_configs:
+          description: Channel config of inventoried per product
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelConfig"
+            minLength: 2
       required:
         - id
         - name
@@ -8780,6 +8997,7 @@ components:
         - tax
         - pos_inventoried
         - pos_quantity
+        - channel_configs
     OrderingCoProductDto:
       type: object
       properties:
@@ -8867,7 +9085,7 @@ components:
           example: true
           description: Whether the product is restricted
         tax:
-          allOf: *a50
+          allOf: *a51
           nullable: true
       required:
         - id
@@ -9548,302 +9766,6 @@ components:
         - externalId
         - orderingBusinessId
         - status
-    VivaEventId:
-      type: number
-      enum:
-        - 1000
-        - 1001
-        - 1002
-        - 1003
-        - 1004
-        - 1006
-        - 1007
-        - 1008
-        - 1009
-        - 1010
-        - 1011
-        - 1012
-        - 1013
-        - 1014
-        - 1016
-        - 1017
-        - 1018
-        - 1019
-        - 1020
-        - 1021
-        - 1047
-        - 1048
-        - 1049
-        - 1050
-        - 1051
-        - 1052
-        - 1053
-        - 1054
-        - 1055
-        - 1056
-        - 1057
-        - 1058
-        - 1059
-        - 1060
-        - 1061
-        - 1062
-        - 1063
-        - 1064
-        - 1065
-        - 1066
-        - 1067
-        - 1068
-        - 1069
-        - 1070
-        - 1071
-        - 1072
-        - 1074
-        - 1075
-        - 1076
-        - 1077
-        - 1079
-        - 1080
-        - 1081
-        - 1082
-        - 1083
-        - 1099
-        - 1100
-        - 1101
-        - 1102
-        - 1110
-        - 1301
-        - 1302
-        - 1303
-        - 2000
-        - 3000
-        - 3001
-        - 3002
-        - 3099
-        - 4000
-        - 5000
-        - 5001
-        - 5002
-        - 5003
-        - 5004
-        - 5005
-        - 5006
-        - 6000
-        - 6102
-        - 6201
-        - 7001
-        - 7002
-        - 7003
-        - 7004
-        - 7005
-    VivaCurrencyCode:
-      type: string
-      enum:
-        - "978"
-        - "840"
-        - "826"
-        - "392"
-        - "036"
-        - "124"
-        - "756"
-        - "156"
-        - "344"
-        - "554"
-        - "752"
-        - "410"
-        - "702"
-        - "578"
-        - "484"
-        - "356"
-        - "643"
-        - "710"
-        - "949"
-        - "986"
-        - "901"
-        - "208"
-        - "985"
-        - "764"
-        - "360"
-        - "348"
-        - "203"
-        - "376"
-        - "152"
-        - "608"
-        - "784"
-        - "170"
-        - "682"
-        - "458"
-        - "946"
-    VivaEventDataEcrDto:
-      type: object
-      properties:
-        Aid:
-          type: string
-          description: Application Identifier (AID)
-          example: A0000000031010
-        Tid:
-          type: string
-          description: Terminal ID (Tid)
-          example: "16010572"
-        Amount:
-          type: number
-          description: Transaction amount in the smallest currency unit
-          example: 1400
-        EventId:
-          description: Event ID
-          allOf:
-            - $ref: "#/components/schemas/VivaEventId"
-        Preauth:
-          type: boolean
-          description: Indicates if the transaction was a pre-authorization
-          example: false
-        Success:
-          type: boolean
-          description: Indicates if the transaction was successful
-          example: true
-        Message:
-          type: string
-          description: Message describing the transaction outcome
-          example: Transaction successful
-        TipAmount:
-          type: number
-          description: Tip amount
-          example: 0
-        MerchantId:
-          type: string
-          description: Merchant ID (UUID)
-          example: 7e2a46a4-5b64-4d39-bd82-a2a572078506
-        ResellerId:
-          type: string
-          description: Reseller ID (UUID)
-          example: eeca4dee-10b9-4a4d-84e0-06393c28c6e6
-        OrderCode:
-          type: string
-          description: Order Code
-          example: "5288110730010572"
-        SessionId:
-          type: string
-          description: Session ID
-          example: vpi_cmgrpcjth00010glw1z670rm2_1760515290197
-        Installments:
-          type: number
-          description: Number of installments
-          example: 0
-        TerminalId:
-          type: string
-          description: Terminal ID
-          example: "16010572"
-        AbortSuccess:
-          type: boolean
-          description: Indicates if an abort success operation occurred
-          example: false
-        AbortOperation:
-          type: boolean
-          description: Indicates if an abort operation occurred
-          example: false
-        CurrencyCode:
-          description: Currency Code (e.g., ISO 4217 numeric)
-          allOf:
-            - $ref: "#/components/schemas/VivaCurrencyCode"
-        PanEntryMode:
-          type: string
-          description: PAN Entry Mode
-          example: "07"
-        TransactionId:
-          type: string
-          description: Transaction ID (UUID)
-          example: 00feaf2e-7fd8-4a69-9cca-d685b88ab5a8
-        ReferenceNumber:
-          type: number
-          description: Reference Number
-          example: 169341
-        CashRegisterId:
-          type: string
-          description: Cash Register ID
-          example: "351"
-        DccDetails:
-          type: string
-          description: DCC Details
-          example: null
-        ShortOrderCode:
-          type: string
-          description: Short Order Code
-          example: "5288110730"
-        TransactionTypeId:
-          type: number
-          description: Transaction Type ID
-          example: 5
-        AuthorizationId:
-          type: string
-          description: Authorization ID
-          example: "169341"
-        ApplicationLabel:
-          type: string
-          description: Application Label (e.g., Card Scheme)
-          example: Visa DEBIT
-        LoyaltyInfo:
-          type: object
-          description: Loyalty Information
-          example: null
-        AadeTransactionId:
-          type: string
-          description: AADE Transaction ID
-          example: null
-          nullable: true
-        MerchantReference:
-          type: string
-          description: Merchant Reference
-          example: vpi_cmgrpcjth00010glw1z670rm2_1760515290197
-        VerificationMethod:
-          type: string
-          description: Cardholder Verification Method (CVM)
-          example: CONTACTLESS - NO CVM
-        AbortAckTime:
-          type: object
-          description: Abort Acknowledge Time
-          example: null
-        RetrievalReferenceNumber:
-          type: number
-          description: Retrieval Reference Number
-          example: 528808169341
-        PrimaryAccountNumberMasked:
-          type: string
-          description: Primary Account Number Masked
-          example: 489985******9740
-        TransactionDateTime:
-          type: string
-          description: Transaction Date and Time (ISO 8601 format)
-          example: 2025-10-15T08:01:44.383+00:00
-      required:
-        - Aid
-        - Tid
-        - Amount
-        - EventId
-        - Preauth
-        - Success
-        - Message
-        - TipAmount
-        - MerchantId
-        - ResellerId
-        - OrderCode
-        - SessionId
-        - Installments
-        - TerminalId
-        - AbortSuccess
-        - AbortOperation
-        - CurrencyCode
-        - PanEntryMode
-        - TransactionId
-        - ReferenceNumber
-        - CashRegisterId
-        - ShortOrderCode
-        - TransactionTypeId
-        - AuthorizationId
-        - ApplicationLabel
-        - MerchantReference
-        - VerificationMethod
-        - RetrievalReferenceNumber
-        - PrimaryAccountNumberMasked
-        - TransactionDateTime
     VivaWebhookPayloadDto:
       type: object
       properties:
@@ -9852,9 +9774,8 @@ components:
           description: Webhook URL
           example: https://f7ff6c353da9.ngrok-free.app/api/webhook/viva
         EventData:
+          type: object
           description: Event data containing transaction details
-          allOf:
-            - $ref: "#/components/schemas/VivaEventDataEcrDto"
         Created:
           type: string
           description: Event creation timestamp
@@ -9910,161 +9831,6 @@ components:
         - MessageId
         - RecipientId
         - MessageTypeId
-    ProductWithCategoryDto:
-      type: object
-      properties:
-        id:
-          type: number
-          example: 12345
-          description: Product ID
-        name:
-          type: string
-          example: Cheeseburger
-          description: Product name
-        price:
-          type: number
-          example: 9.99
-          description: Product price
-        description:
-          type: string
-          example: A delicious cheeseburger
-          description: Product description
-        images:
-          type: string
-          example: https://example.com/image.jpg
-          description: Product image URL
-        category_id:
-          type: number
-          example: 1
-          description: Category ID the product belongs to
-        inventoried:
-          type: boolean
-          example: true
-          description: Whether the product is tracked for inventory
-        quantity:
-          type: number
-          example: 10
-          description: Available quantity if inventoried
-        featured:
-          type: boolean
-          example: true
-          description: Whether the product is marked as featured
-        enabled:
-          type: boolean
-          example: true
-          description: Whether the product is currently enabled
-        upselling:
-          type: boolean
-          example: false
-          description: Whether upselling is enabled for this product
-        in_offer:
-          type: boolean
-          example: false
-          description: Whether the product is part of an offer
-        offer_price:
-          type: object
-          example: null
-          nullable: true
-          description: Offer price if applicable
-        rank:
-          type: number
-          example: 1
-          description: Display order rank of the product
-        weight_unit:
-          type: object
-          example: g
-          description: Weight unit (e.g., g, kg, ml)
-        updated_at:
-          type: string
-          example: 2024-03-16T12:00:00Z
-          description: Last update timestamp
-        created_at:
-          type: string
-          example: 2024-03-16T12:00:00Z
-          description: Product creation timestamp
-        deleted_at:
-          type: object
-          example: null
-          nullable: true
-          description: Deletion timestamp if soft-deleted
-        extras:
-          description: List of product extras (e.g., toppings, add-ons)
-          type: array
-          items:
-            $ref: "#/components/schemas/OrderingItemExtraDto"
-        is_restricted:
-          type: boolean
-          example: true
-          description: Whether the product is restricted
-        tax:
-          allOf: *a50
-          nullable: true
-        categoryName:
-          type: string
-          description: Name of the category this product belongs to
-          example: Appetizers
-        pos_inventoried:
-          type: boolean
-          description: Indicates if the product is inventoried in POS
-          example: true
-        pos_quantity:
-          type: number
-          description: Quantity of the product in POS
-          example: 10
-      required:
-        - id
-        - name
-        - price
-        - description
-        - images
-        - category_id
-        - inventoried
-        - quantity
-        - featured
-        - enabled
-        - upselling
-        - in_offer
-        - offer_price
-        - rank
-        - weight_unit
-        - updated_at
-        - created_at
-        - deleted_at
-        - extras
-        - is_restricted
-        - tax
-        - categoryName
-        - pos_inventoried
-        - pos_quantity
-    ProductsSummaryDto:
-      type: object
-      properties:
-        productCount:
-          type: number
-          example: 42
-          description: Total number of products
-        categoryCount:
-          type: number
-          example: 8
-          description: Total number of categories
-      required:
-        - productCount
-        - categoryCount
-    ProductsByCategoriesResponseDto:
-      type: object
-      properties:
-        products:
-          description: List of products with their associated categories
-          type: array
-          items:
-            $ref: "#/components/schemas/ProductWithCategoryDto"
-        summary:
-          description: Summary data for products and categories
-          allOf:
-            - $ref: "#/components/schemas/ProductsSummaryDto"
-      required:
-        - products
-        - summary
     MenuProductExtraSuboptionDto:
       type: object
       properties:
@@ -10226,6 +9992,15 @@ components:
         - created_at
         - options
         - metafields
+    ResetEodDto:
+      type: object
+      properties:
+        bindingId:
+          type: string
+          description: The unique binding ID for the business or device
+          example: cmkd1hn520000lwpgecj0nlpx
+      required:
+        - bindingId
     MenuProductDto:
       type: object
       properties:
@@ -10267,25 +10042,23 @@ components:
     ProviderMapResponseDto:
       type: object
       properties:
-        MunchiOnline:
-          description: Update result for MunchiOnline provider
+        providers:
+          type: object
+          description: Only providers configured for this business are included. Keys are
+            ProviderEnum values.
+          additionalProperties:
+            $ref: "#/components/schemas/ProviderResponseDto"
           example:
-            error: false
-            message: Products updated successfully
-            timestamp: 2025-04-24T10:17:11.103Z
-          allOf:
-            - $ref: "#/components/schemas/ProviderResponseDto"
-        Wolt:
-          description: Update result for Wolt provider
-          example:
-            error: false
-            message: Products scheduled for update
-            timestamp: 2025-04-24T10:31:55.400Z
-          allOf:
-            - $ref: "#/components/schemas/ProviderResponseDto"
+            MunchiOnline:
+              error: false
+              message: Products updated successfully
+              timestamp: 2025-04-24T10:17:11.103Z
+            Wolt:
+              error: false
+              message: Products scheduled for update
+              timestamp: 2025-04-24T10:31:55.400Z
       required:
-        - MunchiOnline
-        - Wolt
+        - providers
     TimeSpan:
       type: string
       enum:
@@ -11546,6 +11319,44 @@ components:
           description: The access token for the payment provider.
       required:
         - accessToken
+    VivaCurrencyCode:
+      type: string
+      enum:
+        - "978"
+        - "840"
+        - "826"
+        - "392"
+        - "036"
+        - "124"
+        - "756"
+        - "156"
+        - "344"
+        - "554"
+        - "752"
+        - "410"
+        - "702"
+        - "578"
+        - "484"
+        - "356"
+        - "643"
+        - "710"
+        - "949"
+        - "986"
+        - "901"
+        - "208"
+        - "985"
+        - "764"
+        - "360"
+        - "348"
+        - "203"
+        - "376"
+        - "152"
+        - "608"
+        - "784"
+        - "170"
+        - "682"
+        - "458"
+        - "946"
     VivaCreatePaymentDto:
       type: object
       properties:
@@ -13109,18 +12920,32 @@ components:
       required:
         - lapses
         - enabled
+    KioskLayout:
+      type: string
+      enum:
+        - VERTICAL
+        - HORIZONTAL
+    UpsellMode:
+      type: string
+      enum:
+        - AfterAddProduct
+        - BeforeCheckout
+        - Disabled
+    ProductDetailLayout:
+      type: string
+      enum:
+        - MODAL
+        - SCREEN
     ConfigDto:
       type: object
       properties:
         id:
           type: string
           description: Unique identifier for the configuration
-        timeZone:
-          type: string
-          description: Time zone for the business, e.g., Europe/Helsinki
         currency:
-          type: string
           description: Currency code, e.g., EUR
+          allOf:
+            - $ref: "#/components/schemas/CurrencyCode"
         createdAt:
           format: date-time
           type: string
@@ -13133,65 +12958,32 @@ components:
           type: number
           description: ID used by the ordering business system
         channel:
-          type: string
           description: The sales channel, e.g., Kiosk
-        selectedPaymentProvider:
-          type: object
-          description: The selected payment provider
-          nullable: true
-        companyName:
-          type: string
-          description: Company name, can be null
-          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/ProviderEnum"
         autoRejectEnabled:
           type: boolean
           description: Whether automatic rejection of orders is enabled
-        uniquePosDeviceId:
-          type: string
-          description: Unique POS device ID, can be null
-          nullable: true
-        operatingMode:
-          type: string
-          description: Operating mode of the business, e.g., STANDARD
         layout:
-          type: string
-          description: Layout setting, e.g., vertical
-          nullable: true
-        productDetailLayout:
-          type: string
-          description: Product detail screen layout, e.g., SCREEN
-        useFranchise:
-          type: string
-          description: Whether the franchise feature is in use
-        storeAndroidId:
-          type: string
-          description: Store Android ID, can be null
-          nullable: true
-        storeAppleId:
-          type: string
-          description: Store Apple ID, can be null
-          nullable: true
-        storeKindleId:
-          type: string
-          description: Store Kindle ID, can be null
-          nullable: true
-        businessSlug:
-          type: string
-          description: Business slug for URLs, can be null
-          nullable: true
-        franchiseSlug:
-          type: string
-          description: Franchise slug for URLs, can be null
-          nullable: true
-        upsellAfterAddProduct:
-          type: boolean
-          description: Whether upsell is enabled after adding a product
-        upsellBeforeCheckout:
-          type: boolean
-          description: Whether upsell is enabled before checkout
+          description: Layout setting
+          allOf:
+            - $ref: "#/components/schemas/KioskLayout"
+        upsellMode:
+          description: Upsell mode configuration
+          allOf:
+            - $ref: "#/components/schemas/UpsellMode"
         kioskAutoPrintReceipt:
           type: boolean
           description: Default config for kiosk auto print
+        productDetailLayout:
+          description: Product detail screen layout, e.g., SCREEN
+          allOf:
+            - $ref: "#/components/schemas/ProductDetailLayout"
+        selectedPaymentProvider:
+          description: The selected payment provider
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/PaymentProvider"
         hasLoyaltyProgram:
           type: boolean
           description: Show if business has loyalty program
@@ -13201,29 +12993,35 @@ components:
         showLocator:
           type: boolean
           description: Configuration for the locator screen
+        companyName:
+          type: string
+          description: Company name for the business
+          nullable: true
+        timezone:
+          type: string
+          description: Timezone for the business
+          nullable: true
         theme:
           type: object
           description: Configuration for the theme
       required:
         - id
-        - timeZone
         - currency
         - createdAt
         - updatedAt
         - orderingBusinessId
         - channel
-        - selectedPaymentProvider
         - autoRejectEnabled
-        - operatingMode
         - layout
-        - productDetailLayout
-        - useFranchise
-        - upsellAfterAddProduct
-        - upsellBeforeCheckout
+        - upsellMode
         - kioskAutoPrintReceipt
+        - productDetailLayout
+        - selectedPaymentProvider
         - hasLoyaltyProgram
         - appearanceConfig
         - showLocator
+        - companyName
+        - timezone
         - theme
     LoyaltyLinkMetadataDto:
       type: object
@@ -13395,6 +13193,262 @@ components:
         - description
         - products
         - subcategories
+    ProductWithCategoryDto:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 12345
+          description: Product ID
+        name:
+          type: string
+          example: Cheeseburger
+          description: Product name
+        price:
+          type: number
+          example: 9.99
+          description: Product price
+        description:
+          type: string
+          example: A delicious cheeseburger
+          description: Product description
+        images:
+          type: string
+          example: https://example.com/image.jpg
+          description: Product image URL
+        category_id:
+          type: number
+          example: 1
+          description: Category ID the product belongs to
+        inventoried:
+          type: boolean
+          example: true
+          description: Whether the product is tracked for inventory
+        quantity:
+          type: number
+          example: 10
+          description: Available quantity if inventoried
+        featured:
+          type: boolean
+          example: true
+          description: Whether the product is marked as featured
+        enabled:
+          type: boolean
+          example: true
+          description: Whether the product is currently enabled
+        upselling:
+          type: boolean
+          example: false
+          description: Whether upselling is enabled for this product
+        in_offer:
+          type: boolean
+          example: false
+          description: Whether the product is part of an offer
+        offer_price:
+          type: object
+          example: null
+          nullable: true
+          description: Offer price if applicable
+        rank:
+          type: number
+          example: 1
+          description: Display order rank of the product
+        weight_unit:
+          type: object
+          example: g
+          description: Weight unit (e.g., g, kg, ml)
+        updated_at:
+          type: string
+          example: 2024-03-16T12:00:00Z
+          description: Last update timestamp
+        created_at:
+          type: string
+          example: 2024-03-16T12:00:00Z
+          description: Product creation timestamp
+        deleted_at:
+          type: object
+          example: null
+          nullable: true
+          description: Deletion timestamp if soft-deleted
+        extras:
+          description: List of product extras (e.g., toppings, add-ons)
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderingItemExtraDto"
+        is_restricted:
+          type: boolean
+          example: true
+          description: Whether the product is restricted
+        tax:
+          allOf: *a51
+          nullable: true
+        categoryName:
+          type: string
+          description: Name of the category this product belongs to
+          example: Appetizers
+        pos_inventoried:
+          type: boolean
+          description: Indicates if the product is inventoried in POS
+          example: true
+        pos_quantity:
+          type: number
+          description: Quantity of the product in POS
+          example: 10
+        channel_configs:
+          description: Channel config of inventoried per product
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelConfig"
+            minLength: 2
+      required:
+        - id
+        - name
+        - price
+        - description
+        - images
+        - category_id
+        - inventoried
+        - quantity
+        - featured
+        - enabled
+        - upselling
+        - in_offer
+        - offer_price
+        - rank
+        - weight_unit
+        - updated_at
+        - created_at
+        - deleted_at
+        - extras
+        - is_restricted
+        - tax
+        - categoryName
+        - pos_inventoried
+        - pos_quantity
+        - channel_configs
+    ProductsSummaryDto:
+      type: object
+      properties:
+        productCount:
+          type: number
+          example: 42
+          description: Total number of products
+        categoryCount:
+          type: number
+          example: 8
+          description: Total number of categories
+      required:
+        - productCount
+        - categoryCount
+    ProductsByCategoriesResponseDto:
+      type: object
+      properties:
+        products:
+          description: List of products with their associated categories
+          type: array
+          items:
+            $ref: "#/components/schemas/ProductWithCategoryDto"
+        summary:
+          description: Summary data for products and categories
+          allOf:
+            - $ref: "#/components/schemas/ProductsSummaryDto"
+      required:
+        - products
+        - summary
+    ProductAvailability:
+      type: string
+      enum:
+        - AVAILABLE
+        - UNAVAILABLE_TODAY
+        - UNAVAILABLE_INDEFINITELY
+    MenuProductDtoV2:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 15460
+          description: Product ID from Ordering
+        categoryId:
+          type: number
+          example: 5528
+          description: Category ID in Ordering
+        enabled:
+          type: boolean
+          example: true
+          description: Visibility flag
+        availabilityStatus:
+          example: UNAVAILABLE_INDEFINITELY
+          description: Product availability
+          allOf:
+            - $ref: "#/components/schemas/ProductAvailability"
+      required:
+        - id
+        - categoryId
+        - enabled
+        - availabilityStatus
+    ChannelInventoryUpdateDto:
+      type: object
+      properties:
+        channel:
+          description: Channel to update
+          example: MunchiPos
+          allOf:
+            - $ref: "#/components/schemas/ProviderEnum"
+        inventoried:
+          type: boolean
+          description: Whether inventory tracking is enabled for this channel
+          example: true
+        quantity:
+          type: number
+          description: Current quantity for this channel
+          example: 10
+        enabled:
+          type: boolean
+          description: Whether the product is enabled for this channel
+          example: true
+      required:
+        - channel
+        - inventoried
+        - quantity
+    UpdateChannelInventoryDto:
+      type: object
+      properties:
+        channels:
+          description: Array of channel inventory updates
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelInventoryUpdateDto"
+      required:
+        - channels
+    ChannelInventoryResponseDto:
+      type: object
+      properties:
+        channel:
+          example: MunchiPos
+          allOf:
+            - $ref: "#/components/schemas/ProviderEnum"
+        product_id:
+          type: number
+          example: 1
+        category_id:
+          type: number
+          example: 2
+        pos_inventoried:
+          type: boolean
+          example: true
+        pos_quantity:
+          type: number
+          example: 10
+        enabled:
+          type: boolean
+          example: true
+      required:
+        - channel
+        - product_id
+        - category_id
+        - pos_inventoried
+        - pos_quantity
+        - enabled
     TaxRateItem:
       type: object
       properties:
@@ -13573,6 +13627,62 @@ components:
         - amount
         - currencyCode
         - identityId
+    IntegrationType:
+      type: string
+      enum:
+        - ORDERS
+        - MENU
+        - VENUE
+    ProviderIntegrationDto:
+      type: object
+      properties:
+        externalId:
+          type: string
+          example: clx8n4m9u0000s8q2p1h2k3l4
+          description: Provider external ID (unique key used in integrations)
+        provider:
+          example: Wolt
+          description: Provider enum (also used as channel in your schema)
+          allOf:
+            - $ref: "#/components/schemas/ProviderEnum"
+        orderingBusinessId:
+          type: number
+          example: 12345
+          description: Business orderingBusinessId
+        supportedIntegrations:
+          type: array
+          example:
+            - MENU
+            - ORDERS
+          description: Integrations this provider supports (capability)
+          items:
+            $ref: "#/components/schemas/IntegrationType"
+        isInternal:
+          type: boolean
+          example: true
+          description: Whether this provider is internal (starts with "Munchi")
+      required:
+        - externalId
+        - provider
+        - orderingBusinessId
+        - supportedIntegrations
+        - isInternal
+    MenuReponseDto:
+      type: object
+      properties:
+        menus:
+          description: Array of menu data
+          type: array
+          items:
+            $ref: "#/components/schemas/MenuDto"
+        integrations:
+          description: Array of integrations aligned with that business
+          type: array
+          items:
+            $ref: "#/components/schemas/ProviderIntegrationDto"
+      required:
+        - menus
+        - integrations
     OrderActionDataDto:
       type: object
       properties:
@@ -14556,7 +14666,7 @@ components:
         rawData:
           type: object
           description: The raw, unparsed response object received from the payment provider.
-          example: &a51
+          example: &a52
             failure:
               error: ...
         requestId:
@@ -14594,7 +14704,7 @@ components:
         rawData:
           type: object
           description: The raw, unparsed response object received from the payment provider.
-          example: *a51
+          example: *a52
         sessionId:
           type: string
           description: A unique identifier for the request, used for tracking.
@@ -14606,6 +14716,264 @@ components:
       required:
         - success
         - rawData
+    VivaEventId:
+      type: number
+      enum:
+        - 1000
+        - 1001
+        - 1002
+        - 1003
+        - 1004
+        - 1006
+        - 1007
+        - 1008
+        - 1009
+        - 1010
+        - 1011
+        - 1012
+        - 1013
+        - 1014
+        - 1016
+        - 1017
+        - 1018
+        - 1019
+        - 1020
+        - 1021
+        - 1047
+        - 1048
+        - 1049
+        - 1050
+        - 1051
+        - 1052
+        - 1053
+        - 1054
+        - 1055
+        - 1056
+        - 1057
+        - 1058
+        - 1059
+        - 1060
+        - 1061
+        - 1062
+        - 1063
+        - 1064
+        - 1065
+        - 1066
+        - 1067
+        - 1068
+        - 1069
+        - 1070
+        - 1071
+        - 1072
+        - 1074
+        - 1075
+        - 1076
+        - 1077
+        - 1079
+        - 1080
+        - 1081
+        - 1082
+        - 1083
+        - 1099
+        - 1100
+        - 1101
+        - 1102
+        - 1110
+        - 1301
+        - 1302
+        - 1303
+        - 2000
+        - 3000
+        - 3001
+        - 3002
+        - 3099
+        - 4000
+        - 5000
+        - 5001
+        - 5002
+        - 5003
+        - 5004
+        - 5005
+        - 5006
+        - 6000
+        - 6102
+        - 6201
+        - 7001
+        - 7002
+        - 7003
+        - 7004
+        - 7005
+    VivaEventDataEcrDto:
+      type: object
+      properties:
+        Aid:
+          type: string
+          description: Application Identifier (AID)
+          example: A0000000031010
+        Tid:
+          type: string
+          description: Terminal ID (Tid)
+          example: "16010572"
+        Amount:
+          type: number
+          description: Transaction amount in the smallest currency unit
+          example: 1400
+        EventId:
+          description: Event ID
+          allOf:
+            - $ref: "#/components/schemas/VivaEventId"
+        Preauth:
+          type: boolean
+          description: Indicates if the transaction was a pre-authorization
+          example: false
+        Success:
+          type: boolean
+          description: Indicates if the transaction was successful
+          example: true
+        Message:
+          type: string
+          description: Message describing the transaction outcome
+          example: Transaction successful
+        TipAmount:
+          type: number
+          description: Tip amount
+          example: 0
+        MerchantId:
+          type: string
+          description: Merchant ID (UUID)
+          example: 7e2a46a4-5b64-4d39-bd82-a2a572078506
+        ResellerId:
+          type: string
+          description: Reseller ID (UUID)
+          example: eeca4dee-10b9-4a4d-84e0-06393c28c6e6
+        OrderCode:
+          type: string
+          description: Order Code
+          example: "5288110730010572"
+        SessionId:
+          type: string
+          description: Session ID
+          example: vpi_cmgrpcjth00010glw1z670rm2_1760515290197
+        Installments:
+          type: number
+          description: Number of installments
+          example: 0
+        TerminalId:
+          type: string
+          description: Terminal ID
+          example: "16010572"
+        AbortSuccess:
+          type: boolean
+          description: Indicates if an abort success operation occurred
+          example: false
+        AbortOperation:
+          type: boolean
+          description: Indicates if an abort operation occurred
+          example: false
+        CurrencyCode:
+          description: Currency Code (e.g., ISO 4217 numeric)
+          allOf:
+            - $ref: "#/components/schemas/VivaCurrencyCode"
+        PanEntryMode:
+          type: string
+          description: PAN Entry Mode
+          example: "07"
+        TransactionId:
+          type: string
+          description: Transaction ID (UUID)
+          example: 00feaf2e-7fd8-4a69-9cca-d685b88ab5a8
+        ReferenceNumber:
+          type: number
+          description: Reference Number
+          example: 169341
+        CashRegisterId:
+          type: string
+          description: Cash Register ID
+          example: "351"
+        DccDetails:
+          type: string
+          description: DCC Details
+          example: null
+        ShortOrderCode:
+          type: string
+          description: Short Order Code
+          example: "5288110730"
+        TransactionTypeId:
+          type: number
+          description: Transaction Type ID
+          example: 5
+        AuthorizationId:
+          type: string
+          description: Authorization ID
+          example: "169341"
+        ApplicationLabel:
+          type: string
+          description: Application Label (e.g., Card Scheme)
+          example: Visa DEBIT
+        LoyaltyInfo:
+          type: object
+          description: Loyalty Information
+          example: null
+        AadeTransactionId:
+          type: string
+          description: AADE Transaction ID
+          example: null
+          nullable: true
+        MerchantReference:
+          type: string
+          description: Merchant Reference
+          example: vpi_cmgrpcjth00010glw1z670rm2_1760515290197
+        VerificationMethod:
+          type: string
+          description: Cardholder Verification Method (CVM)
+          example: CONTACTLESS - NO CVM
+        AbortAckTime:
+          type: object
+          description: Abort Acknowledge Time
+          example: null
+        RetrievalReferenceNumber:
+          type: number
+          description: Retrieval Reference Number
+          example: 528808169341
+        PrimaryAccountNumberMasked:
+          type: string
+          description: Primary Account Number Masked
+          example: 489985******9740
+        TransactionDateTime:
+          type: string
+          description: Transaction Date and Time (ISO 8601 format)
+          example: 2025-10-15T08:01:44.383+00:00
+      required:
+        - Aid
+        - Tid
+        - Amount
+        - EventId
+        - Preauth
+        - Success
+        - Message
+        - TipAmount
+        - MerchantId
+        - ResellerId
+        - OrderCode
+        - SessionId
+        - Installments
+        - TerminalId
+        - AbortSuccess
+        - AbortOperation
+        - CurrencyCode
+        - PanEntryMode
+        - TransactionId
+        - ReferenceNumber
+        - CashRegisterId
+        - ShortOrderCode
+        - TransactionTypeId
+        - AuthorizationId
+        - ApplicationLabel
+        - MerchantReference
+        - VerificationMethod
+        - RetrievalReferenceNumber
+        - PrimaryAccountNumberMasked
+        - TransactionDateTime
     NetsTransactionFailureDetailsDto:
       type: object
       properties:
@@ -14811,6 +15179,11 @@ components:
         - business:status-updated
         - business:menu-updated
         - business:config-updated
+    KioskEventType:
+      type: string
+      enum:
+        - kiosk.status.updated
+        - kiosk.config.updated
     KioskStatusDto:
       type: object
       properties:
@@ -14821,9 +15194,14 @@ components:
           description: The type of business event currently active.
           allOf:
             - $ref: "#/components/schemas/BusinessEventType"
+        kiosk_event:
+          description: The type of kiosk event currently active.
+          allOf:
+            - $ref: "#/components/schemas/KioskEventType"
       required:
         - open
         - event
+        - kiosk_event
     BusinessBackgroundType:
       type: string
       enum:
@@ -14960,6 +15338,52 @@ components:
       required:
         - light
         - dark
+    AblyBusinessEventPayloadDto:
+      type: object
+      properties:
+        action:
+          type: string
+          enum:
+            - PRODUCT_UPDATED
+            - PRODUCT_DELETED
+            - MENU_UPDATED
+            - CATEGORY_UPDATED
+            - EXTRA_UPDATED
+            - EXTRA_DELETED
+            - OPTION_UPDATED
+            - OPTION_DELETED
+            - SUBOPTION_UPDATED
+            - SUBOPTION_DELETED
+            - SITE_UPDATED
+            - CATEGORY_DELETED
+            - PRODUCT_CREATED
+            - BUSINESS_CONFIG_UPDATED
+        entityType:
+          type: string
+          enum:
+            - product
+            - menu
+            - category
+            - extra
+            - option
+        entityId:
+          type: object
+        businessId:
+          type: object
+        channel:
+          allOf:
+            - $ref: "#/components/schemas/ProviderEnum"
+        timestamp:
+          type: string
+        productUpdates:
+          type: object
+      required:
+        - action
+        - entityType
+        - entityId
+        - businessId
+        - channel
+        - timestamp
     LoyaltyActionKey:
       type: string
       enum:
@@ -14968,3 +15392,28 @@ components:
         - searchUser
         - addPoints
         - getAdminHistory
+    BusinessEventAction:
+      type: string
+      enum:
+        - PRODUCT_UPDATED
+        - PRODUCT_DELETED
+        - MENU_UPDATED
+        - CATEGORY_UPDATED
+        - EXTRA_UPDATED
+        - EXTRA_DELETED
+        - OPTION_UPDATED
+        - OPTION_DELETED
+        - SUBOPTION_UPDATED
+        - SUBOPTION_DELETED
+        - SITE_UPDATED
+        - CATEGORY_DELETED
+        - PRODUCT_CREATED
+        - BUSINESS_CONFIG_UPDATED
+    EntityType:
+      type: string
+      enum:
+        - product
+        - menu
+        - category
+        - extra
+        - option
