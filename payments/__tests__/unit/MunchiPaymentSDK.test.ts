@@ -329,7 +329,7 @@ describe('MunchiPaymentSDK', () => {
                 createVivaTransactionV3: jest.fn().mockResolvedValue({
                     data: { sessionId: 'session-race', orderId: orderRef },
                 }),
-                cancelTransaction: jest.fn().mockResolvedValue(true),
+                cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
             })) as any);
 
             const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
@@ -515,6 +515,113 @@ describe('MunchiPaymentSDK', () => {
             // 2. It should have transitioned to IDLE because of _cancellationIntent.
             expect(states).not.toContain(PaymentInteractionState.FAILED);
             expect(states[states.length - 1]).toBe(PaymentInteractionState.IDLE);
+        });
+    });
+
+    describe('transaction callbacks', () => {
+        it('should fire onSuccess callback on successful payment', async () => {
+            setupSuccessfulPaymentMocks('order-callback-success', 'session-cb', mockMessaging);
+            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+            const onSuccess = jest.fn();
+            const onError = jest.fn();
+
+            const result = await sdk.initiateTransaction({
+                orderRef: 'order-callback-success',
+                amountCents: 1000,
+                currency: 'EUR'
+            }, {
+                onSuccess,
+                onError,
+            });
+
+            expect(result.success).toBe(true);
+            expect(onSuccess).toHaveBeenCalledWith(expect.objectContaining({
+                success: true,
+                status: SdkPaymentStatus.SUCCESS,
+            }));
+            expect(onError).not.toHaveBeenCalled();
+        });
+
+        it('should fire onError callback on failed payment', async () => {
+            setupFailedPaymentMocks('order-callback-fail', 'session-fail', mockMessaging, {
+                code: PaymentFailureCode.PaymentDeclined,
+                message: 'Declined'
+            });
+            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+            const onSuccess = jest.fn();
+            const onError = jest.fn();
+
+            const result = await sdk.initiateTransaction({
+                orderRef: 'order-callback-fail',
+                amountCents: 1000,
+                currency: 'EUR'
+            }, {
+                onSuccess,
+                onError,
+            });
+
+            expect(result.success).toBe(false);
+            expect(onError).toHaveBeenCalledWith(expect.objectContaining({
+                success: false,
+                status: SdkPaymentStatus.FAILED,
+            }));
+            expect(onSuccess).not.toHaveBeenCalled();
+        });
+
+        it('should fire state callbacks during transaction lifecycle', async () => {
+            setupSuccessfulPaymentMocks('order-state-cb', 'session-state', mockMessaging);
+            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+            const onConnecting = jest.fn();
+            const onRequiresInput = jest.fn();
+
+            await sdk.initiateTransaction({
+                orderRef: 'order-state-cb',
+                amountCents: 1000,
+                currency: 'EUR'
+            }, {
+                onConnecting,
+                onRequiresInput,
+            });
+
+            expect(onConnecting).toHaveBeenCalledWith({ orderRef: 'order-state-cb' });
+            expect(onRequiresInput).toHaveBeenCalledWith({ orderRef: 'order-state-cb' });
+        });
+
+        it('should not break SDK flow if callback throws an error', async () => {
+            setupSuccessfulPaymentMocks('order-cb-error', 'session-error', mockMessaging);
+            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+            const throwingCallback = jest.fn().mockImplementation(() => {
+                throw new Error('Callback crashed!');
+            });
+
+            const result = await sdk.initiateTransaction({
+                orderRef: 'order-cb-error',
+                amountCents: 1000,
+                currency: 'EUR'
+            }, {
+                onConnecting: throwingCallback,
+                onSuccess: throwingCallback,
+            });
+
+            expect(result.success).toBe(true);
+            expect(throwingCallback).toHaveBeenCalled();
+        });
+
+        it('should work without any callbacks provided', async () => {
+            setupSuccessfulPaymentMocks('order-no-cb', 'session-no-cb', mockMessaging);
+            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+            const result = await sdk.initiateTransaction({
+                orderRef: 'order-no-cb',
+                amountCents: 1000,
+                currency: 'EUR'
+            });
+
+            expect(result.success).toBe(true);
         });
     });
 });

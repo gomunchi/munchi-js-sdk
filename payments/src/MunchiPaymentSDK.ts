@@ -12,6 +12,7 @@ import {
   type PaymentRequest,
   type PaymentResult,
   type PaymentTerminalConfig,
+  type TransactionOptions,
   SdkPaymentStatus,
 } from "./types/payment";
 import type { ILogger, SDKOptions } from "./types/sdk";
@@ -113,7 +114,13 @@ export class MunchiPaymentSDK {
     this.transitionTo(PaymentInteractionState.IDLE);
   }
 
-  public async initiateTransaction(params: PaymentRequest): Promise<PaymentResult> {
+  public async initiateTransaction(
+    params: PaymentRequest,
+    options?: TransactionOptions
+  ): Promise<PaymentResult> {
+    const callbacks = options ?? {};
+    const orderRef = params.orderRef;
+
     const isRestingState = [
       PaymentInteractionState.IDLE,
       PaymentInteractionState.SUCCESS,
@@ -146,6 +153,7 @@ export class MunchiPaymentSDK {
       const internalStateCallback = (state: PaymentInteractionState) => {
         if (state !== PaymentInteractionState.FAILED) {
           this.transitionTo(state);
+          this.fireStateCallback(state, callbacks, orderRef);
         }
       };
 
@@ -164,10 +172,12 @@ export class MunchiPaymentSDK {
 
       if (result.success) {
         this.transitionTo(PaymentInteractionState.SUCCESS);
+        this.safeFireCallback(() => callbacks.onSuccess?.(result));
       } else if (this._cancellationIntent) {
-        return await this.handleTransactionError(params, new Error("Aborted after resolution"));
+        return await this.handleTransactionError(params, new Error("Aborted after resolution"), callbacks);
       } else {
         this.transitionTo(PaymentInteractionState.FAILED);
+        this.safeFireCallback(() => callbacks.onError?.(result));
       }
 
       this.logger?.info("Transaction completed successfully", {
@@ -180,18 +190,24 @@ export class MunchiPaymentSDK {
     } catch (error: unknown) {
       this.logger?.warn("Transaction interrupted. Handling final status...", { error });
 
-      return await this.handleTransactionError(params, error);
+      return await this.handleTransactionError(params, error, callbacks);
     }
   }
 
-  private async handleTransactionError(params: PaymentRequest, originalError: unknown): Promise<PaymentResult> {
+  private async handleTransactionError(
+    params: PaymentRequest,
+    originalError: unknown,
+    callbacks: TransactionOptions = {}
+  ): Promise<PaymentResult> {
     this.transitionTo(PaymentInteractionState.VERIFYING);
+    this.safeFireCallback(() => callbacks.onVerifying?.({ orderRef: params.orderRef }));
 
     if (this._cancellationIntent) {
       try {
         const finalStatus = await this.strategy.verifyFinalStatus(params);
         if (finalStatus.success) {
           this.transitionTo(PaymentInteractionState.SUCCESS);
+          this.safeFireCallback(() => callbacks.onSuccess?.(finalStatus));
           return finalStatus;
         }
       } catch (err) {
@@ -199,6 +215,7 @@ export class MunchiPaymentSDK {
       }
 
       this.transitionTo(PaymentInteractionState.IDLE);
+      this.safeFireCallback(() => callbacks.onCancelled?.({ orderRef: params.orderRef }));
       return {
         success: false,
         status: SdkPaymentStatus.CANCELLED,
@@ -208,20 +225,42 @@ export class MunchiPaymentSDK {
     }
 
     this.transitionTo(PaymentInteractionState.FAILED);
+    const errorResult = originalError instanceof PaymentSDKError
+      ? this.generateErrorResult(params.orderRef, originalError.code, originalError.message)
+      : this.generateErrorResult(
+          params.orderRef,
+          PaymentErrorCode.UNKNOWN,
+          originalError instanceof Error ? originalError.message : "Unknown fatal error"
+        );
+    this.safeFireCallback(() => callbacks.onError?.(errorResult));
+    return errorResult;
+  }
 
-    if (originalError instanceof PaymentSDKError) {
-      return this.generateErrorResult(
-        params.orderRef,
-        originalError.code,
-        originalError.message
-      );
+  private fireStateCallback(
+    state: PaymentInteractionState,
+    callbacks: TransactionOptions,
+    orderRef: string
+  ) {
+    const ctx = { orderRef };
+    switch (state) {
+      case PaymentInteractionState.CONNECTING:
+        this.safeFireCallback(() => callbacks.onConnecting?.(ctx));
+        break;
+      case PaymentInteractionState.REQUIRES_INPUT:
+        this.safeFireCallback(() => callbacks.onRequiresInput?.(ctx));
+        break;
+      case PaymentInteractionState.PROCESSING:
+        this.safeFireCallback(() => callbacks.onProcessing?.(ctx));
+        break;
     }
+  }
 
-    return this.generateErrorResult(
-      params.orderRef,
-      PaymentErrorCode.UNKNOWN,
-      originalError instanceof Error ? originalError.message : "Unknown fatal error"
-    );
+  private safeFireCallback(callback: () => void) {
+    try {
+      callback();
+    } catch (error) {
+      this.logger?.warn("Callback execution failed", { error });
+    }
   }
 
   public async cancel(): Promise<boolean> {

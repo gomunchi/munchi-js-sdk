@@ -58,6 +58,16 @@ export interface PaymentResult {
   errorMessage?: string;
 }
 
+export interface TransactionOptions {
+  onConnecting?: (ctx: { orderRef: string }) => void;
+  onRequiresInput?: (ctx: { orderRef: string }) => void;
+  onProcessing?: (ctx: { orderRef: string }) => void;
+  onVerifying?: (ctx: { orderRef: string }) => void;
+  onSuccess?: (result: PaymentResult) => void;
+  onError?: (result: PaymentResult) => void;
+  onCancelled?: (ctx: { orderRef: string }) => void;
+}
+
 export interface IMessagingAdapter {
   subscribe<T>(
     channel: string,
