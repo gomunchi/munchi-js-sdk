@@ -48,14 +48,18 @@ export class MunchiPaymentSDK {
     return version;
   }
 
-  public subscribe(listener: StateListener): () => void {
+  public get currentState() {
+    return this._currentState;
+  }
+
+  public subscribe = (listener: StateListener): (() => void) => {
     this._listeners.push(listener);
     listener(this._currentState);
 
     return () => {
       this._listeners = this._listeners.filter((l) => l !== listener);
     };
-  }
+  };
 
   private transitionTo(newState: PaymentInteractionState) {
     if (this._currentState === newState) return;
@@ -98,7 +102,7 @@ export class MunchiPaymentSDK {
     }
   }
 
-  public async connect(): Promise<void> {
+  public connect = async (): Promise<void> => {
     this.transitionTo(PaymentInteractionState.CONNECTING);
     try {
       await this.strategy.initialize();
@@ -107,17 +111,17 @@ export class MunchiPaymentSDK {
       this.transitionTo(PaymentInteractionState.FAILED);
       throw error;
     }
-  }
+  };
 
-  public async disconnect(): Promise<void> {
+  public disconnect = async (): Promise<void> => {
     await this.strategy.disconnect();
     this.transitionTo(PaymentInteractionState.IDLE);
-  }
+  };
 
-  public async initiateTransaction(
+  public initiateTransaction = async (
     params: PaymentRequest,
     options?: TransactionOptions,
-  ): Promise<PaymentResult> {
+  ): Promise<PaymentResult> => {
     const callbacks = options ?? {};
     const orderRef = params.orderRef;
 
@@ -287,7 +291,7 @@ export class MunchiPaymentSDK {
     }
   }
 
-  public async cancel(): Promise<boolean> {
+  public cancel = async (): Promise<boolean> => {
     this.logger?.info("Attempting cancellation");
     this._cancellationIntent = true;
 
@@ -299,7 +303,7 @@ export class MunchiPaymentSDK {
       this.logger?.error("Cancellation command failed", error);
       return false;
     }
-  }
+  };
 
   private generateErrorResult(
     orderRef: string,

@@ -59,6 +59,11 @@ describe("MunchiPaymentSDK", () => {
       const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
       expect(sdk).toBeInstanceOf(MunchiPaymentSDK);
     });
+
+    it("should expose the current state", () => {
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      expect(sdk.currentState).toBe(PaymentInteractionState.IDLE);
+    });
     // ... other initialization tests can remain similar if they don't involve initiateTransaction
   });
 
@@ -715,6 +720,24 @@ describe("MunchiPaymentSDK", () => {
 
       const result = await sdk.initiateTransaction({
         orderRef: "order-no-cb",
+        amountCents: 1000,
+        currency: "EUR",
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it("should work when initiateTransaction is destructured", async () => {
+      setupSuccessfulPaymentMocks(
+        "order-destructure",
+        "session-destructure",
+        mockMessaging,
+      );
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      const { initiateTransaction } = sdk;
+
+      const result = await initiateTransaction({
+        orderRef: "order-destructure",
         amountCents: 1000,
         currency: "EUR",
       });
