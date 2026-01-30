@@ -1,5 +1,5 @@
 import type { AxiosInstance } from "axios";
-import { PaymentProvider } from "../../../core";
+import { PaymentProvider, ProviderEnum } from "../../../core";
 import type {
     IMessagingAdapter,
     PaymentTerminalConfig,
@@ -33,6 +33,7 @@ export function createMockMessaging(): jest.Mocked<IMessagingAdapter> {
  */
 export function createMockConfig(): PaymentTerminalConfig {
   return {
+    channel: ProviderEnum.MunchiKiosk,
     provider: PaymentProvider.Viva,
     kioskId: "test-kiosk-123",
     storeId: "351",
@@ -44,6 +45,7 @@ export function createMockConfig(): PaymentTerminalConfig {
  */
 export function createMockConfigWithoutProvider(): PaymentTerminalConfig {
   return {
+    channel: ProviderEnum.MunchiKiosk,
     kioskId: "test-kiosk-123",
     storeId: "351",
   };

@@ -1,6 +1,6 @@
 {
   "name": "@munchi/payments",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Munchi Payments SDK - Payment processing utilities",
   "license": "UNLICENSED",
   "publishConfig": {
@@ -8,15 +8,20 @@
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "react-native": "index.ts",
   "files": [
     "dist",
+    "src",
+    "index.ts",
     "README.md"
   ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "require": "./dist/index.js",
+      "react-native": "./index.ts"
     }
   },
   "scripts": {

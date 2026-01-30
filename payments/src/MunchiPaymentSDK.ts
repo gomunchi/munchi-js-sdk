@@ -25,10 +25,8 @@ export class MunchiPaymentSDK {
   private messaging: IMessagingAdapter;
   private timeoutMs: number;
   private logger: ILogger | undefined;
-
   private _currentState: PaymentInteractionState = PaymentInteractionState.IDLE;
   private _listeners: StateListener[] = [];
-
   private _cancellationIntent = false;
 
   constructor(
