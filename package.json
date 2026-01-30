@@ -1,8 +1,14 @@
 {
   "name": "@munchi/sdk",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "private": true,
   "scripts": {
     "test": "jest",
@@ -12,7 +18,8 @@
     "test:payments": "jest --selectProject @munchi/payments",
     "generate": "openapi-generator-cli generate",
     "version:sync": "pnpm -r version:sync",
-    "build": "pnpm -r build"
+    "build:workspaces": "pnpm -r build",
+    "build": "pnpm build:workspaces && tsup"
   },
   "dependencies": {
     "@openapitools/openapi-generator-cli": "^2.25.2",
@@ -23,6 +30,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "tsup": "^8.0.0",
     "@types/jest": "^30.0.0",
     "jest": "^30.2.0",
     "ts-jest": "^29.4.6"
