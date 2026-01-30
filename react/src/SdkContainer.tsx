@@ -3,22 +3,22 @@ import { createContext, useMemo } from "react";
 import type { MunchiPaymentSDK } from "../../payments";
 
 export interface SdkContextType {
-  payments: MunchiPaymentSDK;
+  sdk: MunchiPaymentSDK;
 }
 
 export const SdkContext = createContext<SdkContextType | undefined>(undefined);
 
 export interface SdkContainerProps {
   children: ReactNode;
-  payments: MunchiPaymentSDK;
+  sdk: MunchiPaymentSDK;
 }
 
 /**
  * SdkContainer provides the Munchi SDK instances to the application via context.
  * Works in React and React Native.
  */
-export const SdkContainer: FC<SdkContainerProps> = ({ children, payments }) => {
-  const value = useMemo(() => ({ payments }), [payments]);
+export const SdkContainer: FC<SdkContainerProps> = ({ children, sdk }) => {
+  const value = useMemo(() => ({ sdk }), [sdk]);
 
   return <SdkContext.Provider value={value}>{children}</SdkContext.Provider>;
 };

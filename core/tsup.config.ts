@@ -8,6 +8,7 @@ export default defineConfig({
   tsconfig: "./tsconfig.json",
   splitting: false,
   sourcemap: true,
+  minify: true,
   external: [
     // Don't bundle dependencies - let the consuming project install them
     "axios",
