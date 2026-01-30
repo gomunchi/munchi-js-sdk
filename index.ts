@@ -1,2 +1,5 @@
-export * from "@munchi/core";
-export * from "@munchi/payments";
+export * from "./core";
+export * from "./payments";
+export * from "./react";
+export { VERSION } from "./version";
+

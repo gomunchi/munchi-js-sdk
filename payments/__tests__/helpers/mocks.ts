@@ -1,6 +1,5 @@
+import { KiosksApi, PaymentApi, SimplePaymentStatus } from "../../../core";
 import type { IMessagingAdapter } from "../../src/types/payment";
-import { SdkPaymentStatus } from "../../src/types/payment";
-import { PaymentApi, KiosksApi, SimplePaymentStatus } from "@munchi/core";
 
 // Type assertion to access mock methods
 const MockedPaymentApi = PaymentApi as jest.MockedClass<typeof PaymentApi>;

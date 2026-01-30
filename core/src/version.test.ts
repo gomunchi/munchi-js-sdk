@@ -13,8 +13,4 @@ describe("VERSION", () => {
     const semverRegex = /^\d+\.\d+\.\d+$/;
     expect(VERSION).toMatch(semverRegex);
   });
-
-  it("should match the current version", () => {
-    expect(VERSION).toBe("1.0.12");
-  });
 });

@@ -1,8 +1,8 @@
 import type {
-  CurrencyCode,
-  PaymentProvider,
-  TransactionDto,
-} from "@munchi/core";
+    CurrencyCode,
+    PaymentProvider,
+    TransactionDto,
+} from "../../../core";
 
 export type TransactionDetails = Omit<
   TransactionDto,

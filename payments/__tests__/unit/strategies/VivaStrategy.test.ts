@@ -1,5 +1,5 @@
-import { PaymentApi } from "@munchi/core";
 import type { AxiosInstance } from "axios";
+import { PaymentApi } from "../../../../core";
 import { VivaStrategy } from "../../../src/strategies/VivaStrategy";
 import {
   PaymentInteractionState,
@@ -7,16 +7,16 @@ import {
   type PaymentTerminalConfig,
 } from "../../../src/types/payment";
 import {
-  setupSuccessfulPaymentMocks,
-  setupNetworkErrorMocks,
-} from "../../helpers/mocks";
-import {
   createMockAxios,
-  createMockMessaging,
   createMockConfig,
+  createMockMessaging,
 } from "../../helpers/fixtures";
+import {
+  setupNetworkErrorMocks,
+  setupSuccessfulPaymentMocks,
+} from "../../helpers/mocks";
 
-jest.mock("@munchi/core", () => {
+jest.mock("../../../../core", () => {
   const actual = jest.requireActual("@munchi/core");
   return {
     ...actual,

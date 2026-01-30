@@ -1,34 +1,32 @@
-import { PaymentErrorCode } from "./../../src/error";
-import {
-  PaymentProvider,
-  PaymentApi,
-  KiosksApi,
-  PaymentFailureCode,
-  SimplePaymentStatus,
-} from "@munchi/core";
 import type { AxiosInstance } from "axios";
-import { MunchiPaymentSDK } from "../../src/MunchiPaymentSDK";
 import {
+  KiosksApi,
+  PaymentApi,
+  PaymentFailureCode,
+  SimplePaymentStatus
+} from "../../../core";
+import { MunchiPaymentSDK } from "../../src/MunchiPaymentSDK";
+import { VivaStrategy } from "../../src/strategies/VivaStrategy";
+import {
+  PaymentInteractionState,
   SdkPaymentStatus,
   type IMessagingAdapter,
   type PaymentTerminalConfig,
-  PaymentInteractionState,
 } from "../../src/types/payment";
 import {
-  setupSuccessfulPaymentMocks,
-  setupNetworkErrorMocks,
-  setupFailedPaymentMocks,
-  setupTimeoutWithPollingMocks,
-} from "../helpers/mocks";
-import {
   createMockAxios,
-  createMockMessaging,
   createMockConfig,
   createMockConfigWithoutProvider,
+  createMockMessaging,
 } from "../helpers/fixtures";
-import { VivaStrategy } from "../../src/strategies/VivaStrategy";
-
-jest.mock("@munchi/core", () => {
+import {
+  setupFailedPaymentMocks,
+  setupNetworkErrorMocks,
+  setupSuccessfulPaymentMocks,
+  setupTimeoutWithPollingMocks,
+} from "../helpers/mocks";
+import { PaymentErrorCode } from "./../../src/error";
+jest.mock("../../../core", () => {
   const actual = jest.requireActual("@munchi/core");
   return {
     ...actual,

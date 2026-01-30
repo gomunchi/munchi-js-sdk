@@ -1,5 +1,5 @@
-import { PaymentProvider } from "@munchi/core";
 import type { AxiosInstance } from "axios";
+import { PaymentProvider } from "../../core";
 
 import { version } from "../package.json";
 import { PaymentErrorCode, PaymentSDKError } from "./error";
@@ -7,13 +7,13 @@ import type { IPaymentStrategy } from "./strategies/IPaymentStrategy";
 import { MockStrategy } from "./strategies/MockStrategy";
 import { VivaStrategy } from "./strategies/VivaStrategy";
 import {
-  type IMessagingAdapter,
-  PaymentInteractionState,
-  type PaymentRequest,
-  type PaymentResult,
-  type PaymentTerminalConfig,
-  type TransactionOptions,
-  SdkPaymentStatus,
+    type IMessagingAdapter,
+    PaymentInteractionState,
+    type PaymentRequest,
+    type PaymentResult,
+    type PaymentTerminalConfig,
+    SdkPaymentStatus,
+    type TransactionOptions,
 } from "./types/payment";
 import type { ILogger, SDKOptions } from "./types/sdk";
 

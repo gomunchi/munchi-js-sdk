@@ -1,21 +1,21 @@
-import {
-  type CreateTransactionPayloadDto,
-  type CurrencyCode,
-  KiosksApi,
-  PaymentApi,
-  type PaymentStatusDto,
-  SimplePaymentStatus,
-  VivaCurrencyCode,
-} from "@munchi/core";
 import type { AxiosInstance } from "axios";
+import {
+    type CreateTransactionPayloadDto,
+    type CurrencyCode,
+    KiosksApi,
+    PaymentApi,
+    type PaymentStatusDto,
+    SimplePaymentStatus,
+    VivaCurrencyCode,
+} from "../../../core";
 import { PaymentErrorCode, PaymentSDKError } from "../error";
 import {
-  type IMessagingAdapter,
-  PaymentInteractionState,
-  type PaymentRequest,
-  type PaymentResult,
-  type PaymentTerminalConfig,
-  SdkPaymentStatus,
+    type IMessagingAdapter,
+    PaymentInteractionState,
+    type PaymentRequest,
+    type PaymentResult,
+    type PaymentTerminalConfig,
+    SdkPaymentStatus,
 } from "../types/payment";
 import type { IPaymentStrategy } from "./IPaymentStrategy";
 
