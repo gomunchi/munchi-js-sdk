@@ -1,16 +1,16 @@
 import type { FC, ReactNode } from "react";
 import { createContext, useMemo } from "react";
-import type { MunchiPaymentSDK } from "../../payments";
+import type { IMunchiPaymentSDK } from "../../payments";
 
 export interface SdkContextType {
-  sdk: MunchiPaymentSDK;
+  sdk: IMunchiPaymentSDK;
 }
 
 export const SdkContext = createContext<SdkContextType | undefined>(undefined);
 
 export interface SdkContainerProps {
   children: ReactNode;
-  sdk: MunchiPaymentSDK;
+  sdk: IMunchiPaymentSDK;
 }
 
 /**

@@ -15,11 +15,11 @@ import {
     SdkPaymentStatus,
     type TransactionOptions,
 } from "./types/payment";
-import type { ILogger, SDKOptions } from "./types/sdk";
+import type { ILogger, IMunchiPaymentSDK, SDKOptions } from "./types/sdk";
 
 type StateListener = (state: PaymentInteractionState) => void;
 
-export class MunchiPaymentSDK {
+export class MunchiPaymentSDK implements IMunchiPaymentSDK {
   private strategy: IPaymentStrategy;
   private axios: AxiosInstance;
   private messaging: IMessagingAdapter;
@@ -44,6 +44,10 @@ export class MunchiPaymentSDK {
 
   public get version() {
     return version;
+  }
+
+  public get currentState() {
+    return this._currentState;
   }
 
   public subscribe(listener: StateListener): () => void {

@@ -1,12 +1,29 @@
-# Release Notes - v1.0.18
+# Release Notes - v1.0.23
 
-This release addresses critical build and resolution issues for the root `@munchi/sdk` package.
+This release resolves type compatibility issues and introduces new state management capabilities for React/React Native.
 
 ## 🐛 Bug Fixes
 
-### Fixed Root Package Resolution (`InternalError Metro has encountered an error`)
-- **Added Root Build Configuration:** The root package `@munchi/sdk` now includes a `tsup` configuration to properly build and bundle the entry point into `dist/index.js`.
-- **Updated `package.json`:** configured headers (`main`, `module`, `types`) to correctly point to the generated `dist` files instead of non-existent files.
-- **Strictness Adjustment:** Relaxed `exactOptionalPropertyTypes` in the root configuration to allow successful bundling of generated core definitions.
+### Fixed `Type 'MunchiPaymentSDK$1' is not assignable to type 'MunchiPaymentSDK'`
+- **Refactored to Interface-Based Typing:** The SDK and `SdkContainer` now rely on the `IMunchiPaymentSDK` interface instead of the concrete class. This resolves nominal typing conflicts caused by bundler-generated duplicates (`MunchiPaymentSDK$1`), ensuring smooth type resolution in your application.
 
-This ensures that consumers installing the root package will find the expected `index.js` entry point, resolving the "module could not be resolved" errors in Metro/React Native.
+## ✨ New Features
+
+### Exposed SDK State
+- **`currentState` Property:** The `IMunchiPaymentSDK` interface now includes a readonly `currentState` property (e.g., `IDLE`, `CONNECTING`, `PROCESSING`), allowing synchronous access to the SDK's status.
+- **`usePaymentState()` Hook:** Added a new React hook `@munchi/react/usePaymentState` that automatically subscribes to SDK state changes.
+  ```typescript
+  import { usePaymentState, PaymentInteractionState } from '@munchi/react';
+
+  const MyComponent = () => {
+    const status = usePaymentState();
+
+    if (status === PaymentInteractionState.PROCESSING) {
+       return <Spinner />;
+    }
+    return <View />;
+  }
+  ```
+
+**Upgrade Instructions:**
+Update to `v1.0.22` and run `pnpm install`.

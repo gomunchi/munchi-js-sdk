@@ -30,6 +30,8 @@ export enum PaymentInteractionState {
   VERIFYING = "VERIFYING",
 }
 
+export type StateListener = (state: PaymentInteractionState) => void;
+
 export interface VivaOptions {
   installments?: number;
   tipAmount?: number;

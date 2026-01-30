@@ -1,4 +1,10 @@
-import type { PaymentResult } from "./payment";
+import type {
+  PaymentRequest,
+  PaymentResult,
+  PaymentInteractionState,
+  StateListener,
+  TransactionOptions,
+} from "./payment";
 
 export interface ILogger {
   info(message: string, meta?: Record<string, unknown>): void;
@@ -19,4 +25,17 @@ export interface PaymentCallbacks {
 export interface SDKOptions {
   timeoutMs?: number;
   logger?: ILogger;
+}
+
+export interface IMunchiPaymentSDK {
+  version: string;
+  readonly currentState: PaymentInteractionState;
+  initiateTransaction(
+    params: PaymentRequest,
+    options?: TransactionOptions,
+  ): Promise<PaymentResult>;
+  cancel(): Promise<boolean>;
+  subscribe(listener: StateListener): () => void;
+  connect(): Promise<void>;
+  disconnect(): Promise<void>;
 }
