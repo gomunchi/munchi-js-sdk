@@ -7,7 +7,7 @@ export default defineConfig({
   clean: true,
   tsconfig: "./tsconfig.json",
   splitting: false,
-  sourcemap: true,
+  sourcemap: false,
   minify: true,
   external: [
     // Don't bundle dependencies - let the consuming project install them
