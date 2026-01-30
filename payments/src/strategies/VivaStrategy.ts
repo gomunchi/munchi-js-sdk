@@ -91,7 +91,8 @@ export class VivaStrategy implements IPaymentStrategy {
     onStateChange: (state: PaymentInteractionState) => void,
     signal: AbortSignal,
   ): Promise<PaymentResult> {
-    const channelName = `viva.kiosk.requests.${sessionId}`;
+    const channel= this.config.channel.toLowerCase()
+    const channelName = `viva.${channel}.requests.${sessionId}`;
     const eventName = "payment:status-changed";
 
     return new Promise((resolve, reject) => {

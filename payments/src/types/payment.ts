@@ -1,6 +1,7 @@
 import type {
     CurrencyCode,
     PaymentProvider,
+    ProviderEnum,
     TransactionDto,
 } from "../../../core";
 
@@ -49,6 +50,7 @@ export interface PaymentRequest {
 
 export interface PaymentTerminalConfig {
   provider?: PaymentProvider;
+  channel: ProviderEnum;
   kioskId: string;
   storeId: string;
 }
