@@ -15,7 +15,12 @@ export const useMunchi = () => {
 /**
  * Hook to access the Munchi Payment SDK instance.
  */
-export const usePayments = () => {
-  const { payments } = useMunchi();
-  return payments;
+export const useSdk = () => {
+  const { sdk } = useMunchi();
+  return sdk;
 };
+
+/**
+ * @deprecated Use useSdk instead
+ */
+export const usePayments = useSdk;

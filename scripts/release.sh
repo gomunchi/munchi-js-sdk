@@ -149,16 +149,13 @@ echo ""
 
 # Push
 echo "📤 Pushing to remote..."
-read -p "Push changes and tags to remote? (y/n) " -n 1 -r
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+git push origin "$CURRENT_BRANCH"
+git push origin --tags
+echo "✅ Pushed to remote branch $CURRENT_BRANCH"
 echo ""
 
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  git push origin master
-  git push origin --tags
-  echo "✅ Pushed to remote"
-  echo ""
-
-  if [ "$PUBLISH" == "true" ]; then
+if [ "$PUBLISH" == "true" ]; then
     echo "📢 Creating GitHub release..."
     
     if ! command -v gh &> /dev/null; then
