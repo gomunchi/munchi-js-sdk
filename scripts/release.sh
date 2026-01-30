@@ -103,7 +103,7 @@ read -p "Push changes and tags to remote? (y/n) " -n 1 -r
 echo ""
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-  git push origin main
+  git push origin master
   git push origin --tags
   echo "✅ Pushed to remote"
   echo ""
@@ -114,6 +114,6 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo "   npm install github:gomunchi/munchi-js-sdk#payments-v$VERSION"
 else
   echo "⏸️  Skipped push. Run manually with:"
-  echo "   git push origin main"
+  echo "   git push origin master"
   echo "   git push origin --tags"
 fi
