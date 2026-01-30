@@ -11,14 +11,28 @@ TypeScript SDK for Munchi services, providing core utilities and payment process
 
 ✨ **No authentication required!** This is a public repository.
 
-### Quick Install
+### Quick Install (Latest Stable)
+
+Use the `master` branch to always get the latest stable release:
 
 ```bash
-# Install both packages
-npm install github:gomunchi/munchi-js-sdk#core github:gomunchi/munchi-js-sdk#payments
+# npm
+npm install github:gomunchi/munchi-js-sdk#master
 
-# Or with pnpm
-pnpm add github:gomunchi/munchi-js-sdk#core github:gomunchi/munchi-js-sdk#payments
+# pnpm
+pnpm add github:gomunchi/munchi-js-sdk#master
+```
+
+### Install Specific Version
+
+For a pinned version, use the version tag (check [releases](https://github.com/gomunchi/munchi-js-sdk/releases) for available versions):
+
+```bash
+# npm
+npm install github:gomunchi/munchi-js-sdk#v1.0.12
+
+# pnpm
+pnpm add github:gomunchi/munchi-js-sdk#v1.0.12
 ```
 
 ### In your package.json
@@ -26,13 +40,22 @@ pnpm add github:gomunchi/munchi-js-sdk#core github:gomunchi/munchi-js-sdk#paymen
 ```json
 {
   "dependencies": {
-    "@munchi/core": "github:gomunchi/munchi-js-sdk#core",
-    "@munchi/payments": "github:gomunchi/munchi-js-sdk#payments"
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#master"
   }
 }
 ```
 
-Then simply run `npm install` - no authentication setup needed!
+Or with a pinned version:
+
+```json
+{
+  "dependencies": {
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.0.12"
+  }
+}
+```
+
+Then run `npm install` or `pnpm install` - no authentication setup needed!
 
 ## Quick Start
 
@@ -86,25 +109,43 @@ munchi-js-sdk/
 
 ## Version Management
 
-This monorepo uses a centralized version system. The version is defined in `version.ts` and automatically synced to all packages.
+This monorepo uses a centralized version system with an automated release script.
 
-### Update Version
-
-1. Edit `version.ts` in the root
-2. Run build to sync versions: `pnpm -r build`
-
-### Git Tags for Versioning
-
-Create tags for specific versions:
+### Creating a Release
 
 ```bash
-# Tag a release
-git tag core-v1.0.0
-git tag payments-v1.0.0
-git push origin --tags
+# Release with version bump only
+./scripts/release.sh 1.0.13
 
-# Install specific version
-npm install github:gomunchi/munchi-js-sdk#core-v1.0.0
+# Release and create GitHub release with auto-generated notes
+./scripts/release.sh 1.0.13 --publish
+
+# Release with custom release notes (opens editor)
+./scripts/release.sh 1.0.13 --publish=custom
+```
+
+The script will:
+1. Update version in all `package.json` files and `version.ts`
+2. Build all packages
+3. Commit changes and create git tags
+4. Push to remote
+5. (Optional) Create a GitHub release
+
+### Git Tags
+
+Each release creates three tags:
+- `v1.0.13` - Main version tag (use this for installing)
+- `core-v1.0.13` - Core package tag
+- `payments-v1.0.13` - Payments package tag
+
+### Install Specific Version
+
+```bash
+# npm
+npm install github:gomunchi/munchi-js-sdk#v1.0.13
+
+# pnpm
+pnpm add github:gomunchi/munchi-js-sdk#v1.0.13
 ```
 
 ## Contributing
