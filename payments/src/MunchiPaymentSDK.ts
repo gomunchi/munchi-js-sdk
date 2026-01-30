@@ -1,6 +1,6 @@
 import { PaymentProvider } from "@munchi/core";
 import type { AxiosInstance } from "axios";
-import dayjs from "dayjs";
+
 import { version } from "../package.json";
 import { PaymentErrorCode, PaymentSDKError } from "./error";
 import type { IPaymentStrategy } from "./strategies/IPaymentStrategy";
@@ -35,7 +35,7 @@ export class MunchiPaymentSDK {
     axios: AxiosInstance,
     messaging: IMessagingAdapter,
     config: PaymentTerminalConfig,
-    options: SDKOptions = {}
+    options: SDKOptions = {},
   ) {
     this.axios = axios;
     this.messaging = messaging;
@@ -116,7 +116,7 @@ export class MunchiPaymentSDK {
 
   public async initiateTransaction(
     params: PaymentRequest,
-    options?: TransactionOptions
+    options?: TransactionOptions,
   ): Promise<PaymentResult> {
     const callbacks = options ?? {};
     const orderRef = params.orderRef;
@@ -132,11 +132,11 @@ export class MunchiPaymentSDK {
       return this.generateErrorResult(
         params.orderRef,
         PaymentErrorCode.UNKNOWN,
-        "A transaction is already in progress"
+        "A transaction is already in progress",
       );
     }
 
-    const startTime = dayjs();
+    const startTime = Date.now();
     this._cancellationIntent = false;
 
     this.transitionTo(PaymentInteractionState.IDLE);
@@ -145,7 +145,7 @@ export class MunchiPaymentSDK {
       return this.generateErrorResult(
         params.orderRef,
         PaymentErrorCode.INVALID_AMOUNT,
-        "Amount must be greater than 0"
+        "Amount must be greater than 0",
       );
     }
 
@@ -159,12 +159,17 @@ export class MunchiPaymentSDK {
 
       const transactionPromise = this.strategy.processPayment(
         params,
-        internalStateCallback
+        internalStateCallback,
       );
 
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => {
-          reject(new PaymentSDKError(PaymentErrorCode.TIMEOUT, "Transaction timed out"));
+          reject(
+            new PaymentSDKError(
+              PaymentErrorCode.TIMEOUT,
+              "Transaction timed out",
+            ),
+          );
         }, this.timeoutMs);
       });
 
@@ -174,7 +179,11 @@ export class MunchiPaymentSDK {
         this.transitionTo(PaymentInteractionState.SUCCESS);
         this.safeFireCallback(() => callbacks.onSuccess?.(result));
       } else if (this._cancellationIntent) {
-        return await this.handleTransactionError(params, new Error("Aborted after resolution"), callbacks);
+        return await this.handleTransactionError(
+          params,
+          new Error("Aborted after resolution"),
+          callbacks,
+        );
       } else {
         this.transitionTo(PaymentInteractionState.FAILED);
         this.safeFireCallback(() => callbacks.onError?.(result));
@@ -182,13 +191,14 @@ export class MunchiPaymentSDK {
 
       this.logger?.info("Transaction completed successfully", {
         orderId: params.orderRef,
-        durationMs: dayjs().diff(startTime, "millisecond"),
+        durationMs: Date.now() - startTime,
       });
 
       return result;
-
     } catch (error: unknown) {
-      this.logger?.warn("Transaction interrupted. Handling final status...", { error });
+      this.logger?.warn("Transaction interrupted. Handling final status...", {
+        error,
+      });
 
       return await this.handleTransactionError(params, error, callbacks);
     }
@@ -197,10 +207,12 @@ export class MunchiPaymentSDK {
   private async handleTransactionError(
     params: PaymentRequest,
     originalError: unknown,
-    callbacks: TransactionOptions = {}
+    callbacks: TransactionOptions = {},
   ): Promise<PaymentResult> {
     this.transitionTo(PaymentInteractionState.VERIFYING);
-    this.safeFireCallback(() => callbacks.onVerifying?.({ orderRef: params.orderRef }));
+    this.safeFireCallback(() =>
+      callbacks.onVerifying?.({ orderRef: params.orderRef }),
+    );
 
     if (this._cancellationIntent) {
       try {
@@ -211,27 +223,39 @@ export class MunchiPaymentSDK {
           return finalStatus;
         }
       } catch (err) {
-        this.logger?.warn("Final status verification failed during cancellation", { err });
+        this.logger?.warn(
+          "Final status verification failed during cancellation",
+          { err },
+        );
       }
 
       this.transitionTo(PaymentInteractionState.IDLE);
-      this.safeFireCallback(() => callbacks.onCancelled?.({ orderRef: params.orderRef }));
+      this.safeFireCallback(() =>
+        callbacks.onCancelled?.({ orderRef: params.orderRef }),
+      );
       return {
         success: false,
         status: SdkPaymentStatus.CANCELLED,
         errorCode: PaymentErrorCode.CANCELLED,
-        orderId: params.orderRef
+        orderId: params.orderRef,
       };
     }
 
     this.transitionTo(PaymentInteractionState.FAILED);
-    const errorResult = originalError instanceof PaymentSDKError
-      ? this.generateErrorResult(params.orderRef, originalError.code, originalError.message)
-      : this.generateErrorResult(
-          params.orderRef,
-          PaymentErrorCode.UNKNOWN,
-          originalError instanceof Error ? originalError.message : "Unknown fatal error"
-        );
+    const errorResult =
+      originalError instanceof PaymentSDKError
+        ? this.generateErrorResult(
+            params.orderRef,
+            originalError.code,
+            originalError.message,
+          )
+        : this.generateErrorResult(
+            params.orderRef,
+            PaymentErrorCode.UNKNOWN,
+            originalError instanceof Error
+              ? originalError.message
+              : "Unknown fatal error",
+          );
     this.safeFireCallback(() => callbacks.onError?.(errorResult));
     return errorResult;
   }
@@ -239,7 +263,7 @@ export class MunchiPaymentSDK {
   private fireStateCallback(
     state: PaymentInteractionState,
     callbacks: TransactionOptions,
-    orderRef: string
+    orderRef: string,
   ) {
     const ctx = { orderRef };
     switch (state) {
@@ -270,15 +294,18 @@ export class MunchiPaymentSDK {
     this.transitionTo(PaymentInteractionState.VERIFYING);
 
     try {
-      return await this.strategy.cancelTransaction(() => {
-      });
+      return await this.strategy.cancelTransaction(() => {});
     } catch (error) {
       this.logger?.error("Cancellation command failed", error);
       return false;
     }
   }
 
-  private generateErrorResult(orderRef: string, code: PaymentErrorCode, message: string): PaymentResult {
+  private generateErrorResult(
+    orderRef: string,
+    code: PaymentErrorCode,
+    message: string,
+  ): PaymentResult {
     return {
       success: false,
       status: SdkPaymentStatus.ERROR,

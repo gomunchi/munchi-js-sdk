@@ -1,6 +1,6 @@
 // This fixes the "Cannot find name 'Null'" error in OpenAPI generated files
-export { };
+export {};
 
 declare global {
-    type Null = null;
+  type Null = null;
 }

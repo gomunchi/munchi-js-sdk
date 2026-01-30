@@ -1,627 +1,727 @@
-import { PaymentErrorCode } from './../../src/error';
-import { PaymentProvider, PaymentApi, KiosksApi, PaymentFailureCode, SimplePaymentStatus } from '@munchi/core';
-import type { AxiosInstance } from 'axios';
-import { MunchiPaymentSDK } from '../../src/MunchiPaymentSDK';
-import { SdkPaymentStatus, type IMessagingAdapter, type PaymentTerminalConfig, PaymentInteractionState } from '../../src/types/payment';
+import { PaymentErrorCode } from "./../../src/error";
 import {
-    setupSuccessfulPaymentMocks, setupNetworkErrorMocks,
-    setupFailedPaymentMocks,
-    setupTimeoutWithPollingMocks,
-} from '../helpers/mocks';
-import { createMockAxios, createMockMessaging, createMockConfig, createMockConfigWithoutProvider } from '../helpers/fixtures';
-import { VivaStrategy } from '../../src/strategies/VivaStrategy';
+  PaymentProvider,
+  PaymentApi,
+  KiosksApi,
+  PaymentFailureCode,
+  SimplePaymentStatus,
+} from "@munchi/core";
+import type { AxiosInstance } from "axios";
+import { MunchiPaymentSDK } from "../../src/MunchiPaymentSDK";
+import {
+  SdkPaymentStatus,
+  type IMessagingAdapter,
+  type PaymentTerminalConfig,
+  PaymentInteractionState,
+} from "../../src/types/payment";
+import {
+  setupSuccessfulPaymentMocks,
+  setupNetworkErrorMocks,
+  setupFailedPaymentMocks,
+  setupTimeoutWithPollingMocks,
+} from "../helpers/mocks";
+import {
+  createMockAxios,
+  createMockMessaging,
+  createMockConfig,
+  createMockConfigWithoutProvider,
+} from "../helpers/fixtures";
+import { VivaStrategy } from "../../src/strategies/VivaStrategy";
 
-jest.mock('@munchi/core', () => {
-    const actual = jest.requireActual('@munchi/core');
-    return {
-        ...actual,
-        PaymentApi: jest.fn().mockImplementation(() => ({
-            createVivaTransactionV3: jest.fn(),
-            cancelTransaction: jest.fn(),
-        })),
-        KiosksApi: jest.fn().mockImplementation(() => ({
-            getOrderStatus: jest.fn(),
-        })),
-    };
+jest.mock("@munchi/core", () => {
+  const actual = jest.requireActual("@munchi/core");
+  return {
+    ...actual,
+    PaymentApi: jest.fn().mockImplementation(() => ({
+      createVivaTransactionV3: jest.fn(),
+      cancelTransaction: jest.fn(),
+    })),
+    KiosksApi: jest.fn().mockImplementation(() => ({
+      getOrderStatus: jest.fn(),
+    })),
+  };
 });
 
-describe('MunchiPaymentSDK', () => {
-    let mockAxios: jest.Mocked<AxiosInstance>;
-    let mockMessaging: jest.Mocked<IMessagingAdapter>;
-    let mockConfig: PaymentTerminalConfig;
-    let mockWithNoProvider: PaymentTerminalConfig;
+describe("MunchiPaymentSDK", () => {
+  let mockAxios: jest.Mocked<AxiosInstance>;
+  let mockMessaging: jest.Mocked<IMessagingAdapter>;
+  let mockConfig: PaymentTerminalConfig;
+  let mockWithNoProvider: PaymentTerminalConfig;
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockAxios = createMockAxios();
+    mockMessaging = createMockMessaging();
+    mockConfig = createMockConfig();
+    mockWithNoProvider = createMockConfigWithoutProvider();
+  });
+
+  describe("initialization", () => {
+    it("should create SDK instance with Viva provider", () => {
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      expect(sdk).toBeInstanceOf(MunchiPaymentSDK);
+    });
+    // ... other initialization tests can remain similar if they don't involve initiateTransaction
+  });
+
+  describe("initiateTransaction with ably", () => {
+    it("should reject invalid amount (zero)", async () => {
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+      const result = await sdk.initiateTransaction({
+        orderRef: "order-123",
+        amountCents: 0,
+        currency: "EUR",
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.errorCode).toBe("INVALID_AMOUNT");
+    });
+
+    it("should fail with valid amount due to network error", async () => {
+      setupNetworkErrorMocks();
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+      // Subscribe to verify state transitions
+      const states: PaymentInteractionState[] = [];
+      sdk.subscribe((state) => states.push(state));
+
+      const result = await sdk.initiateTransaction({
+        orderRef: "order-456",
+        amountCents: 100,
+        currency: "EUR",
+      });
+
+      expect(result.success).toBe(false);
+      expect(result.errorCode).toBe("NETWORK_ERROR");
+
+      // Check state flow: IDLE -> IDLE (reset) -> VERIFYING -> FAILED
+      expect(states).toContain(PaymentInteractionState.FAILED);
+      expect(states).toContain(PaymentInteractionState.VERIFYING);
+    });
+
+    it("should succeed with valid amount", async () => {
+      setupSuccessfulPaymentMocks(
+        "order-789",
+        "test-session-123",
+        mockMessaging,
+      );
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+      const states: PaymentInteractionState[] = [];
+      sdk.subscribe((state) => states.push(state));
+
+      const result = await sdk.initiateTransaction({
+        orderRef: "order-789",
+        amountCents: 1000,
+        currency: "EUR",
+      });
+
+      expect(result.success).toBe(true);
+      expect(result.status).toBe(SdkPaymentStatus.SUCCESS);
+      expect(states).toContain(PaymentInteractionState.SUCCESS);
+    });
+
+    describe.each(Object.entries(PaymentFailureCode))(
+      "Failure Code: %s",
+      (key, code) => {
+        it(`should handle terminal-side failure: ${key}`, async () => {
+          const orderRef = `order-fail-${code}`;
+          setupFailedPaymentMocks(
+            orderRef,
+            `session-fail-${code}`,
+            mockMessaging,
+            {
+              code,
+              message: `Payment failed with ${key}`,
+            },
+          );
+
+          const sdk = new MunchiPaymentSDK(
+            mockAxios,
+            mockMessaging,
+            mockConfig,
+          );
+          const states: PaymentInteractionState[] = [];
+          sdk.subscribe((state) => states.push(state));
+
+          const result = await sdk.initiateTransaction({
+            orderRef,
+            amountCents: 1000,
+            currency: "EUR",
+          });
+
+          expect(result.success).toBe(false);
+          expect(result.status).toBe(SdkPaymentStatus.FAILED);
+          expect(result.errorCode).toBe(code);
+          expect(states).toContain(PaymentInteractionState.FAILED);
+        });
+      },
+    );
+  });
+
+  describe("initiateTransaction with timeout fallback", () => {
     beforeEach(() => {
-        jest.clearAllMocks();
-        mockAxios = createMockAxios();
-        mockMessaging = createMockMessaging();
-        mockConfig = createMockConfig();
-        mockWithNoProvider = createMockConfigWithoutProvider();
+      jest.useFakeTimers();
     });
 
-    describe('initialization', () => {
-        it('should create SDK instance with Viva provider', () => {
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
-            expect(sdk).toBeInstanceOf(MunchiPaymentSDK);
-        });
-        // ... other initialization tests can remain similar if they don't involve initiateTransaction
+    afterEach(() => {
+      jest.useRealTimers();
     });
 
-    describe('initiateTransaction with ably', () => {
-        it('should reject invalid amount (zero)', async () => {
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+    it("should fallback to polling when messaging is delayed", async () => {
+      const orderRef = "order-timeout-poll";
+      const { mockGetOrderStatus } = setupTimeoutWithPollingMocks(
+        orderRef,
+        "session-timeout-poll",
+        mockMessaging,
+        SimplePaymentStatus.Success,
+      );
 
-            const result = await sdk.initiateTransaction({
-                orderRef: 'order-123',
-                amountCents: 0,
-                currency: "EUR"
-            });
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      const states: PaymentInteractionState[] = [];
+      sdk.subscribe((state) => states.push(state));
 
-            expect(result.success).toBe(false);
-            expect(result.errorCode).toBe('INVALID_AMOUNT');
-        });
+      const transactionPromise = sdk.initiateTransaction({
+        orderRef,
+        amountCents: 1000,
+        currency: "EUR",
+      });
 
-        it('should fail with valid amount due to network error', async () => {
-            setupNetworkErrorMocks();
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      // Fast-forward 10 seconds to trigger the timeout in VivaStrategy
+      await jest.advanceTimersByTimeAsync(11000);
 
-            // Subscribe to verify state transitions
-            const states: PaymentInteractionState[] = [];
-            sdk.subscribe((state) => states.push(state));
+      const result = await transactionPromise;
 
-            const result = await sdk.initiateTransaction({
-                orderRef: 'order-456',
-                amountCents: 100,
-                currency: "EUR"
-            });
-
-            expect(result.success).toBe(false);
-            expect(result.errorCode).toBe('NETWORK_ERROR');
-
-            // Check state flow: IDLE -> IDLE (reset) -> VERIFYING -> FAILED
-            expect(states).toContain(PaymentInteractionState.FAILED);
-            expect(states).toContain(PaymentInteractionState.VERIFYING);
-        });
-
-        it('should succeed with valid amount', async () => {
-            setupSuccessfulPaymentMocks('order-789', 'test-session-123', mockMessaging);
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
-
-            const states: PaymentInteractionState[] = [];
-            sdk.subscribe((state) => states.push(state));
-
-            const result = await sdk.initiateTransaction({
-                orderRef: 'order-789',
-                amountCents: 1000,
-                currency: "EUR"
-            });
-
-            expect(result.success).toBe(true);
-            expect(result.status).toBe(SdkPaymentStatus.SUCCESS);
-            expect(states).toContain(PaymentInteractionState.SUCCESS);
-        });
-
-        describe.each(Object.entries(PaymentFailureCode))('Failure Code: %s', (key, code) => {
-            it(`should handle terminal-side failure: ${key}`, async () => {
-                const orderRef = `order-fail-${code}`;
-                setupFailedPaymentMocks(
-                    orderRef,
-                    `session-fail-${code}`,
-                    mockMessaging,
-                    {
-                        code,
-                        message: `Payment failed with ${key}`
-                    }
-                );
-
-                const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
-                const states: PaymentInteractionState[] = [];
-                sdk.subscribe((state) => states.push(state));
-
-                const result = await sdk.initiateTransaction({
-                    orderRef,
-                    amountCents: 1000,
-                    currency: 'EUR'
-                });
-
-                expect(result.success).toBe(false);
-                expect(result.status).toBe(SdkPaymentStatus.FAILED);
-                expect(result.errorCode).toBe(code);
-                expect(states).toContain(PaymentInteractionState.FAILED);
-            });
-        });
+      expect(result.success).toBe(true);
+      expect(result.status).toBe(SdkPaymentStatus.SUCCESS);
+      expect(mockGetOrderStatus).toHaveBeenCalledWith(
+        orderRef,
+        mockConfig.storeId,
+      );
+      expect(states).toContain(PaymentInteractionState.SUCCESS);
     });
 
-    describe('initiateTransaction with timeout fallback', () => {
-        beforeEach(() => {
-            jest.useFakeTimers();
+    describe.each(Object.entries(PaymentFailureCode))(
+      "Polling Failure Code: %s",
+      (key, code) => {
+        it(`should handle terminal-side failure via polling: ${key}`, async () => {
+          const orderRef = `order-poll-fail-${code}`;
+          const { mockGetOrderStatus } = setupTimeoutWithPollingMocks(
+            orderRef,
+            `session-poll-fail-${code}`,
+            mockMessaging,
+            SimplePaymentStatus.Failed,
+            {
+              code,
+              message: `Polling failed with ${key}`,
+            },
+          );
+
+          const sdk = new MunchiPaymentSDK(
+            mockAxios,
+            mockMessaging,
+            mockConfig,
+          );
+          const states: PaymentInteractionState[] = [];
+          sdk.subscribe((state) => states.push(state));
+
+          const transactionPromise = sdk.initiateTransaction({
+            orderRef,
+            amountCents: 1000,
+            currency: "EUR",
+          });
+
+          // Fast-forward 10 seconds to trigger the timeout/polling
+          await jest.advanceTimersByTimeAsync(11000);
+
+          const result = await transactionPromise;
+
+          expect(result.success).toBe(false);
+          expect(result.status).toBe(SdkPaymentStatus.FAILED);
+          expect(result.errorCode).toBe(code);
+          expect(mockGetOrderStatus).toHaveBeenCalled();
+          expect(states).toContain(PaymentInteractionState.FAILED);
+        });
+      },
+    );
+  });
+
+  describe("cancellation", () => {
+    it("should suppress FAILED state update during cancellation", async () => {
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+      const states: PaymentInteractionState[] = [];
+      sdk.subscribe((state) => states.push(state));
+
+      const processPaymentSpy = jest
+        .spyOn(VivaStrategy.prototype, "processPayment")
+        .mockImplementation((params: any, onStateChange: any) => {
+          onStateChange(PaymentInteractionState.CONNECTING);
+          return new Promise((resolve, reject) => {
+            setTimeout(() => {
+              // Only emit if not strictly guarded by SDK logic?
+              // Actually SDK guards against strategy emitting FAILED?
+              // No, SDK callback prevents emitting FAILED to transitionTo.
+              onStateChange(PaymentInteractionState.FAILED);
+              reject(new Error("Aborted or Network Error"));
+            }, 50);
+          });
         });
 
-        afterEach(() => {
-            jest.useRealTimers();
+      const cancelTransactionSpy = jest
+        .spyOn(VivaStrategy.prototype, "cancelTransaction")
+        .mockImplementation(async (onStateChange: any) => {
+          return true;
         });
 
-        it('should fallback to polling when messaging is delayed', async () => {
-            const orderRef = 'order-timeout-poll';
-            const { mockGetOrderStatus } = setupTimeoutWithPollingMocks(
-                orderRef,
-                'session-timeout-poll',
-                mockMessaging,
-                SimplePaymentStatus.Success
-            );
+      const transactionPromise = sdk.initiateTransaction({
+        orderRef: "order-cancel-test",
+        amountCents: 1000,
+        currency: "EUR",
+      });
 
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
-            const states: PaymentInteractionState[] = [];
-            sdk.subscribe((state) => states.push(state));
+      await sdk.cancel();
 
-            const transactionPromise = sdk.initiateTransaction({
-                orderRef,
-                amountCents: 1000,
-                currency: 'EUR'
-            });
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
-            // Fast-forward 10 seconds to trigger the timeout in VivaStrategy
-            await jest.advanceTimersByTimeAsync(11000);
+      try {
+        await transactionPromise;
+      } catch (e) {}
 
-            const result = await transactionPromise;
+      // Assertions for Observer Pattern implementation:
+      // The flow should optionally contain CONNECTING.
+      // When cancelling, we intentionally suppress the FAILED state to avoid UI flashes.
+      // Instead, it should transition to IDLE finally.
 
-            expect(result.success).toBe(true);
-            expect(result.status).toBe(SdkPaymentStatus.SUCCESS);
-            expect(mockGetOrderStatus).toHaveBeenCalledWith(orderRef, mockConfig.storeId);
-            expect(states).toContain(PaymentInteractionState.SUCCESS);
-        });
+      expect(states).toContain(PaymentInteractionState.VERIFYING);
+      expect(states).not.toContain(PaymentInteractionState.FAILED);
 
-        describe.each(Object.entries(PaymentFailureCode))('Polling Failure Code: %s', (key, code) => {
-            it(`should handle terminal-side failure via polling: ${key}`, async () => {
-                const orderRef = `order-poll-fail-${code}`;
-                const { mockGetOrderStatus } = setupTimeoutWithPollingMocks(
-                    orderRef,
-                    `session-poll-fail-${code}`,
-                    mockMessaging,
-                    SimplePaymentStatus.Failed,
-                    {
-                        code,
-                        message: `Polling failed with ${key}`
-                    }
-                );
-
-                const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
-                const states: PaymentInteractionState[] = [];
-                sdk.subscribe((state) => states.push(state));
-
-                const transactionPromise = sdk.initiateTransaction({
-                    orderRef,
-                    amountCents: 1000,
-                    currency: 'EUR'
-                });
-
-                // Fast-forward 10 seconds to trigger the timeout/polling
-                await jest.advanceTimersByTimeAsync(11000);
-
-                const result = await transactionPromise;
-
-                expect(result.success).toBe(false);
-                expect(result.status).toBe(SdkPaymentStatus.FAILED);
-                expect(result.errorCode).toBe(code);
-                expect(mockGetOrderStatus).toHaveBeenCalled();
-                expect(states).toContain(PaymentInteractionState.FAILED);
-            });
-        });
+      // Verify mock calls
+      processPaymentSpy.mockRestore();
+      cancelTransactionSpy.mockRestore();
     });
 
-    describe('cancellation', () => {
-        it('should suppress FAILED state update during cancellation', async () => {
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+    it("should trigger INTERNAL_ERROR on invalid state transition", async () => {
+      setupSuccessfulPaymentMocks(
+        "order-invalid-test",
+        "test-session-inv",
+        mockMessaging,
+      );
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      const states: PaymentInteractionState[] = [];
+      sdk.subscribe((state) => states.push(state));
 
-            const states: PaymentInteractionState[] = [];
-            sdk.subscribe((state) => states.push(state));
+      // Manually force state to SUCCESS (simulating a completed transaction)
+      // accessing private property for testing purpose or using a method if available
+      // Since we can't access private, we run a success flow first
+      await sdk.initiateTransaction({
+        orderRef: "order-invalid-test",
+        amountCents: 1000,
+        currency: "EUR",
+      });
 
-            const processPaymentSpy = jest.spyOn(VivaStrategy.prototype, 'processPayment')
-                .mockImplementation((params: any, onStateChange: any) => {
-                    onStateChange(PaymentInteractionState.CONNECTING);
-                    return new Promise((resolve, reject) => {
-                        setTimeout(() => {
-                            // Only emit if not strictly guarded by SDK logic? 
-                            // Actually SDK guards against strategy emitting FAILED?
-                            // No, SDK callback prevents emitting FAILED to transitionTo.
-                            onStateChange(PaymentInteractionState.FAILED);
-                            reject(new Error('Aborted or Network Error'));
-                        }, 50);
-                    });
-                });
+      expect(states[states.length - 1]).toBe(PaymentInteractionState.SUCCESS);
 
-            const cancelTransactionSpy = jest.spyOn(VivaStrategy.prototype, 'cancelTransaction')
-                .mockImplementation(async (onStateChange: any) => {
-                    return true;
-                });
+      // Now, simulate a delayed event trying to update state to PROCESSING
+      // We need to access the internal transitionTo method or mimic the callback
+      // Since we can't easily access private methods, we can simulate this by having
+      // the strategy emit an event AFTER success if we mock it that way.
 
-            const transactionPromise = sdk.initiateTransaction({
-                orderRef: 'order-cancel-test',
-                amountCents: 1000,
-                currency: "EUR"
+      // Re-mock strategy to emit event after resolution
+
+      const processPaymentSpy = jest
+        .spyOn(VivaStrategy.prototype, "processPayment")
+        .mockImplementation((params: any, onStateChange: any) => {
+          return new Promise((resolve) => {
+            resolve({
+              success: true,
+              status: SdkPaymentStatus.SUCCESS,
+              orderId: "ref",
             });
-
-            await sdk.cancel();
-
-            await new Promise(resolve => setTimeout(resolve, 100));
-
-            try {
-                await transactionPromise;
-            } catch (e) { }
-
-            // Assertions for Observer Pattern implementation:
-            // The flow should optionally contain CONNECTING.
-            // When cancelling, we intentionally suppress the FAILED state to avoid UI flashes.
-            // Instead, it should transition to IDLE finally.
-
-            expect(states).toContain(PaymentInteractionState.VERIFYING);
-            expect(states).not.toContain(PaymentInteractionState.FAILED);
-
-            // Verify mock calls
-            processPaymentSpy.mockRestore();
-            cancelTransactionSpy.mockRestore();
+            // Emit invalid state AFTER resolving (which sets SUCCESS in SDK)
+            setTimeout(() => {
+              try {
+                onStateChange(PaymentInteractionState.PROCESSING);
+              } catch (e) {
+                // Expected to throw
+              }
+            }, 10);
+          });
         });
 
-        it('should trigger INTERNAL_ERROR on invalid state transition', async () => {
-            setupSuccessfulPaymentMocks('order-invalid-test', 'test-session-inv', mockMessaging);
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
-            const states: PaymentInteractionState[] = [];
-            sdk.subscribe((state) => states.push(state));
+      // Trigger a new transaction to use the new mock
+      await sdk.initiateTransaction({
+        orderRef: "order-invalid-test-2",
+        amountCents: 1000,
+        currency: "EUR",
+      });
 
-            // Manually force state to SUCCESS (simulating a completed transaction)
-            // accessing private property for testing purpose or using a method if available
-            // Since we can't access private, we run a success flow first
-            await sdk.initiateTransaction({
-                orderRef: 'order-invalid-test',
-                amountCents: 1000,
-                currency: "EUR"
-            });
+      // Wait for the timeout in the mock
+      await new Promise((resolve) => setTimeout(resolve, 50));
 
-            expect(states[states.length - 1]).toBe(PaymentInteractionState.SUCCESS);
+      expect(states).toContain(PaymentInteractionState.INTERNAL_ERROR);
 
-            // Now, simulate a delayed event trying to update state to PROCESSING
-            // We need to access the internal transitionTo method or mimic the callback
-            // Since we can't easily access private methods, we can simulate this by having 
-            // the strategy emit an event AFTER success if we mock it that way.
-
-            // Re-mock strategy to emit event after resolution
-
-            const processPaymentSpy = jest.spyOn(VivaStrategy.prototype, 'processPayment')
-                .mockImplementation((params: any, onStateChange: any) => {
-                    return new Promise((resolve) => {
-                        resolve({ success: true, status: SdkPaymentStatus.SUCCESS, orderId: 'ref' });
-                        // Emit invalid state AFTER resolving (which sets SUCCESS in SDK)
-                        setTimeout(() => {
-                            try {
-                                onStateChange(PaymentInteractionState.PROCESSING);
-                            } catch (e) {
-                                // Expected to throw
-                            }
-                        }, 10);
-                    });
-                });
-
-            // Trigger a new transaction to use the new mock
-            await sdk.initiateTransaction({
-                orderRef: 'order-invalid-test-2',
-                amountCents: 1000,
-                currency: "EUR"
-            });
-
-            // Wait for the timeout in the mock
-            await new Promise(resolve => setTimeout(resolve, 50));
-
-            expect(states).toContain(PaymentInteractionState.INTERNAL_ERROR);
-
-            processPaymentSpy.mockRestore();
-        });
-
-        it('should handle race condition: ignore terminal FAILED message after user clicks cancel', async () => {
-            const orderRef = 'order-race-cancel';
-
-            let triggerMessage: (data: any) => void = () => { };
-            (mockMessaging.subscribe as jest.Mock).mockImplementation((_ch, _ev, callback) => {
-                triggerMessage = callback;
-                return jest.fn(); // Unsubscribe
-            });
-
-            (PaymentApi as jest.Mock).mockImplementation((() => ({
-                createVivaTransactionV3: jest.fn().mockResolvedValue({
-                    data: { sessionId: 'session-race', orderId: orderRef },
-                }),
-                cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
-            })) as any);
-
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
-            const states: PaymentInteractionState[] = [];
-            sdk.subscribe((state) => states.push(state));
-
-            const transactionPromise = sdk.initiateTransaction({
-                orderRef,
-                amountCents: 1000,
-                currency: 'EUR'
-            });
-
-            // Wait for session to be created (REQUIRES_INPUT state)
-            await new Promise((resolve) => {
-                const unsubscribe = sdk.subscribe((state) => {
-                    if (state === PaymentInteractionState.REQUIRES_INPUT) {
-                        unsubscribe();
-                        resolve(null);
-                    }
-                });
-            });
-
-            // 1. User clicks cancel
-            const cancelPromise = sdk.cancel();
-
-            // 2. State at this point should be VERIFYING (set by cancel())
-            expect(states[states.length - 1]).toBe(PaymentInteractionState.VERIFYING);
-
-            // 3. Terminal fires a failure message slightly late (Abort signal usually triggers this)
-            triggerMessage({
-                orderId: orderRef,
-                status: SimplePaymentStatus.Failed,
-                error: { code: PaymentFailureCode.PaymentCancelledByUser, message: 'Aborted' }
-            });
-
-            const result = await transactionPromise;
-            const cancelResult = await cancelPromise;
-
-            // 4. Verification
-            expect(cancelResult).toBe(true);
-            expect(result.status).toBe(SdkPaymentStatus.CANCELLED);
-
-            // The states should NOT contain FAILED (it should have been suppressed by our racing logic)
-            expect(states).not.toContain(PaymentInteractionState.FAILED);
-
-            // Final state should be IDLE (set by handleTransactionError)
-            expect(states[states.length - 1]).toBe(PaymentInteractionState.IDLE);
-        });
-
-        it('should prevent starting a new transaction if one is already in progress', async () => {
-            setupSuccessfulPaymentMocks('order-1', 'session-1', mockMessaging);
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
-
-            // Start the first transaction (but don't await yet)
-            const promise1 = sdk.initiateTransaction({
-                orderRef: 'order-1',
-                amountCents: 1000,
-                currency: 'EUR'
-            });
-
-            // Immediately try to start a second one
-            const promise2 = sdk.initiateTransaction({
-                orderRef: 'order-2',
-                amountCents: 1000,
-                currency: 'EUR'
-            });
-
-            const result2 = await promise2;
-
-            expect(result2.success).toBe(false);
-            expect(result2.errorCode).toBe(PaymentErrorCode.UNKNOWN);
-            expect(result2.errorMessage).toContain('already in progress');
-        });
-
-        it('should handle race condition: prioritize SUCCESS message even if user clicked cancel (Ghost Order Prevention)', async () => {
-            const orderRef = 'order-ghost-prevent';
-
-            let triggerMessage: (data: any) => void = () => { };
-            (mockMessaging.subscribe as jest.Mock).mockImplementation((_ch, _ev, callback) => {
-                triggerMessage = callback;
-                return jest.fn();
-            });
-
-            (PaymentApi as jest.Mock).mockImplementation((() => ({
-                createVivaTransactionV3: jest.fn().mockResolvedValue({
-                    data: { sessionId: 'session-ghost', orderId: orderRef },
-                }),
-                cancelTransaction: jest.fn().mockResolvedValue(true),
-            })) as any);
-
-            (KiosksApi as jest.Mock).mockImplementation(() => ({
-                getOrderStatus: jest.fn().mockResolvedValue({
-                    data: {
-                        orderId: orderRef,
-                        status: SimplePaymentStatus.Success,
-                        error: null,
-                    }
-                }),
-            }));
-
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
-            const states: PaymentInteractionState[] = [];
-            sdk.subscribe((state) => states.push(state));
-
-            const transactionPromise = sdk.initiateTransaction({
-                orderRef,
-                amountCents: 1000,
-                currency: 'EUR'
-            });
-
-            // Wait for REQUIRES_INPUT
-            await new Promise((resolve) => {
-                const unsubscribe = sdk.subscribe((state) => {
-                    if (state === PaymentInteractionState.REQUIRES_INPUT) {
-                        unsubscribe();
-                        resolve(null);
-                    }
-                });
-            });
-
-            // 1. User clicks cancel
-            const cancelPromise = sdk.cancel();
-
-            // 2. Terminal fires a SUCCESS message late (Ghost Order scenario: User tapped just before cancelling)
-            triggerMessage({
-                orderId: orderRef,
-                status: SimplePaymentStatus.Success,
-                error: null
-            });
-
-            const result = await transactionPromise;
-            await cancelPromise;
-
-            // 3. Verification: SUCCESS must win
-            expect(result.status).toBe(SdkPaymentStatus.SUCCESS);
-            expect(result.success).toBe(true);
-
-            // Interaction state must end in SUCCESS, not IDLE/CANCELLED
-            expect(states[states.length - 1]).toBe(PaymentInteractionState.SUCCESS);
-        });
-
-        it('should NOT emit FAILED state even if the cancellation API call fails', async () => {
-            const orderRef = 'order-cancel-fail';
-
-            (mockMessaging.subscribe as jest.Mock).mockReturnValue(jest.fn());
-
-            (PaymentApi as jest.Mock).mockImplementation((() => ({
-                createVivaTransactionV3: jest.fn().mockResolvedValue({
-                    data: { sessionId: 'session-fail', orderId: orderRef },
-                }),
-                // Simulate a network error during the cancel command itself
-                cancelTransaction: jest.fn().mockRejectedValue(new Error('Network error')),
-            })) as any);
-
-            (KiosksApi as jest.Mock).mockImplementation(() => ({
-                getOrderStatus: jest.fn().mockResolvedValue({
-                    data: {
-                        orderId: orderRef,
-                        status: SimplePaymentStatus.Failed,
-                        error: { code: PaymentFailureCode.PaymentCancelledByUser, message: 'Cancelled' },
-                    }
-                }),
-            }));
-
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
-            const states: PaymentInteractionState[] = [];
-            sdk.subscribe((state) => states.push(state));
-
-            const transactionPromise = sdk.initiateTransaction({
-                orderRef,
-                amountCents: 1000,
-                currency: 'EUR'
-            });
-
-            await new Promise(resolve => setTimeout(resolve, 50)); // Wait for processing
-
-            // Try to cancel
-            await sdk.cancel();
-            await transactionPromise;
-
-            // Verification: 
-            // 1. Even though the cancellation API failed, the UI should NOT show FAILED.
-            // 2. It should have transitioned to IDLE because of _cancellationIntent.
-            expect(states).not.toContain(PaymentInteractionState.FAILED);
-            expect(states[states.length - 1]).toBe(PaymentInteractionState.IDLE);
-        });
+      processPaymentSpy.mockRestore();
     });
 
-    describe('transaction callbacks', () => {
-        it('should fire onSuccess callback on successful payment', async () => {
-            setupSuccessfulPaymentMocks('order-callback-success', 'session-cb', mockMessaging);
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+    it("should handle race condition: ignore terminal FAILED message after user clicks cancel", async () => {
+      const orderRef = "order-race-cancel";
 
-            const onSuccess = jest.fn();
-            const onError = jest.fn();
+      let triggerMessage: (data: any) => void = () => {};
+      (mockMessaging.subscribe as jest.Mock).mockImplementation(
+        (_ch, _ev, callback) => {
+          triggerMessage = callback;
+          return jest.fn(); // Unsubscribe
+        },
+      );
 
-            const result = await sdk.initiateTransaction({
-                orderRef: 'order-callback-success',
-                amountCents: 1000,
-                currency: 'EUR'
-            }, {
-                onSuccess,
-                onError,
-            });
+      (PaymentApi as jest.Mock).mockImplementation((() => ({
+        createVivaTransactionV3: jest.fn().mockResolvedValue({
+          data: { sessionId: "session-race", orderId: orderRef },
+        }),
+        cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
+      })) as any);
 
-            expect(result.success).toBe(true);
-            expect(onSuccess).toHaveBeenCalledWith(expect.objectContaining({
-                success: true,
-                status: SdkPaymentStatus.SUCCESS,
-            }));
-            expect(onError).not.toHaveBeenCalled();
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      const states: PaymentInteractionState[] = [];
+      sdk.subscribe((state) => states.push(state));
+
+      const transactionPromise = sdk.initiateTransaction({
+        orderRef,
+        amountCents: 1000,
+        currency: "EUR",
+      });
+
+      // Wait for session to be created (REQUIRES_INPUT state)
+      await new Promise((resolve) => {
+        const unsubscribe = sdk.subscribe((state) => {
+          if (state === PaymentInteractionState.REQUIRES_INPUT) {
+            unsubscribe();
+            resolve(null);
+          }
         });
+      });
 
-        it('should fire onError callback on failed payment', async () => {
-            setupFailedPaymentMocks('order-callback-fail', 'session-fail', mockMessaging, {
-                code: PaymentFailureCode.PaymentDeclined,
-                message: 'Declined'
-            });
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      // 1. User clicks cancel
+      const cancelPromise = sdk.cancel();
 
-            const onSuccess = jest.fn();
-            const onError = jest.fn();
+      // 2. State at this point should be VERIFYING (set by cancel())
+      expect(states[states.length - 1]).toBe(PaymentInteractionState.VERIFYING);
 
-            const result = await sdk.initiateTransaction({
-                orderRef: 'order-callback-fail',
-                amountCents: 1000,
-                currency: 'EUR'
-            }, {
-                onSuccess,
-                onError,
-            });
+      // 3. Terminal fires a failure message slightly late (Abort signal usually triggers this)
+      triggerMessage({
+        orderId: orderRef,
+        status: SimplePaymentStatus.Failed,
+        error: {
+          code: PaymentFailureCode.PaymentCancelledByUser,
+          message: "Aborted",
+        },
+      });
 
-            expect(result.success).toBe(false);
-            expect(onError).toHaveBeenCalledWith(expect.objectContaining({
-                success: false,
-                status: SdkPaymentStatus.FAILED,
-            }));
-            expect(onSuccess).not.toHaveBeenCalled();
-        });
+      const result = await transactionPromise;
+      const cancelResult = await cancelPromise;
 
-        it('should fire state callbacks during transaction lifecycle', async () => {
-            setupSuccessfulPaymentMocks('order-state-cb', 'session-state', mockMessaging);
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      // 4. Verification
+      expect(cancelResult).toBe(true);
+      expect(result.status).toBe(SdkPaymentStatus.CANCELLED);
 
-            const onConnecting = jest.fn();
-            const onRequiresInput = jest.fn();
+      // The states should NOT contain FAILED (it should have been suppressed by our racing logic)
+      expect(states).not.toContain(PaymentInteractionState.FAILED);
 
-            await sdk.initiateTransaction({
-                orderRef: 'order-state-cb',
-                amountCents: 1000,
-                currency: 'EUR'
-            }, {
-                onConnecting,
-                onRequiresInput,
-            });
-
-            expect(onConnecting).toHaveBeenCalledWith({ orderRef: 'order-state-cb' });
-            expect(onRequiresInput).toHaveBeenCalledWith({ orderRef: 'order-state-cb' });
-        });
-
-        it('should not break SDK flow if callback throws an error', async () => {
-            setupSuccessfulPaymentMocks('order-cb-error', 'session-error', mockMessaging);
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
-
-            const throwingCallback = jest.fn().mockImplementation(() => {
-                throw new Error('Callback crashed!');
-            });
-
-            const result = await sdk.initiateTransaction({
-                orderRef: 'order-cb-error',
-                amountCents: 1000,
-                currency: 'EUR'
-            }, {
-                onConnecting: throwingCallback,
-                onSuccess: throwingCallback,
-            });
-
-            expect(result.success).toBe(true);
-            expect(throwingCallback).toHaveBeenCalled();
-        });
-
-        it('should work without any callbacks provided', async () => {
-            setupSuccessfulPaymentMocks('order-no-cb', 'session-no-cb', mockMessaging);
-            const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
-
-            const result = await sdk.initiateTransaction({
-                orderRef: 'order-no-cb',
-                amountCents: 1000,
-                currency: 'EUR'
-            });
-
-            expect(result.success).toBe(true);
-        });
+      // Final state should be IDLE (set by handleTransactionError)
+      expect(states[states.length - 1]).toBe(PaymentInteractionState.IDLE);
     });
+
+    it("should prevent starting a new transaction if one is already in progress", async () => {
+      setupSuccessfulPaymentMocks("order-1", "session-1", mockMessaging);
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+      // Start the first transaction (but don't await yet)
+      const promise1 = sdk.initiateTransaction({
+        orderRef: "order-1",
+        amountCents: 1000,
+        currency: "EUR",
+      });
+
+      // Immediately try to start a second one
+      const promise2 = sdk.initiateTransaction({
+        orderRef: "order-2",
+        amountCents: 1000,
+        currency: "EUR",
+      });
+
+      const result2 = await promise2;
+
+      expect(result2.success).toBe(false);
+      expect(result2.errorCode).toBe(PaymentErrorCode.UNKNOWN);
+      expect(result2.errorMessage).toContain("already in progress");
+    });
+
+    it("should handle race condition: prioritize SUCCESS message even if user clicked cancel (Ghost Order Prevention)", async () => {
+      const orderRef = "order-ghost-prevent";
+
+      let triggerMessage: (data: any) => void = () => {};
+      (mockMessaging.subscribe as jest.Mock).mockImplementation(
+        (_ch, _ev, callback) => {
+          triggerMessage = callback;
+          return jest.fn();
+        },
+      );
+
+      (PaymentApi as jest.Mock).mockImplementation((() => ({
+        createVivaTransactionV3: jest.fn().mockResolvedValue({
+          data: { sessionId: "session-ghost", orderId: orderRef },
+        }),
+        cancelTransaction: jest.fn().mockResolvedValue(true),
+      })) as any);
+
+      (KiosksApi as jest.Mock).mockImplementation(() => ({
+        getOrderStatus: jest.fn().mockResolvedValue({
+          data: {
+            orderId: orderRef,
+            status: SimplePaymentStatus.Success,
+            error: null,
+          },
+        }),
+      }));
+
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      const states: PaymentInteractionState[] = [];
+      sdk.subscribe((state) => states.push(state));
+
+      const transactionPromise = sdk.initiateTransaction({
+        orderRef,
+        amountCents: 1000,
+        currency: "EUR",
+      });
+
+      // Wait for REQUIRES_INPUT
+      await new Promise((resolve) => {
+        const unsubscribe = sdk.subscribe((state) => {
+          if (state === PaymentInteractionState.REQUIRES_INPUT) {
+            unsubscribe();
+            resolve(null);
+          }
+        });
+      });
+
+      // 1. User clicks cancel
+      const cancelPromise = sdk.cancel();
+
+      // 2. Terminal fires a SUCCESS message late (Ghost Order scenario: User tapped just before cancelling)
+      triggerMessage({
+        orderId: orderRef,
+        status: SimplePaymentStatus.Success,
+        error: null,
+      });
+
+      const result = await transactionPromise;
+      await cancelPromise;
+
+      // 3. Verification: SUCCESS must win
+      expect(result.status).toBe(SdkPaymentStatus.SUCCESS);
+      expect(result.success).toBe(true);
+
+      // Interaction state must end in SUCCESS, not IDLE/CANCELLED
+      expect(states[states.length - 1]).toBe(PaymentInteractionState.SUCCESS);
+    });
+
+    it("should NOT emit FAILED state even if the cancellation API call fails", async () => {
+      const orderRef = "order-cancel-fail";
+
+      (mockMessaging.subscribe as jest.Mock).mockReturnValue(jest.fn());
+
+      (PaymentApi as jest.Mock).mockImplementation((() => ({
+        createVivaTransactionV3: jest.fn().mockResolvedValue({
+          data: { sessionId: "session-fail", orderId: orderRef },
+        }),
+        // Simulate a network error during the cancel command itself
+        cancelTransaction: jest
+          .fn()
+          .mockRejectedValue(new Error("Network error")),
+      })) as any);
+
+      (KiosksApi as jest.Mock).mockImplementation(() => ({
+        getOrderStatus: jest.fn().mockResolvedValue({
+          data: {
+            orderId: orderRef,
+            status: SimplePaymentStatus.Failed,
+            error: {
+              code: PaymentFailureCode.PaymentCancelledByUser,
+              message: "Cancelled",
+            },
+          },
+        }),
+      }));
+
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      const states: PaymentInteractionState[] = [];
+      sdk.subscribe((state) => states.push(state));
+
+      const transactionPromise = sdk.initiateTransaction({
+        orderRef,
+        amountCents: 1000,
+        currency: "EUR",
+      });
+
+      await new Promise((resolve) => setTimeout(resolve, 50)); // Wait for processing
+
+      // Try to cancel
+      await sdk.cancel();
+      await transactionPromise;
+
+      // Verification:
+      // 1. Even though the cancellation API failed, the UI should NOT show FAILED.
+      // 2. It should have transitioned to IDLE because of _cancellationIntent.
+      expect(states).not.toContain(PaymentInteractionState.FAILED);
+      expect(states[states.length - 1]).toBe(PaymentInteractionState.IDLE);
+    });
+  });
+
+  describe("transaction callbacks", () => {
+    it("should fire onSuccess callback on successful payment", async () => {
+      setupSuccessfulPaymentMocks(
+        "order-callback-success",
+        "session-cb",
+        mockMessaging,
+      );
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+      const onSuccess = jest.fn();
+      const onError = jest.fn();
+
+      const result = await sdk.initiateTransaction(
+        {
+          orderRef: "order-callback-success",
+          amountCents: 1000,
+          currency: "EUR",
+        },
+        {
+          onSuccess,
+          onError,
+        },
+      );
+
+      expect(result.success).toBe(true);
+      expect(onSuccess).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: true,
+          status: SdkPaymentStatus.SUCCESS,
+        }),
+      );
+      expect(onError).not.toHaveBeenCalled();
+    });
+
+    it("should fire onError callback on failed payment", async () => {
+      setupFailedPaymentMocks(
+        "order-callback-fail",
+        "session-fail",
+        mockMessaging,
+        {
+          code: PaymentFailureCode.PaymentDeclined,
+          message: "Declined",
+        },
+      );
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+      const onSuccess = jest.fn();
+      const onError = jest.fn();
+
+      const result = await sdk.initiateTransaction(
+        {
+          orderRef: "order-callback-fail",
+          amountCents: 1000,
+          currency: "EUR",
+        },
+        {
+          onSuccess,
+          onError,
+        },
+      );
+
+      expect(result.success).toBe(false);
+      expect(onError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: false,
+          status: SdkPaymentStatus.FAILED,
+        }),
+      );
+      expect(onSuccess).not.toHaveBeenCalled();
+    });
+
+    it("should fire state callbacks during transaction lifecycle", async () => {
+      setupSuccessfulPaymentMocks(
+        "order-state-cb",
+        "session-state",
+        mockMessaging,
+      );
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+      const onConnecting = jest.fn();
+      const onRequiresInput = jest.fn();
+
+      await sdk.initiateTransaction(
+        {
+          orderRef: "order-state-cb",
+          amountCents: 1000,
+          currency: "EUR",
+        },
+        {
+          onConnecting,
+          onRequiresInput,
+        },
+      );
+
+      expect(onConnecting).toHaveBeenCalledWith({ orderRef: "order-state-cb" });
+      expect(onRequiresInput).toHaveBeenCalledWith({
+        orderRef: "order-state-cb",
+      });
+    });
+
+    it("should not break SDK flow if callback throws an error", async () => {
+      setupSuccessfulPaymentMocks(
+        "order-cb-error",
+        "session-error",
+        mockMessaging,
+      );
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+      const throwingCallback = jest.fn().mockImplementation(() => {
+        throw new Error("Callback crashed!");
+      });
+
+      const result = await sdk.initiateTransaction(
+        {
+          orderRef: "order-cb-error",
+          amountCents: 1000,
+          currency: "EUR",
+        },
+        {
+          onConnecting: throwingCallback,
+          onSuccess: throwingCallback,
+        },
+      );
+
+      expect(result.success).toBe(true);
+      expect(throwingCallback).toHaveBeenCalled();
+    });
+
+    it("should work without any callbacks provided", async () => {
+      setupSuccessfulPaymentMocks(
+        "order-no-cb",
+        "session-no-cb",
+        mockMessaging,
+      );
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+      const result = await sdk.initiateTransaction({
+        orderRef: "order-no-cb",
+        amountCents: 1000,
+        currency: "EUR",
+      });
+
+      expect(result.success).toBe(true);
+    });
+  });
 });

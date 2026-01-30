@@ -1,7 +1,7 @@
 {
-  "name": "@munchi/payments",
+  "name": "@munchi/react",
   "version": "1.0.12",
-  "description": "Munchi Payments SDK - Payment processing utilities",
+  "description": "Munchi React SDK - React Context and Hooks for Munchi SDKs",
   "license": "UNLICENSED",
   "publishConfig": {
     "access": "restricted"
@@ -20,23 +20,31 @@
     }
   },
   "scripts": {
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
     "version:sync": "node scripts/sync-version.mjs",
     "prebuild": "pnpm version:sync",
-    "build": "tsup index.ts --format cjs,esm --dts --clean",
-    "dev": "tsup index.ts --format cjs,esm --watch --dts",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "prepare": "npm run build",
     "prepublishOnly": "pnpm build"
   },
+  "dependencies": {},
   "peerDependencies": {
     "@munchi/core": ">=1.0.0",
-    "axios": ">=1.0.0"
+    "@munchi/payments": ">=1.0.0",
+    "react": ">=18.2.0",
+    "react-native": ">=0.76.0"
+  },
+  "peerDependenciesMeta": {
+    "react-native": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@munchi/core": "workspace:*",
-    "@types/jest": "^30.0.0",
+    "@munchi/payments": "workspace:*",
+    "@types/react": "^18.3.0",
+    "react": "^18.3.0",
+    "react-native": "0.76.9",
     "tsup": "^8.0.0",
     "typescript": "^5.0.0"
   }

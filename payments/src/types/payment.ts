@@ -1,4 +1,8 @@
-import type { CurrencyCode, PaymentProvider, TransactionDto } from "@munchi/core";
+import type {
+  CurrencyCode,
+  PaymentProvider,
+  TransactionDto,
+} from "@munchi/core";
 
 export type TransactionDetails = Omit<
   TransactionDto,
@@ -72,6 +76,6 @@ export interface IMessagingAdapter {
   subscribe<T>(
     channel: string,
     event: string,
-    onMessage: (data: T) => void
+    onMessage: (data: T) => void,
   ): () => void;
 }

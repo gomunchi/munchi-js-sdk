@@ -1,8 +1,11 @@
 import {
   type CreateTransactionPayloadDto,
-  type CurrencyCode,KiosksApi, PaymentApi,
-  type PaymentStatusDto,SimplePaymentStatus,
-  VivaCurrencyCode
+  type CurrencyCode,
+  KiosksApi,
+  PaymentApi,
+  type PaymentStatusDto,
+  SimplePaymentStatus,
+  VivaCurrencyCode,
 } from "@munchi/core";
 import type { AxiosInstance } from "axios";
 import { PaymentErrorCode, PaymentSDKError } from "../error";
@@ -25,13 +28,13 @@ export class VivaStrategy implements IPaymentStrategy {
   constructor(
     axios: AxiosInstance,
     private messaging: IMessagingAdapter,
-    private config: PaymentTerminalConfig
+    private config: PaymentTerminalConfig,
   ) {
     this.api = new PaymentApi(undefined, "", axios);
     this.kioskApi = new KiosksApi(undefined, "", axios);
   }
 
-  async initialize() { }
+  async initialize() {}
   async disconnect() {
     this.abortController?.abort();
     this.currentSessionId = null;
@@ -39,7 +42,7 @@ export class VivaStrategy implements IPaymentStrategy {
 
   async processPayment(
     request: PaymentRequest,
-    onStateChange: (state: PaymentInteractionState) => void
+    onStateChange: (state: PaymentInteractionState) => void,
   ): Promise<PaymentResult> {
     this.abortController = new AbortController();
     onStateChange(PaymentInteractionState.CONNECTING);
@@ -66,7 +69,7 @@ export class VivaStrategy implements IPaymentStrategy {
         data.sessionId,
         request.orderRef,
         onStateChange,
-        this.abortController.signal
+        this.abortController.signal,
       );
 
       this.currentSessionId = null;
@@ -77,7 +80,7 @@ export class VivaStrategy implements IPaymentStrategy {
       throw new PaymentSDKError(
         PaymentErrorCode.NETWORK_ERROR,
         "Failed to create Viva Intent",
-        err
+        err,
       );
     }
   }
@@ -86,7 +89,7 @@ export class VivaStrategy implements IPaymentStrategy {
     sessionId: string,
     orderRef: string,
     onStateChange: (state: PaymentInteractionState) => void,
-    signal: AbortSignal
+    signal: AbortSignal,
   ): Promise<PaymentResult> {
     const channelName = `viva.kiosk.requests.${sessionId}`;
     const eventName = "payment:status-changed";
@@ -118,7 +121,7 @@ export class VivaStrategy implements IPaymentStrategy {
             signal.removeEventListener("abort", onAbort);
             resolve(this.handleSuccess(data, onStateChange));
           }
-        }
+        },
       );
 
       const timer = setTimeout(async () => {
@@ -128,7 +131,7 @@ export class VivaStrategy implements IPaymentStrategy {
           const finalResult = await this.pollOrderStatus(
             orderRef,
             this.config.storeId,
-            signal
+            signal,
           );
           resolve(this.handleSuccess(finalResult, onStateChange));
         } catch (pollError) {
@@ -137,8 +140,8 @@ export class VivaStrategy implements IPaymentStrategy {
             new PaymentSDKError(
               PaymentErrorCode.TIMEOUT,
               "Payment timed out and polling failed",
-              pollError
-            )
+              pollError,
+            ),
           );
         } finally {
           signal.removeEventListener("abort", onAbort);
@@ -151,7 +154,7 @@ export class VivaStrategy implements IPaymentStrategy {
   private async pollOrderStatus(
     orderRef: string,
     businessId: string,
-    signal: AbortSignal
+    signal: AbortSignal,
   ): Promise<PaymentStatusDto> {
     const POLLING_DURATION_MS = 120000;
     const INTERVAL_MS = 2000;
@@ -166,7 +169,7 @@ export class VivaStrategy implements IPaymentStrategy {
       try {
         const { data } = await this.kioskApi.getOrderStatus(
           orderRef,
-          businessId
+          businessId,
         );
         if (data.status !== SimplePaymentStatus.Pending) return data;
       } catch (error) {
@@ -179,13 +182,13 @@ export class VivaStrategy implements IPaymentStrategy {
 
   private handleSuccess(
     data: PaymentStatusDto,
-    onStateChange: (state: PaymentInteractionState) => void
+    onStateChange: (state: PaymentInteractionState) => void,
   ): PaymentResult {
     const isSuccess = data.status === SimplePaymentStatus.Success;
     onStateChange(
       isSuccess
         ? PaymentInteractionState.SUCCESS
-        : PaymentInteractionState.FAILED
+        : PaymentInteractionState.FAILED,
     );
     return {
       success: isSuccess,
@@ -197,7 +200,7 @@ export class VivaStrategy implements IPaymentStrategy {
   }
 
   async cancelTransaction(
-    onStateChange: (state: PaymentInteractionState) => void
+    onStateChange: (state: PaymentInteractionState) => void,
   ): Promise<boolean> {
     if (!this.currentSessionId) return false;
     onStateChange(PaymentInteractionState.IDLE);
@@ -215,7 +218,7 @@ export class VivaStrategy implements IPaymentStrategy {
       throw new PaymentSDKError(
         PaymentErrorCode.NETWORK_ERROR,
         "Failed to cancel Viva transaction",
-        error
+        error,
       );
     }
   }
@@ -224,7 +227,7 @@ export class VivaStrategy implements IPaymentStrategy {
     try {
       const { data } = await this.kioskApi.getOrderStatus(
         request.orderRef,
-        this.config.storeId
+        this.config.storeId,
       );
 
       const isSuccess = data.status === SimplePaymentStatus.Success;
@@ -240,7 +243,7 @@ export class VivaStrategy implements IPaymentStrategy {
       throw new PaymentSDKError(
         PaymentErrorCode.NETWORK_ERROR,
         "Failed to verify final transaction status",
-        error
+        error,
       );
     }
   }
@@ -270,5 +273,5 @@ export class VivaStrategy implements IPaymentStrategy {
       );
     }
     return vivaCode;
-  };
+  }
 }

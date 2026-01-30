@@ -7,7 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // Read package.json from parent directory (core)
 const packageJson = JSON.parse(
-  readFileSync(join(__dirname, "..", "package.json"), "utf-8")
+  readFileSync(join(__dirname, "..", "package.json"), "utf-8"),
 );
 
 // Create version.ts content
@@ -20,7 +20,7 @@ export const VERSION = "${packageJson.version}";
 writeFileSync(
   join(__dirname, "..", "src", "version.ts"),
   versionFileContent,
-  "utf-8"
+  "utf-8",
 );
 
 console.log(`✓ Version synced: ${packageJson.version}`);

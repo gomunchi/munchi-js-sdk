@@ -1,2 +1,2 @@
-export * from "@munchi/core"
-export * from "@munchi/payments"
+export * from "@munchi/core";
+export * from "@munchi/payments";

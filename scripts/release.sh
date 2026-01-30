@@ -99,6 +99,18 @@ fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf-8');
 console.log('✅ Updated payments/package.json to $VERSION');
 "
 
+# Update version in react/package.json
+echo "📝 Updating react/package.json..."
+node -e "
+const fs = require('fs');
+const path = require('path');
+const pkgPath = path.join(__dirname, 'react', 'package.json');
+const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf-8'));
+pkg.version = '$VERSION';
+fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf-8');
+console.log('✅ Updated react/package.json to $VERSION');
+"
+
 echo ""
 
 # Build all packages (this will trigger version:sync via prebuild)
@@ -115,7 +127,7 @@ echo ""
 
 # Commit changes
 echo "📦 Committing changes..."
-git add package.json version.ts core/package.json core/src/version.ts payments/package.json payments/src/version.ts
+git add package.json version.ts core/package.json core/src/version.ts payments/package.json payments/src/version.ts react/package.json react/src/version.ts
 git commit -m "chore: bump version to $VERSION"
 
 echo "✅ Changes committed"
@@ -125,11 +137,13 @@ echo ""
 echo "🏷️  Creating git tags..."
 git tag "core-v$VERSION" -m "Release @munchi/core v$VERSION"
 git tag "payments-v$VERSION" -m "Release @munchi/payments v$VERSION"
+git tag "react-v$VERSION" -m "Release @munchi/react v$VERSION"
 git tag "v$VERSION" -m "Release v$VERSION"
 
 echo "✅ Tags created:"
 echo "   - core-v$VERSION"
 echo "   - payments-v$VERSION"
+echo "   - react-v$VERSION"
 echo "   - v$VERSION"
 echo ""
 
@@ -198,6 +212,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo "📦 Install with:"
   echo "   npm install github:gomunchi/munchi-js-sdk#core-v$VERSION"
   echo "   npm install github:gomunchi/munchi-js-sdk#payments-v$VERSION"
+  echo "   npm install github:gomunchi/munchi-js-sdk#react-v$VERSION"
 else
   echo "⏸️  Skipped push. Run manually with:"
   echo "   git push origin master"

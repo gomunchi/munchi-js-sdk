@@ -15,9 +15,9 @@
   ],
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.js"
     }
   },
   "scripts": {
@@ -37,8 +37,5 @@
   },
   "peerDependencies": {
     "axios": ">=1.0.0"
-  },
-  "dependencies": {
-    "dayjs": "^1.11.10"
   }
 }

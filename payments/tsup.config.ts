@@ -10,6 +10,5 @@ export default defineConfig({
     // Don't bundle dependencies - let the consuming project install them
     "@munchi/core",
     "axios",
-    "dayjs",
   ],
 });

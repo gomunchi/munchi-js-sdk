@@ -45,7 +45,8 @@
     "skipLibCheck": true,
     "paths": {
       "@munchi/core": ["./core/index.ts"],
-      "@munchi/payments": ["./payments/index.ts"]
+      "@munchi/payments": ["./payments/index.ts"],
+      "@munchi/react": ["./react/index.ts"]
     }
   }
 }
