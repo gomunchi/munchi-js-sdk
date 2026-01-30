@@ -1,6 +1,6 @@
 {
   "name": "@munchi/sdk",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -19,7 +19,8 @@
     "generate": "openapi-generator-cli generate",
     "version:sync": "pnpm -r version:sync",
     "build:workspaces": "pnpm -r build",
-    "build": "pnpm build:workspaces && tsup"
+    "build": "pnpm build:workspaces && tsup",
+    "prepare": "pnpm build"
   },
   "dependencies": {
     "@openapitools/openapi-generator-cli": "^2.25.2",
