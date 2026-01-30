@@ -1,6 +1,6 @@
 {
   "name": "@munchi/sdk",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -22,10 +22,12 @@
     "build": "pnpm build:workspaces && tsup",
     "prepare": "pnpm build"
   },
+  "peerDependencies": {
+    "axios": ">=1.0.0",
+    "dayjs": ">=1.0.0"
+  },
   "dependencies": {
-    "@openapitools/openapi-generator-cli": "^2.25.2",
-    "axios": "^1.13.2",
-    "dayjs": "^1.11.19"
+    "@openapitools/openapi-generator-cli": "^2.25.2"
   },
   "keywords": [],
   "author": "",
