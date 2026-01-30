@@ -1,17 +1,53 @@
 #!/bin/bash
 
 # Release script for munchi-js-sdk
-# Usage: ./scripts/release.sh [version]
+# Usage: ./scripts/release.sh [version] [options]
 # Example: ./scripts/release.sh 1.0.1
+# Example: ./scripts/release.sh 1.0.1 --publish
+# Example: ./scripts/release.sh 1.0.1 --publish=custom
+#
+# Options:
+#   --publish, -p          Create a GitHub release with auto-generated notes
+#   --publish=custom       Create a GitHub release with custom description (opens editor)
+#   --publish=file         Create a GitHub release using RELEASE_NOTES.md
 
 set -e
 
-VERSION=$1
+VERSION=""
+PUBLISH=""
+PUBLISH_MODE="auto"
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --publish=*)
+      PUBLISH="true"
+      PUBLISH_MODE="${1#*=}"
+      shift
+      ;;
+    --publish|-p)
+      PUBLISH="true"
+      PUBLISH_MODE="auto"
+      shift
+      ;;
+    *)
+      if [ -z "$VERSION" ]; then
+        VERSION="$1"
+      fi
+      shift
+      ;;
+  esac
+done
 
 if [ -z "$VERSION" ]; then
   echo "❌ Error: Version number required"
-  echo "Usage: ./scripts/release.sh [version]"
+  echo "Usage: ./scripts/release.sh [version] [options]"
   echo "Example: ./scripts/release.sh 1.0.1"
+  echo "Example: ./scripts/release.sh 1.0.1 --publish"
+  echo ""
+  echo "Options:"
+  echo "  --publish, -p          Create a GitHub release with auto-generated notes"
+  echo "  --publish=custom       Create a GitHub release with custom description (opens editor)"
+  echo "  --publish=file         Create a GitHub release using RELEASE_NOTES.md"
   exit 1
 fi
 
@@ -107,6 +143,56 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   git push origin --tags
   echo "✅ Pushed to remote"
   echo ""
+
+  if [ "$PUBLISH" == "true" ]; then
+    echo "📢 Creating GitHub release..."
+    
+    if ! command -v gh &> /dev/null; then
+      echo "❌ Error: GitHub CLI (gh) is not installed."
+      echo "   Install it with: brew install gh"
+      echo "   Then authenticate: gh auth login"
+      exit 1
+    fi
+
+    case $PUBLISH_MODE in
+      auto)
+        echo "   Using auto-generated release notes..."
+        gh release create "v$VERSION" \
+          --title "Release v$VERSION" \
+          --generate-notes \
+          --latest
+        ;;
+      custom)
+        echo "   Opening editor for custom release notes..."
+        gh release create "v$VERSION" \
+          --title "Release v$VERSION" \
+          --latest
+        ;;
+      file)
+        if [ -f "RELEASE_NOTES.md" ]; then
+          echo "   Using RELEASE_NOTES.md..."
+          gh release create "v$VERSION" \
+            --title "Release v$VERSION" \
+            --notes-file RELEASE_NOTES.md \
+            --latest
+        else
+          echo "❌ Error: RELEASE_NOTES.md not found"
+          echo "   Create the file or use --publish for auto-generated notes"
+          exit 1
+        fi
+        ;;
+      *)
+        echo "❌ Error: Unknown publish mode '$PUBLISH_MODE'"
+        echo "   Valid modes: auto (default), custom, file"
+        exit 1
+        ;;
+    esac
+
+    echo "✅ GitHub release created!"
+    echo "   View at: https://github.com/gomunchi/munchi-js-sdk/releases/tag/v$VERSION"
+  fi
+
+  echo ""
   echo "🎉 Release $VERSION complete!"
   echo ""
   echo "📦 Install with:"
@@ -116,4 +202,9 @@ else
   echo "⏸️  Skipped push. Run manually with:"
   echo "   git push origin master"
   echo "   git push origin --tags"
+  if [ "$PUBLISH" == "true" ]; then
+    echo ""
+    echo "   Then create release with:"
+    echo "   gh release create v$VERSION --title \"Release v$VERSION\" --generate-notes --latest"
+  fi
 fi
