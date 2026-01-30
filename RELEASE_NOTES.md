@@ -1,29 +1,12 @@
-# Release Notes - v1.0.23
+# Release Notes - v1.0.24
 
-This release resolves type compatibility issues and introduces new state management capabilities for React/React Native.
+This release improves type flexibility and fixes export duplications.
 
 ## 🐛 Bug Fixes
 
-### Fixed `Type 'MunchiPaymentSDK$1' is not assignable to type 'MunchiPaymentSDK'`
-- **Refactored to Interface-Based Typing:** The SDK and `SdkContainer` now rely on the `IMunchiPaymentSDK` interface instead of the concrete class. This resolves nominal typing conflicts caused by bundler-generated duplicates (`MunchiPaymentSDK$1`), ensuring smooth type resolution in your application.
-
-## ✨ New Features
-
-### Exposed SDK State
-- **`currentState` Property:** The `IMunchiPaymentSDK` interface now includes a readonly `currentState` property (e.g., `IDLE`, `CONNECTING`, `PROCESSING`), allowing synchronous access to the SDK's status.
-- **`usePaymentState()` Hook:** Added a new React hook `@munchi/react/usePaymentState` that automatically subscribes to SDK state changes.
-  ```typescript
-  import { usePaymentState, PaymentInteractionState } from '@munchi/react';
-
-  const MyComponent = () => {
-    const status = usePaymentState();
-
-    if (status === PaymentInteractionState.PROCESSING) {
-       return <Spinner />;
-    }
-    return <View />;
-  }
-  ```
+### Fixed Type Compatibility
+- **Nullable Provider:** `PaymentTerminalConfig` now accepts `null` for the `provider` field, accommodating API responses that may return null values.
+- **Duplicate Types:** Refined module exports to prevent `PaymentInteractionState` and other types from being duplicated in the build output, resolving strict type checking errors.
 
 **Upgrade Instructions:**
-Update to `v1.0.22` and run `pnpm install`.
+Update to `v1.0.24` and run `pnpm install`.

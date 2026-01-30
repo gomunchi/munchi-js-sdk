@@ -51,7 +51,7 @@ export interface PaymentRequest {
 }
 
 export interface PaymentTerminalConfig {
-  provider?: PaymentProvider;
+  provider?: PaymentProvider | null;
   channel: ProviderEnum;
   kioskId: string;
   storeId: string;
