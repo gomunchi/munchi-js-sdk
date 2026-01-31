@@ -28,6 +28,7 @@
     "version:sync": "node scripts/sync-version.mjs",
     "prebuild": "pnpm version:sync",
     "build": "tsup",
+    "yalc:publish": "pnpm build && yalc publish --push",
     "dev": "tsup --watch",
     "prepare": "npm run build",
     "prepublishOnly": "pnpm build"

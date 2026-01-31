@@ -14,7 +14,9 @@
     "test:payments": "jest --selectProject @munchi/payments",
     "generate": "openapi-generator-cli generate",
     "version:sync": "pnpm -r version:sync",
-    "build": "pnpm -r build"
+    "build": "pnpm -r build",
+    "yalc:publish": "yalc publish --push --private",
+    "yalc:publish:all": "pnpm -r yalc:publish && npm run yalc:publish"
   },
   "dependencies": {},
   "peerDependencies": {

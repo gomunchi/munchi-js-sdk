@@ -31,6 +31,7 @@
     "version:sync": "node scripts/sync-version.mjs",
     "prebuild": "pnpm version:sync",
     "build": "tsup index.ts --format cjs,esm --dts --clean",
+    "yalc:publish": "pnpm build && yalc publish --push",
     "dev": "tsup index.ts --format cjs,esm --watch --dts",
     "prepare": "npm run build",
     "prepublishOnly": "pnpm build"

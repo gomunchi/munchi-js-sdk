@@ -6,5 +6,7 @@ export default defineConfig({
   dts: true,
   clean: true,
   splitting: false,
+  minify: true,
+  sourcemap: false,
   external: ["react", "react-native", "@munchi/core", "@munchi/payments"],
 });
