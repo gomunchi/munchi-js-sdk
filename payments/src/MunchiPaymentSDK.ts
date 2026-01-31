@@ -1,6 +1,5 @@
 import type { AxiosInstance } from "axios";
 import { PaymentProvider } from "../../core";
-
 import { version } from "../package.json";
 import { PaymentErrorCode, PaymentSDKError } from "./error";
 import type { IPaymentStrategy } from "./strategies/IPaymentStrategy";
@@ -8,6 +7,7 @@ import { MockStrategy } from "./strategies/MockStrategy";
 import { VivaStrategy } from "./strategies/VivaStrategy";
 import {
     type IMessagingAdapter,
+    type IMunchiPaymentSDK,
     PaymentInteractionState,
     type PaymentRequest,
     type PaymentResult,
@@ -19,7 +19,7 @@ import type { ILogger, SDKOptions } from "./types/sdk";
 
 type StateListener = (state: PaymentInteractionState) => void;
 
-export class MunchiPaymentSDK {
+export class MunchiPaymentSDK implements IMunchiPaymentSDK {
   private strategy: IPaymentStrategy;
   private axios: AxiosInstance;
   private messaging: IMessagingAdapter;
@@ -28,6 +28,20 @@ export class MunchiPaymentSDK {
   private _currentState: PaymentInteractionState = PaymentInteractionState.IDLE;
   private _listeners: StateListener[] = [];
   private _cancellationIntent = false;
+  private _currentSessionId: string | undefined;
+  private _autoResetTimer: ReturnType<typeof setTimeout> | undefined;
+  private autoResetOptions: SDKOptions["autoResetOnPaymentComplete"];
+
+  private static readonly TERMINAL_STATES = [
+    PaymentInteractionState.SUCCESS,
+    PaymentInteractionState.FAILED,
+    PaymentInteractionState.INTERNAL_ERROR,
+  ];
+
+  private static readonly RESTING_STATES = [
+    PaymentInteractionState.IDLE,
+    ...MunchiPaymentSDK.TERMINAL_STATES,
+  ];
 
   constructor(
     axios: AxiosInstance,
@@ -39,6 +53,7 @@ export class MunchiPaymentSDK {
     this.messaging = messaging;
     this.logger = options.logger;
     this.timeoutMs = options.timeoutMs || 60000;
+    this.autoResetOptions = options.autoResetOnPaymentComplete;
     this.strategy = this.resolveStrategy(config);
   }
 
@@ -48,6 +63,20 @@ export class MunchiPaymentSDK {
 
   public get currentState() {
     return this._currentState;
+  }
+
+  private generateErrorResult(
+    orderRef: string,
+    code: PaymentErrorCode,
+    message: string,
+  ): PaymentResult {
+    return {
+      success: false,
+      status: SdkPaymentStatus.ERROR,
+      errorCode: code,
+      errorMessage: message,
+      orderId: orderRef,
+    };
   }
 
   public subscribe = (listener: StateListener): (() => void) => {
@@ -62,19 +91,18 @@ export class MunchiPaymentSDK {
   private transitionTo(newState: PaymentInteractionState) {
     if (this._currentState === newState) return;
 
-    const isTerminal = [
-      PaymentInteractionState.SUCCESS,
-      PaymentInteractionState.FAILED,
-      PaymentInteractionState.INTERNAL_ERROR,
-    ].includes(this._currentState);
-
     if (newState === PaymentInteractionState.IDLE) {
+      this.cancelAutoReset();
       this._currentState = newState;
       this._listeners.forEach((l) => l(newState));
       return;
     }
 
-    if (isTerminal) {
+    const isOldStateTerminal = MunchiPaymentSDK.TERMINAL_STATES.includes(
+      this._currentState,
+    );
+
+    if (isOldStateTerminal) {
       const errorMsg = `Invalid State Transition: Attempted to move from terminal state ${this._currentState} to ${newState}`;
       this.logger?.error(errorMsg);
 
@@ -88,7 +116,46 @@ export class MunchiPaymentSDK {
 
     this._currentState = newState;
 
+    if (MunchiPaymentSDK.TERMINAL_STATES.includes(newState)) {
+      this.scheduleAutoReset(newState);
+    }
+
     this._listeners.forEach((listener) => listener(newState));
+  }
+
+  private _resetScheduledAt: number | undefined;
+
+  public get nextAutoResetAt(): number | undefined {
+    return this._resetScheduledAt;
+  }
+
+  private cancelAutoReset() {
+    if (this._autoResetTimer) {
+      clearTimeout(this._autoResetTimer);
+      this._autoResetTimer = undefined;
+    }
+    this._resetScheduledAt = undefined;
+  }
+
+  private scheduleAutoReset(state: PaymentInteractionState) {
+    // If not configured, auto-reset is DISABLED
+    if (!this.autoResetOptions) {
+      return;
+    }
+
+    const isSuccess = state === PaymentInteractionState.SUCCESS;
+    const delay = isSuccess
+      ? this.autoResetOptions.successDelayMs ?? 5000
+      : this.autoResetOptions.failureDelayMs ?? 5000;
+
+    this.logger?.info(`Scheduling auto-reset to IDLE in ${delay}ms`);
+
+    this._resetScheduledAt = Date.now() + delay;
+    
+    this._autoResetTimer = setTimeout(() => {
+      this.logger?.info("Auto-reset triggered");
+      this.reset();
+    }, delay);
   }
 
   private resolveStrategy(config: PaymentTerminalConfig): IPaymentStrategy {
@@ -123,12 +190,9 @@ export class MunchiPaymentSDK {
     const callbacks = options ?? {};
     const orderRef = params.orderRef;
 
-    const isRestingState = [
-      PaymentInteractionState.IDLE,
-      PaymentInteractionState.SUCCESS,
-      PaymentInteractionState.FAILED,
-      PaymentInteractionState.INTERNAL_ERROR,
-    ].includes(this._currentState);
+    const isRestingState = MunchiPaymentSDK.RESTING_STATES.includes(
+      this._currentState,
+    );
 
     if (!isRestingState) {
       return this.generateErrorResult(
@@ -152,7 +216,10 @@ export class MunchiPaymentSDK {
     }
 
     try {
-      const internalStateCallback = (state: PaymentInteractionState) => {
+      const internalStateCallback = (state: PaymentInteractionState, detail?: { sessionId?: string }) => {
+        if (detail?.sessionId) {
+          this._currentSessionId = detail.sessionId;
+        }
         if (state !== PaymentInteractionState.FAILED) {
           this.transitionTo(state);
           this.fireStateCallback(state, callbacks, orderRef);
@@ -213,16 +280,21 @@ export class MunchiPaymentSDK {
   ): Promise<PaymentResult> {
     this.transitionTo(PaymentInteractionState.VERIFYING);
     this.safeFireCallback(() =>
-      callbacks.onVerifying?.({ orderRef: params.orderRef }),
+      callbacks.onVerifying?.({ 
+        orderRef: params.orderRef,
+        refPaymentId: this._currentSessionId 
+      }),
     );
 
     if (this._cancellationIntent) {
       try {
-        const finalStatus = await this.strategy.verifyFinalStatus(params);
-        if (finalStatus.success) {
-          this.transitionTo(PaymentInteractionState.SUCCESS);
-          this.safeFireCallback(() => callbacks.onSuccess?.(finalStatus));
-          return finalStatus;
+        if (this._currentSessionId) {
+          const finalStatus = await this.strategy.verifyFinalStatus(params, this._currentSessionId);
+          if (finalStatus.success) {
+            this.transitionTo(PaymentInteractionState.SUCCESS);
+            this.safeFireCallback(() => callbacks.onSuccess?.(finalStatus));
+            return finalStatus;
+          }
         }
       } catch (err) {
         this.logger?.warn(
@@ -231,15 +303,21 @@ export class MunchiPaymentSDK {
         );
       }
 
-      this.transitionTo(PaymentInteractionState.IDLE);
+      this.transitionTo(PaymentInteractionState.FAILED);
+      // Removed cancelAutoReset() to allow the auto-reset timer (scheduled by FAILED state) to persist.
+
       this.safeFireCallback(() =>
-        callbacks.onCancelled?.({ orderRef: params.orderRef }),
+        callbacks.onCancelled?.({ 
+          orderRef: params.orderRef,
+          refPaymentId: this._currentSessionId 
+        }),
       );
       return {
         success: false,
         status: SdkPaymentStatus.CANCELLED,
         errorCode: PaymentErrorCode.CANCELLED,
         orderId: params.orderRef,
+        ...(this._currentSessionId ? { transactionId: this._currentSessionId } : {}),
       };
     }
 
@@ -267,7 +345,10 @@ export class MunchiPaymentSDK {
     callbacks: TransactionOptions,
     orderRef: string,
   ) {
-    const ctx = { orderRef };
+    const ctx = { 
+      orderRef,
+      refPaymentId: this._currentSessionId
+    };
     switch (state) {
       case PaymentInteractionState.CONNECTING:
         this.safeFireCallback(() => callbacks.onConnecting?.(ctx));
@@ -296,24 +377,27 @@ export class MunchiPaymentSDK {
     this.transitionTo(PaymentInteractionState.VERIFYING);
 
     try {
-      return await this.strategy.cancelTransaction(() => {});
+      const result = await this.strategy.cancelTransaction((state) => this.transitionTo(state));
+      
+      // If cancellation failed (e.g. no active session) AND we are just verifying,
+      // we should probably revert to IDLE or FAILED to avoid getting stuck.
+      if (!result && this._currentState === PaymentInteractionState.VERIFYING) {
+         this.transitionTo(PaymentInteractionState.IDLE);
+      }
+      return result;
     } catch (error) {
       this.logger?.error("Cancellation command failed", error);
+      // Do NOT set internal error here. 
+      // If cancellation failed, the main initiateTransaction loop will likely catch the error 
+      // (or the abort signal) and handle the flow via handleTransactionError.
+      // Setting terminal state here causes a race condition.
       return false;
     }
   };
 
-  private generateErrorResult(
-    orderRef: string,
-    code: PaymentErrorCode,
-    message: string,
-  ): PaymentResult {
-    return {
-      success: false,
-      status: SdkPaymentStatus.ERROR,
-      errorCode: code,
-      errorMessage: message,
-      orderId: orderRef,
-    };
+  public reset(): void {
+    if (MunchiPaymentSDK.TERMINAL_STATES.includes(this._currentState)) {
+      this.transitionTo(PaymentInteractionState.IDLE);
+    }
   }
 }

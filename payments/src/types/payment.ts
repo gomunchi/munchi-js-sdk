@@ -45,6 +45,7 @@ export interface PaymentRequest {
   orderRef: string;
   amountCents: number;
   currency: CurrencyCode;
+  displayId: string;
   options?: VivaOptions | NetsOptions;
 }
 
@@ -65,13 +66,13 @@ export interface PaymentResult {
 }
 
 export interface TransactionOptions {
-  onConnecting?: (ctx: { orderRef: string }) => void;
-  onRequiresInput?: (ctx: { orderRef: string }) => void;
-  onProcessing?: (ctx: { orderRef: string }) => void;
-  onVerifying?: (ctx: { orderRef: string }) => void;
+  onConnecting?: (ctx: { orderRef: string; refPaymentId?: string | undefined }) => void;
+  onRequiresInput?: (ctx: { orderRef: string; refPaymentId?: string | undefined }) => void;
+  onProcessing?: (ctx: { orderRef: string; refPaymentId?: string | undefined }) => void;
+  onVerifying?: (ctx: { orderRef: string; refPaymentId?: string | undefined }) => void;
   onSuccess?: (result: PaymentResult) => void;
   onError?: (result: PaymentResult) => void;
-  onCancelled?: (ctx: { orderRef: string }) => void;
+  onCancelled?: (ctx: { orderRef: string; refPaymentId?: string | undefined }) => void;
 }
 
 export interface IMessagingAdapter {
@@ -80,4 +81,19 @@ export interface IMessagingAdapter {
     event: string,
     onMessage: (data: T) => void,
   ): () => void;
+}
+
+export interface IMunchiPaymentSDK {
+  readonly version: string;
+  readonly currentState: PaymentInteractionState;
+  readonly nextAutoResetAt: number | undefined;
+  subscribe(listener: (state: PaymentInteractionState) => void): () => void;
+  connect(): Promise<void>;
+  disconnect(): Promise<void>;
+  initiateTransaction(
+    params: PaymentRequest,
+    options?: TransactionOptions,
+  ): Promise<PaymentResult>;
+  cancel(): Promise<boolean>;
+  reset(): void;
 }

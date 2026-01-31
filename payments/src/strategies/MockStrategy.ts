@@ -1,4 +1,5 @@
 import {
+  type PaymentInteractionState,
   type PaymentRequest,
   type PaymentResult,
   SdkPaymentStatus,
@@ -14,7 +15,10 @@ export class MockStrategy implements IPaymentStrategy {
     console.log("[MockSDK] Disconnected");
   }
 
-  async processPayment(request: PaymentRequest): Promise<PaymentResult> {
+  async processPayment(
+    request: PaymentRequest,
+    _onStateChange: (state: PaymentInteractionState, detail?: { sessionId?: string }) => void,
+  ): Promise<PaymentResult> {
     console.log("[MockSDK] Processing...", request);
 
     await new Promise((resolve) => setTimeout(resolve, 2000));
@@ -26,12 +30,14 @@ export class MockStrategy implements IPaymentStrategy {
     };
   }
 
-  async cancelTransaction(): Promise<boolean> {
+  async cancelTransaction(
+    _onStateChange: (state: PaymentInteractionState) => void,
+  ): Promise<boolean> {
     console.log("[MockSDK] Cancelled");
     return true;
   }
 
-  async verifyFinalStatus(request: PaymentRequest): Promise<PaymentResult> {
+  async verifyFinalStatus(request: PaymentRequest, sessionId: string): Promise<PaymentResult> {
     return {
       success: false,
       status: SdkPaymentStatus.FAILED,

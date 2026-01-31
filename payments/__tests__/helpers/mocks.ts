@@ -1,9 +1,8 @@
-import { KiosksApi, PaymentApi, SimplePaymentStatus } from "../../../core";
+import { PaymentApi, SimplePaymentStatus } from "../../../core";
 import type { IMessagingAdapter } from "../../src/types/payment";
 
 // Type assertion to access mock methods
 const MockedPaymentApi = PaymentApi as jest.MockedClass<typeof PaymentApi>;
-const MockedKiosksApi = KiosksApi as jest.MockedClass<typeof KiosksApi>;
 
 /**
  * Sets up mocks for a successful payment flow
@@ -22,7 +21,7 @@ export function setupSuccessfulPaymentMocks(
   });
 
   MockedPaymentApi.mockImplementation((() => ({
-    createVivaTransactionV3: mockCreateVivaTransaction,
+    initiateTerminalTransaction: mockCreateVivaTransaction,
     cancelTransaction: jest.fn(),
   })) as any);
 
@@ -56,7 +55,7 @@ export function setupFailedPaymentMocks(
   });
 
   MockedPaymentApi.mockImplementation((() => ({
-    createVivaTransactionV3: mockCreateVivaTransaction,
+    initiateTerminalTransaction: mockCreateVivaTransaction,
     cancelTransaction: jest.fn(),
   })) as any);
 
@@ -84,7 +83,7 @@ export function setupFailedPaymentMocks(
  */
 export function setupNetworkErrorMocks() {
   MockedPaymentApi.mockImplementation((() => ({
-    createVivaTransactionV3: jest
+    initiateTerminalTransaction: jest
       .fn()
       .mockRejectedValue(new Error("Network error")),
     cancelTransaction: jest.fn(),
@@ -105,16 +104,7 @@ export function setupTimeoutWithPollingMocks(
     data: { sessionId, orderId },
   });
 
-  MockedPaymentApi.mockImplementation((() => ({
-    createVivaTransactionV3: mockCreateVivaTransaction,
-    cancelTransaction: jest.fn(),
-  })) as any);
-
-  // Messaging does nothing
-  (mockMessaging.subscribe as jest.Mock).mockReturnValue(jest.fn());
-
-  // Mock KiosksApi implementation
-  const mockGetOrderStatus = jest.fn().mockResolvedValue({
+  const mockGetPaymentStatus = jest.fn().mockResolvedValue({
     data: {
       orderId,
       status: pollStatus,
@@ -122,9 +112,14 @@ export function setupTimeoutWithPollingMocks(
     },
   });
 
-  MockedKiosksApi.mockImplementation((() => ({
-    getOrderStatus: mockGetOrderStatus,
+  MockedPaymentApi.mockImplementation((() => ({
+    initiateTerminalTransaction: mockCreateVivaTransaction,
+    cancelTransaction: jest.fn(),
+    getPaymentStatus: mockGetPaymentStatus,
   })) as any);
 
-  return { mockCreateVivaTransaction, mockGetOrderStatus };
+  // Messaging does nothing
+  (mockMessaging.subscribe as jest.Mock).mockReturnValue(jest.fn());
+
+  return { mockCreateVivaTransaction, mockGetPaymentStatus };
 }

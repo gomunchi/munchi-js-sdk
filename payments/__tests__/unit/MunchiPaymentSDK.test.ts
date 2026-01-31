@@ -1,6 +1,5 @@
 import type { AxiosInstance } from "axios";
 import {
-  KiosksApi,
   PaymentApi,
   PaymentFailureCode,
   SimplePaymentStatus
@@ -31,11 +30,10 @@ jest.mock("../../../core", () => {
   return {
     ...actual,
     PaymentApi: jest.fn().mockImplementation(() => ({
-      createVivaTransactionV3: jest.fn(),
+      initiateTerminalTransaction: jest.fn(),
       cancelTransaction: jest.fn(),
-    })),
-    KiosksApi: jest.fn().mockImplementation(() => ({
-      getOrderStatus: jest.fn(),
+      cancelVivaTransactionV2: jest.fn(),
+      getPaymentStatus: jest.fn(),
     })),
   };
 });
@@ -75,6 +73,7 @@ describe("MunchiPaymentSDK", () => {
         orderRef: "order-123",
         amountCents: 0,
         currency: "EUR",
+        displayId: "display-123",
       });
 
       expect(result.success).toBe(false);
@@ -93,6 +92,7 @@ describe("MunchiPaymentSDK", () => {
         orderRef: "order-456",
         amountCents: 100,
         currency: "EUR",
+        displayId: "display-123",
       });
 
       expect(result.success).toBe(false);
@@ -118,6 +118,7 @@ describe("MunchiPaymentSDK", () => {
         orderRef: "order-789",
         amountCents: 1000,
         currency: "EUR",
+        displayId: "display-123",
       });
 
       expect(result.success).toBe(true);
@@ -152,6 +153,7 @@ describe("MunchiPaymentSDK", () => {
             orderRef,
             amountCents: 1000,
             currency: "EUR",
+            displayId: "display-123",
           });
 
           expect(result.success).toBe(false);
@@ -174,7 +176,7 @@ describe("MunchiPaymentSDK", () => {
 
     it("should fallback to polling when messaging is delayed", async () => {
       const orderRef = "order-timeout-poll";
-      const { mockGetOrderStatus } = setupTimeoutWithPollingMocks(
+      const { mockGetPaymentStatus } = setupTimeoutWithPollingMocks(
         orderRef,
         "session-timeout-poll",
         mockMessaging,
@@ -189,6 +191,7 @@ describe("MunchiPaymentSDK", () => {
         orderRef,
         amountCents: 1000,
         currency: "EUR",
+        displayId: "display-123",
       });
 
       // Fast-forward 10 seconds to trigger the timeout in VivaStrategy
@@ -198,9 +201,11 @@ describe("MunchiPaymentSDK", () => {
 
       expect(result.success).toBe(true);
       expect(result.status).toBe(SdkPaymentStatus.SUCCESS);
-      expect(mockGetOrderStatus).toHaveBeenCalledWith(
-        orderRef,
-        mockConfig.storeId,
+      expect(mockGetPaymentStatus).toHaveBeenCalledWith(
+        expect.objectContaining({
+          orderId: orderRef,
+          businessId: Number(mockConfig.storeId),
+        }),
       );
       expect(states).toContain(PaymentInteractionState.SUCCESS);
     });
@@ -210,7 +215,7 @@ describe("MunchiPaymentSDK", () => {
       (key, code) => {
         it(`should handle terminal-side failure via polling: ${key}`, async () => {
           const orderRef = `order-poll-fail-${code}`;
-          const { mockGetOrderStatus } = setupTimeoutWithPollingMocks(
+          const { mockGetPaymentStatus } = setupTimeoutWithPollingMocks(
             orderRef,
             `session-poll-fail-${code}`,
             mockMessaging,
@@ -221,18 +226,19 @@ describe("MunchiPaymentSDK", () => {
             },
           );
 
-          const sdk = new MunchiPaymentSDK(
+          const {initiateTransaction, subscribe} = new MunchiPaymentSDK(
             mockAxios,
             mockMessaging,
             mockConfig,
           );
           const states: PaymentInteractionState[] = [];
-          sdk.subscribe((state) => states.push(state));
+          subscribe((state) => states.push(state));
 
-          const transactionPromise = sdk.initiateTransaction({
+          const transactionPromise = initiateTransaction({
             orderRef,
             amountCents: 1000,
             currency: "EUR",
+            displayId: "display-123",
           });
 
           // Fast-forward 10 seconds to trigger the timeout/polling
@@ -243,7 +249,7 @@ describe("MunchiPaymentSDK", () => {
           expect(result.success).toBe(false);
           expect(result.status).toBe(SdkPaymentStatus.FAILED);
           expect(result.errorCode).toBe(code);
-          expect(mockGetOrderStatus).toHaveBeenCalled();
+          expect(mockGetPaymentStatus).toHaveBeenCalled();
           expect(states).toContain(PaymentInteractionState.FAILED);
         });
       },
@@ -282,6 +288,7 @@ describe("MunchiPaymentSDK", () => {
         orderRef: "order-cancel-test",
         amountCents: 1000,
         currency: "EUR",
+        displayId: "display-123",
       });
 
       await sdk.cancel();
@@ -295,10 +302,10 @@ describe("MunchiPaymentSDK", () => {
       // Assertions for Observer Pattern implementation:
       // The flow should optionally contain CONNECTING.
       // When cancelling, we intentionally suppress the FAILED state to avoid UI flashes.
-      // Instead, it should transition to IDLE finally.
+      // Instead, it should transition to FAILED finally, to show error UI.
 
       expect(states).toContain(PaymentInteractionState.VERIFYING);
-      expect(states).not.toContain(PaymentInteractionState.FAILED);
+      expect(states).toContain(PaymentInteractionState.FAILED);
 
       // Verify mock calls
       processPaymentSpy.mockRestore();
@@ -322,6 +329,7 @@ describe("MunchiPaymentSDK", () => {
         orderRef: "order-invalid-test",
         amountCents: 1000,
         currency: "EUR",
+        displayId: "display-123",
       });
 
       expect(states[states.length - 1]).toBe(PaymentInteractionState.SUCCESS);
@@ -358,6 +366,7 @@ describe("MunchiPaymentSDK", () => {
         orderRef: "order-invalid-test-2",
         amountCents: 1000,
         currency: "EUR",
+        displayId: "display-123",
       });
 
       // Wait for the timeout in the mock
@@ -380,7 +389,7 @@ describe("MunchiPaymentSDK", () => {
       );
 
       (PaymentApi as jest.Mock).mockImplementation((() => ({
-        createVivaTransactionV3: jest.fn().mockResolvedValue({
+        initiateTerminalTransaction: jest.fn().mockResolvedValue({
           data: { sessionId: "session-race", orderId: orderRef },
         }),
         cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
@@ -394,6 +403,7 @@ describe("MunchiPaymentSDK", () => {
         orderRef,
         amountCents: 1000,
         currency: "EUR",
+        displayId: "display-123",
       });
 
       // Wait for session to be created (REQUIRES_INPUT state)
@@ -429,11 +439,11 @@ describe("MunchiPaymentSDK", () => {
       expect(cancelResult).toBe(true);
       expect(result.status).toBe(SdkPaymentStatus.CANCELLED);
 
-      // The states should NOT contain FAILED (it should have been suppressed by our racing logic)
-      expect(states).not.toContain(PaymentInteractionState.FAILED);
+      // The states SHOULD contain FAILED now
+      expect(states).toContain(PaymentInteractionState.FAILED);
 
-      // Final state should be IDLE (set by handleTransactionError)
-      expect(states[states.length - 1]).toBe(PaymentInteractionState.IDLE);
+      // Final state should be FAILED (set by handleTransactionError)
+      expect(states[states.length - 1]).toBe(PaymentInteractionState.FAILED);
     });
 
     it("should prevent starting a new transaction if one is already in progress", async () => {
@@ -445,6 +455,7 @@ describe("MunchiPaymentSDK", () => {
         orderRef: "order-1",
         amountCents: 1000,
         currency: "EUR",
+        displayId: "display-123",
       });
 
       // Immediately try to start a second one
@@ -452,6 +463,7 @@ describe("MunchiPaymentSDK", () => {
         orderRef: "order-2",
         amountCents: 1000,
         currency: "EUR",
+        displayId: "display-123",
       });
 
       const result2 = await promise2;
@@ -473,21 +485,19 @@ describe("MunchiPaymentSDK", () => {
       );
 
       (PaymentApi as jest.Mock).mockImplementation((() => ({
-        createVivaTransactionV3: jest.fn().mockResolvedValue({
+        initiateTerminalTransaction: jest.fn().mockResolvedValue({
           data: { sessionId: "session-ghost", orderId: orderRef },
         }),
         cancelTransaction: jest.fn().mockResolvedValue(true),
-      })) as any);
-
-      (KiosksApi as jest.Mock).mockImplementation(() => ({
-        getOrderStatus: jest.fn().mockResolvedValue({
+        getPaymentStatus: jest.fn().mockResolvedValue({
           data: {
             orderId: orderRef,
             status: SimplePaymentStatus.Success,
             error: null,
           },
         }),
-      }));
+      })) as any);
+
 
       const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
       const states: PaymentInteractionState[] = [];
@@ -497,6 +507,7 @@ describe("MunchiPaymentSDK", () => {
         orderRef,
         amountCents: 1000,
         currency: "EUR",
+        displayId: "display-123",
       });
 
       // Wait for REQUIRES_INPUT
@@ -536,17 +547,14 @@ describe("MunchiPaymentSDK", () => {
       (mockMessaging.subscribe as jest.Mock).mockReturnValue(jest.fn());
 
       (PaymentApi as jest.Mock).mockImplementation((() => ({
-        createVivaTransactionV3: jest.fn().mockResolvedValue({
+        initiateTerminalTransaction: jest.fn().mockResolvedValue({
           data: { sessionId: "session-fail", orderId: orderRef },
         }),
         // Simulate a network error during the cancel command itself
         cancelTransaction: jest
           .fn()
           .mockRejectedValue(new Error("Network error")),
-      })) as any);
-
-      (KiosksApi as jest.Mock).mockImplementation(() => ({
-        getOrderStatus: jest.fn().mockResolvedValue({
+        getPaymentStatus: jest.fn().mockResolvedValue({
           data: {
             orderId: orderRef,
             status: SimplePaymentStatus.Failed,
@@ -556,7 +564,8 @@ describe("MunchiPaymentSDK", () => {
             },
           },
         }),
-      }));
+      })) as any);
+
 
       const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
       const states: PaymentInteractionState[] = [];
@@ -566,6 +575,7 @@ describe("MunchiPaymentSDK", () => {
         orderRef,
         amountCents: 1000,
         currency: "EUR",
+        displayId: "display-123",
       });
 
       await new Promise((resolve) => setTimeout(resolve, 50)); // Wait for processing
@@ -575,10 +585,13 @@ describe("MunchiPaymentSDK", () => {
       await transactionPromise;
 
       // Verification:
-      // 1. Even though the cancellation API failed, the UI should NOT show FAILED.
-      // 2. It should have transitioned to IDLE because of _cancellationIntent.
-      expect(states).not.toContain(PaymentInteractionState.FAILED);
-      expect(states[states.length - 1]).toBe(PaymentInteractionState.IDLE);
+      // 1. Even if cancellation fails, we mark it as FAILED implementation-wise to ensure UI consistency
+      // 2. It should have transitioned to FAILED because of _cancellationIntent.
+      // Verification:
+      // 1. Even if cancellation fails, we mark it as FAILED implementation-wise to ensure UI consistency
+      // 2. It should have transitioned to FAILED because of _cancellationIntent.
+      expect(states).toContain(PaymentInteractionState.FAILED);
+      expect(states[states.length - 1]).toBe(PaymentInteractionState.FAILED);
     });
   });
 
@@ -599,6 +612,7 @@ describe("MunchiPaymentSDK", () => {
           orderRef: "order-callback-success",
           amountCents: 1000,
           currency: "EUR",
+          displayId: "display-123",
         },
         {
           onSuccess,
@@ -636,6 +650,7 @@ describe("MunchiPaymentSDK", () => {
           orderRef: "order-callback-fail",
           amountCents: 1000,
           currency: "EUR",
+          displayId: "display-123",
         },
         {
           onSuccess,
@@ -669,6 +684,7 @@ describe("MunchiPaymentSDK", () => {
           orderRef: "order-state-cb",
           amountCents: 1000,
           currency: "EUR",
+          displayId: "display-123",
         },
         {
           onConnecting,
@@ -676,10 +692,10 @@ describe("MunchiPaymentSDK", () => {
         },
       );
 
-      expect(onConnecting).toHaveBeenCalledWith({ orderRef: "order-state-cb" });
-      expect(onRequiresInput).toHaveBeenCalledWith({
+      expect(onConnecting).toHaveBeenCalledWith(expect.objectContaining({ orderRef: "order-state-cb" }));
+      expect(onRequiresInput).toHaveBeenCalledWith(expect.objectContaining({
         orderRef: "order-state-cb",
-      });
+      }));
     });
 
     it("should not break SDK flow if callback throws an error", async () => {
@@ -699,6 +715,7 @@ describe("MunchiPaymentSDK", () => {
           orderRef: "order-cb-error",
           amountCents: 1000,
           currency: "EUR",
+          displayId: "display-123",
         },
         {
           onConnecting: throwingCallback,
@@ -722,6 +739,7 @@ describe("MunchiPaymentSDK", () => {
         orderRef: "order-no-cb",
         amountCents: 1000,
         currency: "EUR",
+        displayId: "display-123",
       });
 
       expect(result.success).toBe(true);
@@ -740,6 +758,7 @@ describe("MunchiPaymentSDK", () => {
         orderRef: "order-destructure",
         amountCents: 1000,
         currency: "EUR",
+        displayId: "display-123",
       });
 
       expect(result.success).toBe(true);

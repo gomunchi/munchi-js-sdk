@@ -16,7 +16,26 @@ export interface PaymentCallbacks {
   onCancelled?: (ctx: { orderRef: string }) => void;
 }
 
+export interface AutoResetOptions {
+  /**
+   * Delay in milliseconds before resetting to IDLE after a successful transaction.
+   * Defaults to 5000ms if not specified.
+   */
+  successDelayMs?: number;
+
+  /**
+   * Delay in milliseconds before resetting to IDLE after a failed transaction.
+   * Defaults to 5000ms if not specified.
+   */
+  failureDelayMs?: number;
+}
+
 export interface SDKOptions {
   timeoutMs?: number;
   logger?: ILogger;
+  /**
+   * Configuration for automatically resetting the SDK state to IDLE.
+   * If provided (even as an empty object), auto-reset is enabled.
+   */
+  autoResetOnPaymentComplete?: AutoResetOptions;
 }

@@ -1,4 +1,4 @@
-import { PaymentSDKError, PaymentErrorCode } from "../../src/error";
+import { PaymentErrorCode, PaymentSDKError } from "../../src/error";
 
 describe("PaymentErrorCode", () => {
   it("should have all expected error codes", () => {

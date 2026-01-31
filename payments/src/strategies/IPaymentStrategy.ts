@@ -9,10 +9,10 @@ export interface IPaymentStrategy {
   disconnect(): Promise<void>;
   processPayment(
     request: PaymentRequest,
-    onStateChange: (state: PaymentInteractionState) => void,
+    onStateChange: (state: PaymentInteractionState, detail?: { sessionId?: string }) => void,
   ): Promise<PaymentResult>;
   cancelTransaction(
     onStateChange: (state: PaymentInteractionState) => void,
   ): Promise<boolean>;
-  verifyFinalStatus(request: PaymentRequest): Promise<PaymentResult>;
+  verifyFinalStatus(request: PaymentRequest, sessionId: string): Promise<PaymentResult>;
 }

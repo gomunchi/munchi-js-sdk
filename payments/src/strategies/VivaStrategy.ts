@@ -1,12 +1,10 @@
 import type { AxiosInstance } from "axios";
 import {
-    type CreateTransactionPayloadDto,
-    type CurrencyCode,
-    KiosksApi,
+  type CreateTerminalPaymentDto,
     PaymentApi,
+    PaymentProviderEnum,
     type PaymentStatusDto,
     SimplePaymentStatus,
-    VivaCurrencyCode,
 } from "../../../core";
 import { PaymentErrorCode, PaymentSDKError } from "../error";
 import {
@@ -21,17 +19,15 @@ import type { IPaymentStrategy } from "./IPaymentStrategy";
 
 export class VivaStrategy implements IPaymentStrategy {
   private api: PaymentApi;
-  private kioskApi: KiosksApi;
   private abortController: AbortController | null = null;
   private currentSessionId: string | null = null;
-
+  private paymentProvider = PaymentProviderEnum.Viva;
   constructor(
     axios: AxiosInstance,
     private messaging: IMessagingAdapter,
     private config: PaymentTerminalConfig,
   ) {
     this.api = new PaymentApi(undefined, "", axios);
-    this.kioskApi = new KiosksApi(undefined, "", axios);
   }
 
   async initialize() {}
@@ -42,33 +38,34 @@ export class VivaStrategy implements IPaymentStrategy {
 
   async processPayment(
     request: PaymentRequest,
-    onStateChange: (state: PaymentInteractionState) => void,
+    onStateChange: (state: PaymentInteractionState, detail?: { sessionId?: string }) => void,
   ): Promise<PaymentResult> {
     this.abortController = new AbortController();
     onStateChange(PaymentInteractionState.CONNECTING);
 
-    const payload: CreateTransactionPayloadDto = {
+    const payload: CreateTerminalPaymentDto = {
       amount: request.amountCents,
-      orderId: request.orderRef,
-      orderingBusinessId: parseInt(this.config.storeId),
-      currencyCode: this.mapCurrencyToViva(request.currency),
-      identityId: this.config.kioskId,
+      referenceId: request.orderRef,
+      businessId: parseInt(this.config.storeId),
+      currency: request.currency,
+      displayId: request.displayId,
+      showReceipt: true,
+      showTransactionResult: true,
     };
 
     try {
-      const { data } = await this.api.createVivaTransactionV3(payload);
+      const { data } = await this.api.initiateTerminalTransaction(payload);
       this.currentSessionId = data.sessionId;
 
       if (this.abortController.signal.aborted) {
         throw new Error("Aborted");
       }
 
-      onStateChange(PaymentInteractionState.REQUIRES_INPUT);
+      onStateChange(PaymentInteractionState.REQUIRES_INPUT, { sessionId: data.sessionId });
 
       const result = await this.waitForPaymentCompletion(
         data.sessionId,
         request.orderRef,
-        onStateChange,
         this.abortController.signal,
       );
 
@@ -88,10 +85,10 @@ export class VivaStrategy implements IPaymentStrategy {
   private async waitForPaymentCompletion(
     sessionId: string,
     orderRef: string,
-    onStateChange: (state: PaymentInteractionState) => void,
     signal: AbortSignal,
   ): Promise<PaymentResult> {
-    const channelName = `viva.kiosk.requests.${sessionId}`;
+    const channel = this.config.channel.toLowerCase()
+    const channelName = `viva.${channel}.requests.${sessionId}`;
     const eventName = "payment:status-changed";
 
     return new Promise((resolve, reject) => {
@@ -119,7 +116,7 @@ export class VivaStrategy implements IPaymentStrategy {
           if (!isResolved) {
             cleanup();
             signal.removeEventListener("abort", onAbort);
-            resolve(this.handleSuccess(data, onStateChange));
+            resolve(this.handleSuccess(data));
           }
         },
       );
@@ -129,13 +126,14 @@ export class VivaStrategy implements IPaymentStrategy {
 
         try {
           const finalResult = await this.pollOrderStatus(
+            sessionId,
             orderRef,
             this.config.storeId,
             signal,
           );
-          resolve(this.handleSuccess(finalResult, onStateChange));
+          resolve(this.handleSuccess(finalResult));
         } catch (pollError) {
-          onStateChange(PaymentInteractionState.FAILED);
+          // SDK handles the FAILED state when we reject
           reject(
             new PaymentSDKError(
               PaymentErrorCode.TIMEOUT,
@@ -152,6 +150,7 @@ export class VivaStrategy implements IPaymentStrategy {
   }
 
   private async pollOrderStatus(
+    sessionId: string,
     orderRef: string,
     businessId: string,
     signal: AbortSignal,
@@ -167,13 +166,17 @@ export class VivaStrategy implements IPaymentStrategy {
       }
 
       try {
-        const { data } = await this.kioskApi.getOrderStatus(
-          orderRef,
-          businessId,
+        const { data } = await this.api.getPaymentStatus(
+          {
+            businessId: Number(businessId),
+            orderId: orderRef,
+            provider: this.paymentProvider,
+            referenceId: sessionId,
+          }
         );
         if (data.status !== SimplePaymentStatus.Pending) return data;
       } catch (error) {
-        throw new Error("Payment verification failed.");
+        throw new Error(`Payment verification failed: ${error instanceof Error ? error.message : String(error)}`);
       }
       await new Promise((resolve) => setTimeout(resolve, INTERVAL_MS));
     }
@@ -182,14 +185,9 @@ export class VivaStrategy implements IPaymentStrategy {
 
   private handleSuccess(
     data: PaymentStatusDto,
-    onStateChange: (state: PaymentInteractionState) => void,
   ): PaymentResult {
     const isSuccess = data.status === SimplePaymentStatus.Success;
-    onStateChange(
-      isSuccess
-        ? PaymentInteractionState.SUCCESS
-        : PaymentInteractionState.FAILED,
-    );
+    
     return {
       success: isSuccess,
       status: isSuccess ? SdkPaymentStatus.SUCCESS : SdkPaymentStatus.FAILED,
@@ -200,13 +198,16 @@ export class VivaStrategy implements IPaymentStrategy {
   }
 
   async cancelTransaction(
-    onStateChange: (state: PaymentInteractionState) => void,
+    _onStateChange: (state: PaymentInteractionState) => void,
   ): Promise<boolean> {
-    if (!this.currentSessionId) return false;
-    onStateChange(PaymentInteractionState.IDLE);
+    this.abortController?.abort();
+    
+    if (!this.currentSessionId) {
+      return false;
+    }
+
     try {
       const sessionIdToCancel = this.currentSessionId;
-      this.abortController?.abort();
       this.currentSessionId = null;
       await this.api.cancelVivaTransactionV2({
         cashRegisterId: this.config.storeId,
@@ -223,11 +224,15 @@ export class VivaStrategy implements IPaymentStrategy {
     }
   }
 
-  async verifyFinalStatus(request: PaymentRequest): Promise<PaymentResult> {
+  async verifyFinalStatus(request: PaymentRequest, sessionId: string): Promise<PaymentResult> {
     try {
-      const { data } = await this.kioskApi.getOrderStatus(
-        request.orderRef,
-        this.config.storeId,
+      const { data } = await this.api.getPaymentStatus(
+        {
+          businessId: Number(this.config.storeId),
+          orderId: request.orderRef,
+          provider: this.paymentProvider,
+          referenceId: sessionId,
+        }
       );
 
       const isSuccess = data.status === SimplePaymentStatus.Success;
@@ -246,32 +251,5 @@ export class VivaStrategy implements IPaymentStrategy {
         error,
       );
     }
-  }
-
-  private mapCurrencyToViva(currency: CurrencyCode): VivaCurrencyCode {
-    const mapping: Partial<Record<CurrencyCode, VivaCurrencyCode>> = {
-      EUR: VivaCurrencyCode._978,
-      GBP: VivaCurrencyCode._826,
-      CHF: VivaCurrencyCode._756,
-      SEK: VivaCurrencyCode._752,
-      NOK: VivaCurrencyCode._578,
-      DKK: VivaCurrencyCode._208,
-      PLN: VivaCurrencyCode._985,
-      CZK: VivaCurrencyCode._203,
-      HUF: VivaCurrencyCode._348,
-      RON: VivaCurrencyCode._946,
-      TRY: VivaCurrencyCode._949,
-      RUB: VivaCurrencyCode._643,
-      AED: VivaCurrencyCode._784,
-    };
-
-    const vivaCode = mapping[currency];
-    if (!vivaCode) {
-      throw new PaymentSDKError(
-        PaymentErrorCode.NETWORK_ERROR,
-        `Currency ${currency} is not supported by Viva payment terminal`,
-      );
-    }
-    return vivaCode;
   }
 }

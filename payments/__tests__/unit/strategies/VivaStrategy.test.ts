@@ -64,6 +64,7 @@ describe("VivaStrategy", () => {
           orderRef: "order-123",
           amountCents: 1000,
           currency: "EUR",
+          displayId: "display-123",
         },
         onStateChange,
       );
@@ -73,7 +74,12 @@ describe("VivaStrategy", () => {
       expect(mockApi).toHaveBeenCalledWith(
         expect.objectContaining({
           amount: 1000,
-          orderId: "order-123",
+          businessId: 351,
+          currency: "EUR",
+          displayId: "display-123",
+          referenceId: "order-123",
+          showReceipt: true,
+          showTransactionResult: true,
         }),
       );
 
@@ -96,6 +102,7 @@ describe("VivaStrategy", () => {
             orderRef: "order-123",
             amountCents: 1000,
             currency: "EUR",
+            displayId: "display-123",
           },
           onStateChange,
         );
