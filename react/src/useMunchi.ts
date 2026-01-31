@@ -1,5 +1,6 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { SdkContext } from "./SdkContainer";
+import type { PaymentInteractionState } from "@munchi/payments";
 
 /**
  * Hook to access all Munchi SDK instances.
@@ -24,3 +25,19 @@ export const useSdk = () => {
  * @deprecated Use useSdk instead
  */
 export const usePayments = useSdk;
+
+/**
+ * Hook to access the current state of the Payment SDK reactively.
+ */
+export const usePaymentState = (): PaymentInteractionState => {
+  const sdk = useSdk();
+  const [state, setState] = useState(sdk.currentState);
+
+  useEffect(() => {
+    return sdk.subscribe((newState) => {
+      setState(newState);
+    });
+  }, [sdk]);
+
+  return state;
+};

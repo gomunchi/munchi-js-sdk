@@ -1,6 +1,6 @@
 /** @type {import('jest').Config} */
 module.exports = {
-  projects: ["<rootDir>/core", "<rootDir>/payments"],
+  projects: ["<rootDir>/core", "<rootDir>/payments", "<rootDir>/react"],
   collectCoverageFrom: [
     "**/src/**/*.{ts,tsx}",
     "!**/*.d.ts",
