@@ -2757,6 +2757,33 @@ paths:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get order history for POS
       tags: *a24
+  /api/v1/payment/status:
+    post:
+      description: Retrieves the current status of a payment transaction by its
+        reference ID.
+      operationId: getPaymentStatus
+      parameters: []
+      requestBody:
+        required: true
+        description: Payment status query parameters
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GetPaymentStatusDto"
+      responses:
+        "200":
+          description: Payment status retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentStatusDto"
+        "400": &a26
+          description: Bad request - Invalid payload
+        "404": &a27
+          description: Business configuration not found
+      summary: Get payment status
+      tags: &a25
+        - Payment
   /api/v1/payment/stripe/connectionToken:
     get:
       description: Retrieves a Stripe Terminal connection token for the specified
@@ -2783,8 +2810,7 @@ paths:
         "404":
           description: Business configuration not found
       summary: Get Stripe Terminal connection token
-      tags: &a25
-        - Payment
+      tags: *a25
   /api/v1/payment/stripe/capture:
     post:
       description: Captures a previously authorized payment intent, transferring funds
@@ -2839,25 +2865,6 @@ paths:
           description: Payment intent not found
       summary: Cancel a Stripe payment intent
       tags: *a25
-  /api/v1/payment/stripe/stimulate/confirm:
-    post:
-      operationId: stimulateWipeCardAction
-      parameters: []
-      requestBody:
-        required: true
-        description: Payment intent ID to stimulate
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PaymentIntentIdDto"
-      responses:
-        "201":
-          description: ""
-        "400": &a26
-          description: Bad request - Invalid payload
-        "404": &a27
-          description: Business configuration not found
-      tags: *a25
   /api/v1/payment/connectionToken:
     post:
       description: Retrieves a connection token for the specified business.
@@ -2883,6 +2890,7 @@ paths:
       tags: *a25
   /api/v1/payment/viva/createPayment:
     post:
+      deprecated: true
       description: Creates a new Viva payment intent.
       operationId: createVivaPayment
       parameters: []
@@ -2906,6 +2914,7 @@ paths:
       tags: *a25
   /api/v1/payment/refund:
     post:
+      deprecated: true
       description: Creates a new Viva payment intent.
       operationId: refundPayment
       parameters: []
@@ -3627,6 +3636,71 @@ paths:
           description: ""
       tags:
         - Terminal
+  /api/v1/station:
+    get:
+      operationId: getStation
+      parameters: []
+      responses:
+        "200":
+          description: Station data retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetStationResponseDto"
+        "400":
+          description: Missing X-Munchi-Hardware-Id header
+        "401":
+          description: Hardware ID not authorized
+        "404":
+          description: Station not found
+      tags: &a32
+        - Stations
+  /api/v1/station/sync:
+    post:
+      operationId: syncStation
+      parameters: []
+      requestBody:
+        required: true
+        description: Sync station data from frontend tablet to backend
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SyncStationDto"
+      responses:
+        "200":
+          description: Station synced successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StationSyncResponseDto"
+        "400":
+          description: Validation error or database error
+        "409":
+          description: Station registered to different business
+      tags: *a32
+  /api/v1/station/terminal/sync:
+    post:
+      operationId: syncTerminal
+      parameters: []
+      requestBody:
+        required: true
+        description: Connect payment terminal to station
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SyncTerminalDto"
+      responses:
+        "200":
+          description: Terminal synced successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StationSyncResponseDto"
+        "400":
+          description: Validation error or provider mismatch
+        "404":
+          description: Station or terminal not found
+      tags: *a32
   /api/v2/history/orders/pos:
     get:
       operationId: getOrderHistoryPOS V2
@@ -3773,12 +3847,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VivaPaymentIntent"
-        "400": &a32
+        "400": &a33
           description: Bad request - Invalid payload
-        "404": &a33
+        "404": &a34
           description: Business configuration not found
       summary: Create Viva payment
-      tags: &a34
+      tags: &a35
         - Payment
   /api/v2/payment/nets/createPayment:
     post:
@@ -3799,10 +3873,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreateNetsTransactionResponseDto"
-        "400": *a32
-        "404": *a33
+        "400": *a33
+        "404": *a34
       summary: Create Nets payment
-      tags: *a34
+      tags: *a35
   /api/v2/payment/nets/cancelTransaction:
     post:
       description: Initiates a request to cancel a Nets payment on a specified terminal.
@@ -3819,10 +3893,10 @@ paths:
         "202":
           description: The request to cancel the Nets payment has been successfully
             accepted for processing. No response body is returned.
-        "400": *a32
-        "404": *a33
+        "400": *a33
+        "404": *a34
       summary: Request Nets payment cancellation
-      tags: *a34
+      tags: *a35
   /api/v2/payment/nets/discoverDevices:
     post:
       description: Retrieves a list of available Nets payment devices for the
@@ -3845,10 +3919,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/DiscoveredNetsTerminalDto"
-        "400": *a32
-        "404": *a33
+        "400": *a33
+        "404": *a34
       summary: Discover Nets devices
-      tags: *a34
+      tags: *a35
   /api/v2/payment/nets/connectTerminal:
     post:
       description: Connect Nets terminal
@@ -3870,10 +3944,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ConnectTerminaldDto"
-        "400": *a32
-        "404": *a33
+        "400": *a33
+        "404": *a34
       summary: Connect nets device
-      tags: *a34
+      tags: *a35
   /api/v2/payment/nets/disconnectTerminal:
     post:
       description: Disconnect Nets terminal
@@ -3889,10 +3963,10 @@ paths:
       responses:
         "200":
           description: Successfully disconnect with Nets device.
-        "400": *a32
-        "404": *a33
+        "400": *a33
+        "404": *a34
       summary: Disconnect nets device
-      tags: *a34
+      tags: *a35
   /api/v2/payment/refund:
     post:
       description: Refund a pos order
@@ -3914,10 +3988,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": *a32
-        "404": *a33
+        "400": *a33
+        "404": *a34
       summary: Refund a pos order
-      tags: *a34
+      tags: *a35
   /api/v2/payment/nets/refund:
     post:
       description: Refund a pos order
@@ -3937,10 +4011,10 @@ paths:
             application/json:
               schema:
                 type: string
-        "400": *a32
-        "404": *a33
+        "400": *a33
+        "404": *a34
       summary: Refund a pos order with nets
-      tags: *a34
+      tags: *a35
   /api/v2/payment/nets/cleanupTransaction:
     post:
       description: Requests the cleanup or removal of a Nets transaction, typically
@@ -3966,10 +4040,10 @@ paths:
             application/json:
               schema:
                 type: string
-        "400": *a32
-        "404": *a33
+        "400": *a33
+        "404": *a34
       summary: Initiate cleanup or removal of a Nets transaction
-      tags: *a34
+      tags: *a35
   /api/v2/payment/cash/refund:
     post:
       description: Process a cash refund for a previous cash payment transaction.
@@ -3991,10 +4065,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": *a32
-        "404": *a33
+        "400": *a33
+        "404": *a34
       summary: Refund a cash payment
-      tags: *a34
+      tags: *a35
   /api/v2/payment/manual/refund:
     post:
       description: Process a manual refund for a previous cash payment transaction.
@@ -4016,10 +4090,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": *a32
-        "404": *a33
+        "400": *a33
+        "404": *a34
       summary: Refund a manual payment
-      tags: *a34
+      tags: *a35
   /api/v2/payment/viva/cancel:
     post:
       description: Initiates a request to cancel a Viva payment.
@@ -4036,10 +4110,10 @@ paths:
         "202":
           description: The request to cancel the Viva payment has been successfully
             accepted for processing. No response body is returned.
-        "400": *a32
-        "404": *a33
+        "400": *a33
+        "404": *a34
       summary: Request Viva payment cancellation
-      tags: *a34
+      tags: *a35
   /api/v2/report/email:
     post:
       operationId: sendReportEmailV2
@@ -4092,7 +4166,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Send end-of-day report via email (V2)
-      tags: &a35
+      tags: &a36
         - Report
   /api/v2/report/pos/end-of-day:
     get:
@@ -4144,7 +4218,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get end-of-day financial report for POS (V2)
-      tags: *a35
+      tags: *a36
   /api/v2/business/{businessId}/external/configs:
     get:
       operationId: getBusinessConfigByIdV2
@@ -4168,10 +4242,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BusinessResponseDto"
-      security: &a36
+      security: &a37
         - JWT-auth: []
       summary: ""
-      tags: &a37
+      tags: &a38
         - Business
   /api/v2/business/{businessId}/menu/{menuType}:
     get:
@@ -4200,9 +4274,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/MenuDto"
-      security: *a36
+      security: *a37
       summary: Get business menu by type V2
-      tags: *a37
+      tags: *a38
   /api/v2/business/{businessId}/menu/categories:
     post:
       operationId: getBusinessCategoriesByMenuId V2
@@ -4228,9 +4302,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ExtendedCategoryDto"
-      security: *a36
+      security: *a37
       summary: Get business menu categories V2
-      tags: *a37
+      tags: *a38
   /api/v2/menu/{businessId}/categories:
     get:
       operationId: getProductsByCategoriesV2
@@ -4270,7 +4344,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get products by categories from MongoDB
-      tags: &a38
+      tags: &a39
         - menu
   /api/v2/menu/{businessId}/product:
     patch:
@@ -4311,7 +4385,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Update product status (enabled/disabled) for a business
-      tags: *a38
+      tags: *a39
   /api/v2/business/{businessId}/categories/{categoryId}/products/{productId}/channel-inventory:
     put:
       description: Update inventory settings for multiple channels at once
@@ -4427,7 +4501,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Send end-of-day report via email (V3)
-      tags: &a39
+      tags: &a40
         - Report
   /api/v3/report/pos/end-of-day:
     get:
@@ -4485,7 +4559,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get end-of-day financial report for POS (V3)
-      tags: *a39
+      tags: *a40
   /api/v3/orders:
     get:
       description: Returns paginated orders sorted by status-specific logic. Database
@@ -4520,20 +4594,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaginatedOrderResponseDto"
-        "400": &a40
+        "400": &a41
           description: Bad request
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-        "500": &a41
+        "500": &a42
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get all orders across all statuses with pagination
-      tags: &a42
+      tags: &a43
         - orders
   /api/v3/orders/{status}:
     get:
@@ -4611,10 +4685,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PaginatedOrderResponseDto"
-        "400": *a40
-        "500": *a41
+        "400": *a41
+        "500": *a42
       summary: Get orders by status with pagination
-      tags: *a42
+      tags: *a43
   /api/v3/orders/pos/place:
     post:
       operationId: placePosOrder V3
@@ -4632,10 +4706,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PosOrderDto"
-        "400": *a40
-        "500": *a41
+        "400": *a41
+        "500": *a42
       summary: Place an POS order
-      tags: *a42
+      tags: *a43
   /api/v3/payment/refund:
     post:
       description: Refund a pos order
@@ -4657,12 +4731,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": &a43
+        "400": &a44
           description: Bad request - Invalid payload
-        "404": &a44
+        "404": &a45
           description: Business configuration not found
       summary: Refund a pos order
-      tags: &a45
+      tags: &a46
         - Payment
   /api/v3/payment/cash/refund:
     post:
@@ -4685,10 +4759,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": *a43
-        "404": *a44
+        "400": *a44
+        "404": *a45
       summary: Refund a cash payment
-      tags: *a45
+      tags: *a46
   /api/v3/payment/manual/refund:
     post:
       description: Process a manual refund for a previous payment transaction of any
@@ -4711,10 +4785,10 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PaymentRefundDto"
-        "400": *a43
-        "404": *a44
+        "400": *a44
+        "404": *a45
       summary: Refund a manual payment
-      tags: *a45
+      tags: *a46
   /api/v3/payment/nets/refund:
     post:
       description: Refund a pos order
@@ -4734,10 +4808,10 @@ paths:
             application/json:
               schema:
                 type: string
-        "400": *a43
-        "404": *a44
+        "400": *a44
+        "404": *a45
       summary: Refund a pos order with nets
-      tags: *a45
+      tags: *a46
   /api/v3/payment/viva/createPayment:
     post:
       description: Creates a new Viva payment intent.
@@ -4757,10 +4831,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VivaPaymentIntent"
-        "400": *a43
-        "404": *a44
+        "400": *a44
+        "404": *a45
       summary: Create Viva payment
-      tags: *a45
+      tags: *a46
   /api/v3/payment/viva/create:
     post:
       description: Creates a new Viva transaction.
@@ -4780,10 +4854,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VivaPaymentIntent"
-        "400": *a43
-        "404": *a44
+        "400": *a44
+        "404": *a45
       summary: Create Viva payment
-      tags: *a45
+      tags: *a46
   /api/v3/history/orders/pos:
     get:
       operationId: getOrderHistoryPOS V3
@@ -4964,14 +5038,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-        "500": &a46
+        "500": &a47
           description: Internal Server Error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Place an POS order
-      tags: &a47
+      tags: &a48
         - orders
   /api/v4/orders/pos/actions:
     post:
@@ -4995,9 +5069,9 @@ paths:
           description: Invalid request
         "404":
           description: Order not found
-        "500": *a46
+        "500": *a47
       summary: Process pos order actions
-      tags: *a47
+      tags: *a48
   /api/v4/payment/refund:
     post:
       description: Refund a pos order
@@ -5017,13 +5091,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VivaPaymentResultDto"
-        "400":
+        "400": &a49
           description: Bad request - Invalid payload
-        "404":
+        "404": &a50
           description: Business configuration not found
       summary: Refund a pos order
-      tags:
+      tags: &a51
         - Payment
+  /api/v4/payment/viva/terminal/initiate:
+    post:
+      description: Initiate a terminal transaction
+      operationId: initiateTerminalTransaction
+      parameters: []
+      requestBody:
+        required: true
+        description: Pos order refund payload
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTerminalPaymentDto"
+      responses:
+        "200":
+          description: The pos order was successfully refunded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VivaPaymentIntent"
+        "400": *a49
+        "404": *a50
+      summary: Initiate a terminal transaction
+      tags: *a51
   /api/v4/report/pos/end-of-day:
     get:
       operationId: getPOSEndOfDayReportV4
@@ -5080,7 +5177,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get end-of-day financial report for POS (V4)
-      tags: &a48
+      tags: &a52
         - Report
   /api/v4/report/email:
     post:
@@ -5139,7 +5236,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Send end-of-day report via email (V4)
-      tags: *a48
+      tags: *a52
   /api/v4/history/orders/pos:
     get:
       operationId: getOrderHistoryPOS V4
@@ -5389,10 +5486,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-      security: &a49
+      security: &a53
         - JWT-auth: []
       summary: Get order history for POS V5
-      tags: &a50
+      tags: &a54
         - History
   /api/v5/history/internal/orders/pos:
     get:
@@ -5516,9 +5613,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
-      security: *a49
+      security: *a53
       summary: Get order history for POS V5
-      tags: *a50
+      tags: *a54
 info:
   title: Munchi Super Server Api
   description: The Munchi API description
@@ -6378,7 +6475,7 @@ components:
           description: Product ID
         name:
           type: string
-          example: Deluxe Burger
+          example: Cheeseburger
           description: Product name
         price:
           type: number
@@ -6402,9 +6499,8 @@ components:
           description: Whether the product is tracked for inventory
         quantity:
           type: number
-          example: 2
-          description: Quantity of the item
-          minimum: 1
+          example: 10
+          description: Available quantity if inventoried
         featured:
           type: boolean
           example: true
@@ -6457,7 +6553,7 @@ components:
           example: true
           description: Whether the product is restricted
         tax:
-          allOf:
+          allOf: &a55
             - $ref: "#/components/schemas/BusinessTaxResponseDto"
           nullable: true
         colorCode:
@@ -8954,8 +9050,7 @@ components:
           example: true
           description: Whether the product is restricted
         tax:
-          allOf: &a51
-            - $ref: "#/components/schemas/BusinessTaxResponseDto"
+          allOf: *a55
           nullable: true
         colorCode:
           type: string
@@ -9106,7 +9201,7 @@ components:
           example: true
           description: Whether the product is restricted
         tax:
-          allOf: *a51
+          allOf: *a55
           nullable: true
       required:
         - id
@@ -11207,6 +11302,28 @@ components:
         - orders
         - summary
         - pagination
+    GetPaymentStatusDto:
+      type: object
+      properties:
+        provider:
+          description: The payment provider for this transaction.
+          allOf:
+            - $ref: "#/components/schemas/PaymentProvider"
+        referenceId:
+          type: string
+          description: The session ID or reference ID from the payment provider (e.g.,
+            Viva sessionId).
+        businessId:
+          type: number
+          description: The ordering business ID for this transaction.
+        orderId:
+          type: string
+          description: The order ID associated with this payment (optional, returned in
+            response for convenience).
+      required:
+        - provider
+        - referenceId
+        - businessId
     StripeConnectionTokenDto:
       type: object
       properties:
@@ -12417,6 +12534,180 @@ components:
         address:
           type: string
           example: Espoo, Finland
+    StationType:
+      type: string
+      enum:
+        - KIOSK
+        - POS
+    GetStationResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: cuid123456
+          description: Station ID
+        name:
+          type: string
+          example: Kitchen Station 1
+          description: Station name
+        prefix:
+          type: string
+          example: K1
+          description: Station prefix
+        hardwareId:
+          type: string
+          example: station-tablet-001
+          description: Hardware ID
+        type:
+          example: KIOSK
+          description: Station type
+          allOf:
+            - $ref: "#/components/schemas/StationType"
+        status:
+          example: ACTIVE
+          description: Station status
+          allOf:
+            - $ref: "#/components/schemas/Status"
+        settings:
+          type: object
+          example:
+            autoPrint: true
+            theme: dark
+          description: Station settings
+          nullable: true
+        metadata:
+          type: object
+          example:
+            deviceModel: iPad Pro
+            osVersion: "17.2"
+          description: Station metadata
+          nullable: true
+        orderingBusinessId:
+          type: number
+          example: 351
+          description: Business ID
+        paymentTerminal:
+          description: Connected payment terminal
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/PaymentTerminalDto"
+        createdAt:
+          format: date-time
+          type: string
+          example: 2024-01-28T10:00:00.000Z
+          description: Created at
+        updatedAt:
+          format: date-time
+          type: string
+          example: 2024-01-28T11:00:00.000Z
+          description: Updated at
+      required:
+        - id
+        - name
+        - prefix
+        - hardwareId
+        - type
+        - status
+        - settings
+        - metadata
+        - orderingBusinessId
+        - paymentTerminal
+        - createdAt
+        - updatedAt
+    SyncStationDto:
+      type: object
+      properties:
+        hardwareId:
+          type: string
+          example: station-tablet-001
+          description: Unique hardware ID of the station device
+        businessId:
+          type: number
+          example: 351
+          description: Ordering business ID
+        name:
+          type: string
+          example: Kitchen Station 1
+          description: Display name for the station
+        prefix:
+          type: string
+          example: K1
+          description: Prefix for station when creating orders
+        type:
+          description: Type of station (KIOSK or POS)
+          example: KIOSK
+          default: KIOSK
+          allOf:
+            - $ref: "#/components/schemas/StationType"
+        paymentTerminalId:
+          type: string
+          example: terminal-id-123
+          description: Payment terminal ID associated with this station
+        settings:
+          type: object
+          example:
+            autoPrint: true
+            theme: dark
+          description: Additional settings for the station in JSON format
+        metadata:
+          type: object
+          example:
+            deviceModel: iPad Pro
+            osVersion: "17.2"
+            appVersion: 1.0.0
+          description: Metadata information about the station device in JSON format
+      required:
+        - hardwareId
+        - businessId
+        - prefix
+    StationSyncResponseDto:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Station synced successfully
+          description: A success message indicating the sync was successful
+      required:
+        - message
+    TerminalConnectionType:
+      type: string
+      enum:
+        - NETWORK
+    SyncTerminalDto:
+      type: object
+      properties:
+        stationHardwareId:
+          type: string
+          example: station-tablet-001
+          description: Hardware ID of the station to connect the terminal to
+        terminalId:
+          type: string
+          example: terminal-123
+          description: Hardware ID of the payment terminal
+        provider:
+          description: Payment provider of the terminal
+          example: viva
+          allOf:
+            - $ref: "#/components/schemas/PaymentProvider"
+        label:
+          type: string
+          example: Main Counter Terminal
+          description: Label/name for the terminal
+        connectionType:
+          description: Connection type of the terminal
+          example: NETWORK
+          default: NETWORK
+          allOf:
+            - $ref: "#/components/schemas/TerminalConnectionType"
+        businessId:
+          type: number
+          example: 351
+          description: Business ID that owns the terminal
+      required:
+        - stationHardwareId
+        - terminalId
+        - provider
+        - businessId
     OrderHistoryPosResponseDtoV2:
       type: object
       properties:
@@ -13301,7 +13592,7 @@ components:
           example: true
           description: Whether the product is restricted
         tax:
-          allOf: *a51
+          allOf: *a55
           nullable: true
         categoryName:
           type: string
@@ -14077,6 +14368,37 @@ components:
         - cardType
         - bankId
         - surchargeAmount
+    CreateTerminalPaymentDto:
+      type: object
+      properties:
+        businessId:
+          type: number
+          description: The internal business ID.
+        referenceId:
+          type: string
+          description: The unique reference for the order or cart.
+        displayId:
+          type: string
+          description: The display reference for the order or cart.
+        amount:
+          type: number
+          description: Amount in the smallest currency unit (e.g., cents).
+        currency:
+          allOf:
+            - $ref: "#/components/schemas/CurrencyCode"
+        showReceipt:
+          type: boolean
+        tipAmount:
+          type: number
+        showTransactionResult:
+          type: boolean
+          default: true
+      required:
+        - businessId
+        - referenceId
+        - displayId
+        - amount
+        - currency
     SalesSummaryDtoV2:
       type: object
       properties:
@@ -14687,7 +15009,7 @@ components:
         rawData:
           type: object
           description: The raw, unparsed response object received from the payment provider.
-          example: &a52
+          example: &a56
             failure:
               error: ...
         requestId:
@@ -14725,7 +15047,7 @@ components:
         rawData:
           type: object
           description: The raw, unparsed response object received from the payment provider.
-          example: *a52
+          example: *a56
         sessionId:
           type: string
           description: A unique identifier for the request, used for tracking.
@@ -15379,6 +15701,7 @@ components:
             - CATEGORY_DELETED
             - PRODUCT_CREATED
             - BUSINESS_CONFIG_UPDATED
+            - data_sync_required
         entityType:
           type: string
           enum:
@@ -15430,6 +15753,7 @@ components:
         - CATEGORY_DELETED
         - PRODUCT_CREATED
         - BUSINESS_CONFIG_UPDATED
+        - data_sync_required
     EntityType:
       type: string
       enum:

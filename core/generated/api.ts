@@ -87,7 +87,8 @@ export const ActionEnum = {
     SiteUpdated: 'SITE_UPDATED',
     CategoryDeleted: 'CATEGORY_DELETED',
     ProductCreated: 'PRODUCT_CREATED',
-    BusinessConfigUpdated: 'BUSINESS_CONFIG_UPDATED'
+    BusinessConfigUpdated: 'BUSINESS_CONFIG_UPDATED',
+    DataSyncRequired: 'data_sync_required'
 } as const;
 
 export type ActionEnum = typeof ActionEnum[keyof typeof ActionEnum];
@@ -891,7 +892,8 @@ export const BusinessEventAction = {
     SiteUpdated: 'SITE_UPDATED',
     CategoryDeleted: 'CATEGORY_DELETED',
     ProductCreated: 'PRODUCT_CREATED',
-    BusinessConfigUpdated: 'BUSINESS_CONFIG_UPDATED'
+    BusinessConfigUpdated: 'BUSINESS_CONFIG_UPDATED',
+    DataSyncRequired: 'data_sync_required'
 } as const;
 
 export type BusinessEventAction = typeof BusinessEventAction[keyof typeof BusinessEventAction];
@@ -3814,6 +3816,63 @@ export interface CreateRoleDto {
 /**
  * 
  * @export
+ * @interface CreateTerminalPaymentDto
+ */
+export interface CreateTerminalPaymentDto {
+    /**
+     * The internal business ID.
+     * @type {number}
+     * @memberof CreateTerminalPaymentDto
+     */
+    'businessId': number;
+    /**
+     * The unique reference for the order or cart.
+     * @type {string}
+     * @memberof CreateTerminalPaymentDto
+     */
+    'referenceId': string;
+    /**
+     * The display reference for the order or cart.
+     * @type {string}
+     * @memberof CreateTerminalPaymentDto
+     */
+    'displayId': string;
+    /**
+     * Amount in the smallest currency unit (e.g., cents).
+     * @type {number}
+     * @memberof CreateTerminalPaymentDto
+     */
+    'amount': number;
+    /**
+     * 
+     * @type {CurrencyCode}
+     * @memberof CreateTerminalPaymentDto
+     */
+    'currency': CurrencyCode;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof CreateTerminalPaymentDto
+     */
+    'showReceipt'?: boolean;
+    /**
+     * 
+     * @type {number}
+     * @memberof CreateTerminalPaymentDto
+     */
+    'tipAmount'?: number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof CreateTerminalPaymentDto
+     */
+    'showTransactionResult'?: boolean;
+}
+
+
+/**
+ * 
+ * @export
  * @interface CreateTransactionPayloadDto
  */
 export interface CreateTransactionPayloadDto {
@@ -5475,6 +5534,165 @@ export interface GenerateCodeResponseDto {
      */
     'result': string;
 }
+/**
+ * 
+ * @export
+ * @interface GetPaymentStatusDto
+ */
+export interface GetPaymentStatusDto {
+    /**
+     * 
+     * @type {PaymentProvider}
+     * @memberof GetPaymentStatusDto
+     */
+    'provider': PaymentProvider;
+    /**
+     * The session ID or reference ID from the payment provider (e.g., Viva sessionId).
+     * @type {string}
+     * @memberof GetPaymentStatusDto
+     */
+    'referenceId': string;
+    /**
+     * The ordering business ID for this transaction.
+     * @type {number}
+     * @memberof GetPaymentStatusDto
+     */
+    'businessId': number;
+    /**
+     * The order ID associated with this payment (optional, returned in response for convenience).
+     * @type {string}
+     * @memberof GetPaymentStatusDto
+     */
+    'orderId'?: string;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface GetStationResponseDto
+ */
+export interface GetStationResponseDto {
+    /**
+     * Station ID
+     * @type {string}
+     * @memberof GetStationResponseDto
+     */
+    'id': string;
+    /**
+     * Station name
+     * @type {string}
+     * @memberof GetStationResponseDto
+     */
+    'name': string;
+    /**
+     * Station prefix
+     * @type {string}
+     * @memberof GetStationResponseDto
+     */
+    'prefix': string;
+    /**
+     * Hardware ID
+     * @type {string}
+     * @memberof GetStationResponseDto
+     */
+    'hardwareId': string;
+    /**
+     * 
+     * @type {StationType}
+     * @memberof GetStationResponseDto
+     */
+    'type': StationType;
+    /**
+     * 
+     * @type {Status}
+     * @memberof GetStationResponseDto
+     */
+    'status': Status;
+    /**
+     * Station settings
+     * @type {object}
+     * @memberof GetStationResponseDto
+     */
+    'settings': object | null;
+    /**
+     * Station metadata
+     * @type {object}
+     * @memberof GetStationResponseDto
+     */
+    'metadata': object | null;
+    /**
+     * Business ID
+     * @type {number}
+     * @memberof GetStationResponseDto
+     */
+    'orderingBusinessId': number;
+    /**
+     * 
+     * @type {GetStationResponseDtoPaymentTerminal}
+     * @memberof GetStationResponseDto
+     */
+    'paymentTerminal': GetStationResponseDtoPaymentTerminal | null;
+    /**
+     * Created at
+     * @type {string}
+     * @memberof GetStationResponseDto
+     */
+    'createdAt': string;
+    /**
+     * Updated at
+     * @type {string}
+     * @memberof GetStationResponseDto
+     */
+    'updatedAt': string;
+}
+
+
+/**
+ * Connected payment terminal
+ * @export
+ * @interface GetStationResponseDtoPaymentTerminal
+ */
+export interface GetStationResponseDtoPaymentTerminal {
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof GetStationResponseDtoPaymentTerminal
+     */
+    'id': string;
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof GetStationResponseDtoPaymentTerminal
+     */
+    'hardwareId': string;
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof GetStationResponseDtoPaymentTerminal
+     */
+    'label': string | null;
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof GetStationResponseDtoPaymentTerminal
+     */
+    'orderingBusinessId': string;
+    /**
+     * 
+     * @type {PaymentProvider}
+     * @memberof GetStationResponseDtoPaymentTerminal
+     */
+    'provider': PaymentProvider;
+    /**
+     * Timestamp when the payment terminal record was last updated.
+     * @type {string}
+     * @memberof GetStationResponseDtoPaymentTerminal
+     */
+    'updatedAt': string;
+}
+
+
 /**
  * 
  * @export
@@ -11354,7 +11572,7 @@ export interface PosItemDto {
      */
     'inventoried': boolean;
     /**
-     * Quantity of the item
+     * Available quantity if inventoried
      * @type {number}
      * @memberof PosItemDto
      */
@@ -15000,6 +15218,33 @@ export interface StaffActivityLogDto {
 /**
  * 
  * @export
+ * @interface StationSyncResponseDto
+ */
+export interface StationSyncResponseDto {
+    /**
+     * A success message indicating the sync was successful
+     * @type {string}
+     * @memberof StationSyncResponseDto
+     */
+    'message': string;
+}
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const StationType = {
+    Kiosk: 'KIOSK',
+    Pos: 'POS'
+} as const;
+
+export type StationType = typeof StationType[keyof typeof StationType];
+
+
+/**
+ * 
+ * @export
  * @enum {string}
  */
 
@@ -15299,6 +15544,108 @@ export interface SupportedChannelDto {
 /**
  * 
  * @export
+ * @interface SyncStationDto
+ */
+export interface SyncStationDto {
+    /**
+     * Unique hardware ID of the station device
+     * @type {string}
+     * @memberof SyncStationDto
+     */
+    'hardwareId': string;
+    /**
+     * Ordering business ID
+     * @type {number}
+     * @memberof SyncStationDto
+     */
+    'businessId': number;
+    /**
+     * Display name for the station
+     * @type {string}
+     * @memberof SyncStationDto
+     */
+    'name'?: string;
+    /**
+     * Prefix for station when creating orders
+     * @type {string}
+     * @memberof SyncStationDto
+     */
+    'prefix': string;
+    /**
+     * 
+     * @type {StationType}
+     * @memberof SyncStationDto
+     */
+    'type'?: StationType;
+    /**
+     * Payment terminal ID associated with this station
+     * @type {string}
+     * @memberof SyncStationDto
+     */
+    'paymentTerminalId'?: string;
+    /**
+     * Additional settings for the station in JSON format
+     * @type {object}
+     * @memberof SyncStationDto
+     */
+    'settings'?: object;
+    /**
+     * Metadata information about the station device in JSON format
+     * @type {object}
+     * @memberof SyncStationDto
+     */
+    'metadata'?: object;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface SyncTerminalDto
+ */
+export interface SyncTerminalDto {
+    /**
+     * Hardware ID of the station to connect the terminal to
+     * @type {string}
+     * @memberof SyncTerminalDto
+     */
+    'stationHardwareId': string;
+    /**
+     * Hardware ID of the payment terminal
+     * @type {string}
+     * @memberof SyncTerminalDto
+     */
+    'terminalId': string;
+    /**
+     * 
+     * @type {PaymentProvider}
+     * @memberof SyncTerminalDto
+     */
+    'provider': PaymentProvider;
+    /**
+     * Label/name for the terminal
+     * @type {string}
+     * @memberof SyncTerminalDto
+     */
+    'label'?: string;
+    /**
+     * 
+     * @type {TerminalConnectionType}
+     * @memberof SyncTerminalDto
+     */
+    'connectionType'?: TerminalConnectionType;
+    /**
+     * Business ID that owns the terminal
+     * @type {number}
+     * @memberof SyncTerminalDto
+     */
+    'businessId': number;
+}
+
+
+/**
+ * 
+ * @export
  * @interface TaxBreakdownDto
  */
 export interface TaxBreakdownDto {
@@ -15469,6 +15816,19 @@ export interface TaxRateItem {
      */
     'amount': number;
 }
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const TerminalConnectionType = {
+    Network: 'NETWORK'
+} as const;
+
+export type TerminalConnectionType = typeof TerminalConnectionType[keyof typeof TerminalConnectionType];
+
+
 /**
  * 
  * @export
@@ -28026,6 +28386,7 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
          * @summary Create Viva payment
          * @param {VivaCreatePaymentDto} vivaCreatePaymentDto Viva payment creation payload
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         createVivaPayment: async (vivaCreatePaymentDto: VivaCreatePaymentDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
@@ -28310,6 +28671,42 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * Retrieves the current status of a payment transaction by its reference ID.
+         * @summary Get payment status
+         * @param {GetPaymentStatusDto} getPaymentStatusDto Payment status query parameters
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPaymentStatus: async (getPaymentStatusDto: GetPaymentStatusDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'getPaymentStatusDto' is not null or undefined
+            assertParamExists('getPaymentStatus', 'getPaymentStatusDto', getPaymentStatusDto)
+            const localVarPath = `/api/v1/payment/status`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(getPaymentStatusDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Retrieves a Stripe Terminal connection token for the specified business. This token is required to initialize the Stripe Terminal SDK.
          * @summary Get Stripe Terminal connection token
          * @param {string} businessId Unique identifier for the business
@@ -28340,6 +28737,42 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Initiate a terminal transaction
+         * @summary Initiate a terminal transaction
+         * @param {CreateTerminalPaymentDto} createTerminalPaymentDto Pos order refund payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        initiateTerminalTransaction: async (createTerminalPaymentDto: CreateTerminalPaymentDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createTerminalPaymentDto' is not null or undefined
+            assertParamExists('initiateTerminalTransaction', 'createTerminalPaymentDto', createTerminalPaymentDto)
+            const localVarPath = `/api/v4/payment/viva/terminal/initiate`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createTerminalPaymentDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -28603,6 +29036,7 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
          * @summary Create Viva payment
          * @param {RefundPayloadDto} refundPayloadDto Viva payment creation payload
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         refundPayment: async (refundPayloadDto: RefundPayloadDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
@@ -28742,41 +29176,6 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
                 options: localVarRequestOptions,
             };
         },
-        /**
-         * 
-         * @param {PaymentIntentIdDto} paymentIntentIdDto Payment intent ID to stimulate
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        stimulateWipeCardAction: async (paymentIntentIdDto: PaymentIntentIdDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'paymentIntentIdDto' is not null or undefined
-            assertParamExists('stimulateWipeCardAction', 'paymentIntentIdDto', paymentIntentIdDto)
-            const localVarPath = `/api/v1/payment/stripe/stimulate/confirm`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(paymentIntentIdDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
     }
 };
 
@@ -28880,6 +29279,7 @@ export const PaymentApiFp = function(configuration?: Configuration) {
          * @summary Create Viva payment
          * @param {VivaCreatePaymentDto} vivaCreatePaymentDto Viva payment creation payload
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         async createVivaPayment(vivaCreatePaymentDto: VivaCreatePaymentDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VivaPaymentIntent>> {
@@ -28964,6 +29364,17 @@ export const PaymentApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Retrieves the current status of a payment transaction by its reference ID.
+         * @summary Get payment status
+         * @param {GetPaymentStatusDto} getPaymentStatusDto Payment status query parameters
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getPaymentStatus(getPaymentStatusDto: GetPaymentStatusDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaymentStatusDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getPaymentStatus(getPaymentStatusDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Retrieves a Stripe Terminal connection token for the specified business. This token is required to initialize the Stripe Terminal SDK.
          * @summary Get Stripe Terminal connection token
          * @param {string} businessId Unique identifier for the business
@@ -28972,6 +29383,17 @@ export const PaymentApiFp = function(configuration?: Configuration) {
          */
         async getToken(businessId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StripeConnectionTokenDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getToken(businessId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Initiate a terminal transaction
+         * @summary Initiate a terminal transaction
+         * @param {CreateTerminalPaymentDto} createTerminalPaymentDto Pos order refund payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async initiateTerminalTransaction(createTerminalPaymentDto: CreateTerminalPaymentDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VivaPaymentIntent>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.initiateTerminalTransaction(createTerminalPaymentDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -29056,6 +29478,7 @@ export const PaymentApiFp = function(configuration?: Configuration) {
          * @summary Create Viva payment
          * @param {RefundPayloadDto} refundPayloadDto Viva payment creation payload
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         async refundPayment(refundPayloadDto: RefundPayloadDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
@@ -29093,16 +29516,6 @@ export const PaymentApiFp = function(configuration?: Configuration) {
          */
         async refundVivaTransactionV4(refundPayloadDtoV4: RefundPayloadDtoV4, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VivaPaymentResultDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.refundVivaTransactionV4(refundPayloadDtoV4, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @param {PaymentIntentIdDto} paymentIntentIdDto Payment intent ID to stimulate
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async stimulateWipeCardAction(paymentIntentIdDto: PaymentIntentIdDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.stimulateWipeCardAction(paymentIntentIdDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -29200,6 +29613,7 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
          * @summary Create Viva payment
          * @param {VivaCreatePaymentDto} vivaCreatePaymentDto Viva payment creation payload
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         createVivaPayment(vivaCreatePaymentDto: VivaCreatePaymentDto, options?: any): AxiosPromise<VivaPaymentIntent> {
@@ -29276,6 +29690,16 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.getConnectionToken(connectionTokenPayloadDto, options).then((request) => request(axios, basePath));
         },
         /**
+         * Retrieves the current status of a payment transaction by its reference ID.
+         * @summary Get payment status
+         * @param {GetPaymentStatusDto} getPaymentStatusDto Payment status query parameters
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getPaymentStatus(getPaymentStatusDto: GetPaymentStatusDto, options?: any): AxiosPromise<PaymentStatusDto> {
+            return localVarFp.getPaymentStatus(getPaymentStatusDto, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Retrieves a Stripe Terminal connection token for the specified business. This token is required to initialize the Stripe Terminal SDK.
          * @summary Get Stripe Terminal connection token
          * @param {string} businessId Unique identifier for the business
@@ -29284,6 +29708,16 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
          */
         getToken(businessId: string, options?: any): AxiosPromise<StripeConnectionTokenDto> {
             return localVarFp.getToken(businessId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Initiate a terminal transaction
+         * @summary Initiate a terminal transaction
+         * @param {CreateTerminalPaymentDto} createTerminalPaymentDto Pos order refund payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        initiateTerminalTransaction(createTerminalPaymentDto: CreateTerminalPaymentDto, options?: any): AxiosPromise<VivaPaymentIntent> {
+            return localVarFp.initiateTerminalTransaction(createTerminalPaymentDto, options).then((request) => request(axios, basePath));
         },
         /**
          * Handles refund processing for orders placed through online channels
@@ -29360,6 +29794,7 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
          * @summary Create Viva payment
          * @param {RefundPayloadDto} refundPayloadDto Viva payment creation payload
          * @param {*} [options] Override http request option.
+         * @deprecated
          * @throws {RequiredError}
          */
         refundPayment(refundPayloadDto: RefundPayloadDto, options?: any): AxiosPromise<void> {
@@ -29394,15 +29829,6 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
          */
         refundVivaTransactionV4(refundPayloadDtoV4: RefundPayloadDtoV4, options?: any): AxiosPromise<VivaPaymentResultDto> {
             return localVarFp.refundVivaTransactionV4(refundPayloadDtoV4, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {PaymentIntentIdDto} paymentIntentIdDto Payment intent ID to stimulate
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        stimulateWipeCardAction(paymentIntentIdDto: PaymentIntentIdDto, options?: any): AxiosPromise<void> {
-            return localVarFp.stimulateWipeCardAction(paymentIntentIdDto, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -29498,6 +29924,7 @@ export interface PaymentApiInterface {
      * @summary Create Viva payment
      * @param {VivaCreatePaymentDto} vivaCreatePaymentDto Viva payment creation payload
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      * @memberof PaymentApiInterface
      */
@@ -29574,6 +30001,16 @@ export interface PaymentApiInterface {
     getConnectionToken(connectionTokenPayloadDto: ConnectionTokenPayloadDto, options?: AxiosRequestConfig): AxiosPromise<ConnectionTokenResponseDto>;
 
     /**
+     * Retrieves the current status of a payment transaction by its reference ID.
+     * @summary Get payment status
+     * @param {GetPaymentStatusDto} getPaymentStatusDto Payment status query parameters
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PaymentApiInterface
+     */
+    getPaymentStatus(getPaymentStatusDto: GetPaymentStatusDto, options?: AxiosRequestConfig): AxiosPromise<PaymentStatusDto>;
+
+    /**
      * Retrieves a Stripe Terminal connection token for the specified business. This token is required to initialize the Stripe Terminal SDK.
      * @summary Get Stripe Terminal connection token
      * @param {string} businessId Unique identifier for the business
@@ -29582,6 +30019,16 @@ export interface PaymentApiInterface {
      * @memberof PaymentApiInterface
      */
     getToken(businessId: string, options?: AxiosRequestConfig): AxiosPromise<StripeConnectionTokenDto>;
+
+    /**
+     * Initiate a terminal transaction
+     * @summary Initiate a terminal transaction
+     * @param {CreateTerminalPaymentDto} createTerminalPaymentDto Pos order refund payload
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PaymentApiInterface
+     */
+    initiateTerminalTransaction(createTerminalPaymentDto: CreateTerminalPaymentDto, options?: AxiosRequestConfig): AxiosPromise<VivaPaymentIntent>;
 
     /**
      * Handles refund processing for orders placed through online channels
@@ -29658,6 +30105,7 @@ export interface PaymentApiInterface {
      * @summary Create Viva payment
      * @param {RefundPayloadDto} refundPayloadDto Viva payment creation payload
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      * @memberof PaymentApiInterface
      */
@@ -29692,15 +30140,6 @@ export interface PaymentApiInterface {
      * @memberof PaymentApiInterface
      */
     refundVivaTransactionV4(refundPayloadDtoV4: RefundPayloadDtoV4, options?: AxiosRequestConfig): AxiosPromise<VivaPaymentResultDto>;
-
-    /**
-     * 
-     * @param {PaymentIntentIdDto} paymentIntentIdDto Payment intent ID to stimulate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PaymentApiInterface
-     */
-    stimulateWipeCardAction(paymentIntentIdDto: PaymentIntentIdDto, options?: AxiosRequestConfig): AxiosPromise<void>;
 
 }
 
@@ -29812,6 +30251,7 @@ export class PaymentApi extends BaseAPI implements PaymentApiInterface {
      * @summary Create Viva payment
      * @param {VivaCreatePaymentDto} vivaCreatePaymentDto Viva payment creation payload
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      * @memberof PaymentApi
      */
@@ -29904,6 +30344,18 @@ export class PaymentApi extends BaseAPI implements PaymentApiInterface {
     }
 
     /**
+     * Retrieves the current status of a payment transaction by its reference ID.
+     * @summary Get payment status
+     * @param {GetPaymentStatusDto} getPaymentStatusDto Payment status query parameters
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PaymentApi
+     */
+    public getPaymentStatus(getPaymentStatusDto: GetPaymentStatusDto, options?: AxiosRequestConfig) {
+        return PaymentApiFp(this.configuration).getPaymentStatus(getPaymentStatusDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * Retrieves a Stripe Terminal connection token for the specified business. This token is required to initialize the Stripe Terminal SDK.
      * @summary Get Stripe Terminal connection token
      * @param {string} businessId Unique identifier for the business
@@ -29913,6 +30365,18 @@ export class PaymentApi extends BaseAPI implements PaymentApiInterface {
      */
     public getToken(businessId: string, options?: AxiosRequestConfig) {
         return PaymentApiFp(this.configuration).getToken(businessId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Initiate a terminal transaction
+     * @summary Initiate a terminal transaction
+     * @param {CreateTerminalPaymentDto} createTerminalPaymentDto Pos order refund payload
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PaymentApi
+     */
+    public initiateTerminalTransaction(createTerminalPaymentDto: CreateTerminalPaymentDto, options?: AxiosRequestConfig) {
+        return PaymentApiFp(this.configuration).initiateTerminalTransaction(createTerminalPaymentDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -30004,6 +30468,7 @@ export class PaymentApi extends BaseAPI implements PaymentApiInterface {
      * @summary Create Viva payment
      * @param {RefundPayloadDto} refundPayloadDto Viva payment creation payload
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      * @memberof PaymentApi
      */
@@ -30045,17 +30510,6 @@ export class PaymentApi extends BaseAPI implements PaymentApiInterface {
      */
     public refundVivaTransactionV4(refundPayloadDtoV4: RefundPayloadDtoV4, options?: AxiosRequestConfig) {
         return PaymentApiFp(this.configuration).refundVivaTransactionV4(refundPayloadDtoV4, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {PaymentIntentIdDto} paymentIntentIdDto Payment intent ID to stimulate
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PaymentApi
-     */
-    public stimulateWipeCardAction(paymentIntentIdDto: PaymentIntentIdDto, options?: AxiosRequestConfig) {
-        return PaymentApiFp(this.configuration).stimulateWipeCardAction(paymentIntentIdDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -33001,6 +33455,264 @@ export class ShiftTrackingApi extends BaseAPI implements ShiftTrackingApiInterfa
      */
     public unlock(businessId: string, unlockTerminalDto: UnlockTerminalDto, options?: AxiosRequestConfig) {
         return ShiftTrackingApiFp(this.configuration).unlock(businessId, unlockTerminalDto, options).then((request) => request(this.axios, this.basePath));
+    }
+}
+
+
+/**
+ * StationsApi - axios parameter creator
+ * @export
+ */
+export const StationsApiAxiosParamCreator = function (configuration?: Configuration) {
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getStation: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/station`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {SyncStationDto} syncStationDto Sync station data from frontend tablet to backend
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        syncStation: async (syncStationDto: SyncStationDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'syncStationDto' is not null or undefined
+            assertParamExists('syncStation', 'syncStationDto', syncStationDto)
+            const localVarPath = `/api/v1/station/sync`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(syncStationDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {SyncTerminalDto} syncTerminalDto Connect payment terminal to station
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        syncTerminal: async (syncTerminalDto: SyncTerminalDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'syncTerminalDto' is not null or undefined
+            assertParamExists('syncTerminal', 'syncTerminalDto', syncTerminalDto)
+            const localVarPath = `/api/v1/station/terminal/sync`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(syncTerminalDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+    }
+};
+
+/**
+ * StationsApi - functional programming interface
+ * @export
+ */
+export const StationsApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = StationsApiAxiosParamCreator(configuration)
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getStation(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetStationResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getStation(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {SyncStationDto} syncStationDto Sync station data from frontend tablet to backend
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async syncStation(syncStationDto: SyncStationDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StationSyncResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.syncStation(syncStationDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {SyncTerminalDto} syncTerminalDto Connect payment terminal to station
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async syncTerminal(syncTerminalDto: SyncTerminalDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StationSyncResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.syncTerminal(syncTerminalDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+    }
+};
+
+/**
+ * StationsApi - factory interface
+ * @export
+ */
+export const StationsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = StationsApiFp(configuration)
+    return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getStation(options?: any): AxiosPromise<GetStationResponseDto> {
+            return localVarFp.getStation(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {SyncStationDto} syncStationDto Sync station data from frontend tablet to backend
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        syncStation(syncStationDto: SyncStationDto, options?: any): AxiosPromise<StationSyncResponseDto> {
+            return localVarFp.syncStation(syncStationDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {SyncTerminalDto} syncTerminalDto Connect payment terminal to station
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        syncTerminal(syncTerminalDto: SyncTerminalDto, options?: any): AxiosPromise<StationSyncResponseDto> {
+            return localVarFp.syncTerminal(syncTerminalDto, options).then((request) => request(axios, basePath));
+        },
+    };
+};
+
+/**
+ * StationsApi - interface
+ * @export
+ * @interface StationsApi
+ */
+export interface StationsApiInterface {
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof StationsApiInterface
+     */
+    getStation(options?: AxiosRequestConfig): AxiosPromise<GetStationResponseDto>;
+
+    /**
+     * 
+     * @param {SyncStationDto} syncStationDto Sync station data from frontend tablet to backend
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof StationsApiInterface
+     */
+    syncStation(syncStationDto: SyncStationDto, options?: AxiosRequestConfig): AxiosPromise<StationSyncResponseDto>;
+
+    /**
+     * 
+     * @param {SyncTerminalDto} syncTerminalDto Connect payment terminal to station
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof StationsApiInterface
+     */
+    syncTerminal(syncTerminalDto: SyncTerminalDto, options?: AxiosRequestConfig): AxiosPromise<StationSyncResponseDto>;
+
+}
+
+/**
+ * StationsApi - object-oriented interface
+ * @export
+ * @class StationsApi
+ * @extends {BaseAPI}
+ */
+export class StationsApi extends BaseAPI implements StationsApiInterface {
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof StationsApi
+     */
+    public getStation(options?: AxiosRequestConfig) {
+        return StationsApiFp(this.configuration).getStation(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {SyncStationDto} syncStationDto Sync station data from frontend tablet to backend
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof StationsApi
+     */
+    public syncStation(syncStationDto: SyncStationDto, options?: AxiosRequestConfig) {
+        return StationsApiFp(this.configuration).syncStation(syncStationDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {SyncTerminalDto} syncTerminalDto Connect payment terminal to station
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof StationsApi
+     */
+    public syncTerminal(syncTerminalDto: SyncTerminalDto, options?: AxiosRequestConfig) {
+        return StationsApiFp(this.configuration).syncTerminal(syncTerminalDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
