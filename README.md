@@ -13,44 +13,25 @@ TypeScript SDK for Munchi services, providing core utilities and payment process
 
 ### Quick Install (Latest Stable)
 
-Use the `master` branch to always get the latest stable release:
+We recommend using a specific version tag to ensure stability. The current stable version is `v1.1.0`.
 
 ```bash
 # npm
-npm install github:gomunchi/munchi-js-sdk#master
+npm install github:gomunchi/munchi-js-sdk#v1.1.0
 
 # pnpm
-pnpm add github:gomunchi/munchi-js-sdk#master
+pnpm add github:gomunchi/munchi-js-sdk#v1.1.0
 ```
 
-### Install Specific Version
-
-For a pinned version, use the version tag (check [releases](https://github.com/gomunchi/munchi-js-sdk/releases) for available versions):
-
-```bash
-# npm
-npm install github:gomunchi/munchi-js-sdk#v1.0.12
-
-# pnpm
-pnpm add github:gomunchi/munchi-js-sdk#v1.0.12
-```
+> [!TIP]
+> Always use a version tag (e.g., `#v1.1.0`) instead of `#master` in production. This ensures your build remains the same even when newer versions are released.
 
 ### In your package.json
 
 ```json
 {
   "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#master"
-  }
-}
-```
-
-Or with a pinned version:
-
-```json
-{
-  "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.0.12"
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.0"
   }
 }
 ```
@@ -134,18 +115,19 @@ The script will:
 ### Git Tags
 
 Each release creates three tags:
-- `v1.0.13` - Main version tag (use this for installing)
-- `core-v1.0.13` - Core package tag
-- `payments-v1.0.13` - Payments package tag
+- `v1.1.0` - Main version tag (use this for installing)
+- `core-v1.1.0` - Core package tag
+- `payments-v1.1.0` - Payments package tag
+- `react-v1.1.0` - React package tag
 
 ### Install Specific Version
 
 ```bash
 # npm
-npm install github:gomunchi/munchi-js-sdk#v1.0.13
+npm install github:gomunchi/munchi-js-sdk#v1.1.0
 
 # pnpm
-pnpm add github:gomunchi/munchi-js-sdk#v1.0.13
+pnpm add github:gomunchi/munchi-js-sdk#v1.1.0
 ```
 
 ## Contributing
@@ -182,7 +164,7 @@ This repository is public but protected with branch protection rules.
    - Add description and request review
    - Wait for approval and merge
 
-**Note:** Direct pushes to `main` are blocked. All changes must go through pull requests.
+**Note:** Direct pushes to `master` are blocked. All changes must go through pull requests.
 
 See **[Branch Protection Guide](./BRANCH_PROTECTION.md)** for details.
 
@@ -213,6 +195,12 @@ See [GITHUB_INSTALL.md](./GITHUB_INSTALL.md#cicd-integration) for GitHub Actions
 ### Installation fails with "Repository not found"
 - Verify you have access to the repository
 - Check your GitHub authentication (SSH key or token)
+
+### `pnpm` Caching Issues (Stale Code)
+When installing via GitHub URL, `pnpm` heavily caches the repository content. If you update the version tag in `package.json` but still see old code:
+1. Run `pnpm install --force`
+2. If that fails, run `pnpm store prune` and try again.
+3. As a last resort, delete `node_modules` and the lockfile.
 
 ### Build fails on install
 - Ensure you have the required devDependencies installed

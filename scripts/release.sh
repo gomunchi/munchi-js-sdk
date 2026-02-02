@@ -150,6 +150,17 @@ echo ""
 # Push
 echo "📤 Pushing to remote..."
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+if [ "$CURRENT_BRANCH" != "master" ]; then
+  echo "⚠️  Warning: You are on branch '$CURRENT_BRANCH'."
+  echo "   Releases are recommended to be performed from 'master'."
+  read -p "   Do you want to continue anyway? (y/N) " -n 1 -r
+  echo ""
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "❌ Release aborted."
+    exit 1
+  fi
+fi
+
 git push origin "$CURRENT_BRANCH"
 git push origin --tags
 echo "✅ Pushed to remote branch $CURRENT_BRANCH"
@@ -201,34 +212,19 @@ if [ "$PUBLISH" == "true" ]; then
 
     echo "✅ GitHub release created!"
     echo "   View at: https://github.com/gomunchi/munchi-js-sdk/releases/tag/v$VERSION"
-  fi
 
   echo ""
   echo "🎉 Release $VERSION complete!"
   echo ""
   echo "📦 Install with pnpm:"
+  echo "   pnpm add github:gomunchi/munchi-js-sdk#v$VERSION"
+  echo "   # Or per-package:"
   echo "   pnpm add github:gomunchi/munchi-js-sdk#core-v$VERSION github:gomunchi/munchi-js-sdk#payments-v$VERSION github:gomunchi/munchi-js-sdk#react-v$VERSION"
 else
   echo ""
   read -p "📢 Do you want to create a GitHub release now? (y/N) " -n 1 -r
   echo ""
   if [[ $REPLY =~ ^[Yy]$ ]]; then
-    # Set PUBLISH to true and allow falling through to the publish logic block?
-    # The script structure is: if [ "$PUBLISH" == "true" ]; then ... else ... fi
-    # We are currently in the 'else' block of the *Push* logic? No wait, let's look at the file structure.
-    # The file has:
-    # # Push
-    # ...
-    # if [ "$PUBLISH" == "true" ]; then
-    #   ...
-    # else
-    #   ...
-    # fi
-    
-    # We need to restructure slightly or duplicate the logic.
-    # It's better to move the publish logic to a function or change the flow at the top.
-    # But for a minimal edit, I'll just execute the command here.
-    
     echo "📢 Creating GitHub release..."
     if ! command -v gh &> /dev/null; then
        echo "❌ Error: GitHub CLI (gh) is not installed."

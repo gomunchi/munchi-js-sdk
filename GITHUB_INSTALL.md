@@ -50,7 +50,7 @@ npm install github:gomunchi/munchi-js-sdk#v1.0.0
 npm install github:gomunchi/munchi-js-sdk#abc1234
 
 # Install specific branch
-npm install github:gomunchi/munchi-js-sdk#main
+npm install github:gomunchi/munchi-js-sdk#master
 ```
 
 ## Package.json Configuration
