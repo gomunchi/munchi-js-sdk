@@ -5678,6 +5678,12 @@ export interface GetStationResponseDtoStation {
     'orderingBusinessId': number;
     /**
      * 
+     * @type {string}
+     * @memberof GetStationResponseDtoStation
+     */
+    'prefix': string;
+    /**
+     * 
      * @type {object}
      * @memberof GetStationResponseDtoStation
      */
@@ -15269,6 +15275,12 @@ export interface StationDetailsDto {
      * @memberof StationDetailsDto
      */
     'orderingBusinessId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof StationDetailsDto
+     */
+    'prefix': string;
     /**
      * 
      * @type {object}

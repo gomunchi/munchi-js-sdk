@@ -12668,6 +12668,9 @@ components:
         orderingBusinessId:
           type: number
           example: 351
+        prefix:
+          type: string
+          example: station-tablet-001
         metadata:
           type: object
           example:
@@ -12694,6 +12697,7 @@ components:
         - type
         - status
         - orderingBusinessId
+        - prefix
         - createdAt
         - updatedAt
     GetStationResponseDto:
