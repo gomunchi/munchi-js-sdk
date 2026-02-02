@@ -88,7 +88,8 @@ export const ActionEnum = {
     CategoryDeleted: 'CATEGORY_DELETED',
     ProductCreated: 'PRODUCT_CREATED',
     BusinessConfigUpdated: 'BUSINESS_CONFIG_UPDATED',
-    DataSyncRequired: 'data_sync_required'
+    DataSyncRequired: 'data_sync_required',
+    PosSessionUpdated: 'pos_session_updated'
 } as const;
 
 export type ActionEnum = typeof ActionEnum[keyof typeof ActionEnum];
@@ -97,7 +98,10 @@ export const EntityTypeEnum = {
     Menu: 'menu',
     Category: 'category',
     Extra: 'extra',
-    Option: 'option'
+    Option: 'option',
+    Role: 'role',
+    Shift: 'shift',
+    Employee: 'employee'
 } as const;
 
 export type EntityTypeEnum = typeof EntityTypeEnum[keyof typeof EntityTypeEnum];
@@ -893,7 +897,8 @@ export const BusinessEventAction = {
     CategoryDeleted: 'CATEGORY_DELETED',
     ProductCreated: 'PRODUCT_CREATED',
     BusinessConfigUpdated: 'BUSINESS_CONFIG_UPDATED',
-    DataSyncRequired: 'data_sync_required'
+    DataSyncRequired: 'data_sync_required',
+    PosSessionUpdated: 'pos_session_updated'
 } as const;
 
 export type BusinessEventAction = typeof BusinessEventAction[keyof typeof BusinessEventAction];
@@ -4182,6 +4187,31 @@ export type DeviceStatus = typeof DeviceStatus[keyof typeof DeviceStatus];
 /**
  * 
  * @export
+ * @interface DeviceSubscriptionDto
+ */
+export interface DeviceSubscriptionDto {
+    /**
+     * OneSignal Device ID
+     * @type {string}
+     * @memberof DeviceSubscriptionDto
+     */
+    'oneSignalId': string;
+    /**
+     * Hardware ID of the device
+     * @type {string}
+     * @memberof DeviceSubscriptionDto
+     */
+    'hardwareId': string;
+    /**
+     * List of business IDs to subscribe/unsubscribe
+     * @type {Array<number>}
+     * @memberof DeviceSubscriptionDto
+     */
+    'businessIds': Array<number>;
+}
+/**
+ * 
+ * @export
  * @interface DiscountDto
  */
 export interface DiscountDto {
@@ -4257,6 +4287,27 @@ export const DiscountType = {
 } as const;
 
 export type DiscountType = typeof DiscountType[keyof typeof DiscountType];
+
+
+/**
+ * 
+ * @export
+ * @interface DiscoverTerminalDto
+ */
+export interface DiscoverTerminalDto {
+    /**
+     * The id of the business
+     * @type {number}
+     * @memberof DiscoverTerminalDto
+     */
+    'businessId': number;
+    /**
+     * 
+     * @type {PaymentProvider}
+     * @memberof DiscoverTerminalDto
+     */
+    'provider': PaymentProvider;
+}
 
 
 /**
@@ -4951,7 +5002,10 @@ export const EntityType = {
     Menu: 'menu',
     Category: 'category',
     Extra: 'extra',
-    Option: 'option'
+    Option: 'option',
+    Role: 'role',
+    Shift: 'shift',
+    Employee: 'employee'
 } as const;
 
 export type EntityType = typeof EntityType[keyof typeof EntityType];
@@ -5574,122 +5628,78 @@ export interface GetPaymentStatusDto {
  */
 export interface GetStationResponseDto {
     /**
-     * Station ID
-     * @type {string}
+     * 
+     * @type {GetStationResponseDtoStation}
      * @memberof GetStationResponseDto
+     */
+    'station': GetStationResponseDtoStation | null;
+}
+/**
+ * The station details.
+ * @export
+ * @interface GetStationResponseDtoStation
+ */
+export interface GetStationResponseDtoStation {
+    /**
+     * 
+     * @type {string}
+     * @memberof GetStationResponseDtoStation
      */
     'id': string;
     /**
-     * Station name
+     * 
      * @type {string}
-     * @memberof GetStationResponseDto
+     * @memberof GetStationResponseDtoStation
      */
     'name': string;
     /**
-     * Station prefix
+     * 
      * @type {string}
-     * @memberof GetStationResponseDto
-     */
-    'prefix': string;
-    /**
-     * Hardware ID
-     * @type {string}
-     * @memberof GetStationResponseDto
+     * @memberof GetStationResponseDtoStation
      */
     'hardwareId': string;
     /**
      * 
      * @type {StationType}
-     * @memberof GetStationResponseDto
+     * @memberof GetStationResponseDtoStation
      */
     'type': StationType;
     /**
      * 
      * @type {Status}
-     * @memberof GetStationResponseDto
+     * @memberof GetStationResponseDtoStation
      */
     'status': Status;
     /**
-     * Station settings
-     * @type {object}
-     * @memberof GetStationResponseDto
-     */
-    'settings': object | null;
-    /**
-     * Station metadata
-     * @type {object}
-     * @memberof GetStationResponseDto
-     */
-    'metadata': object | null;
-    /**
-     * Business ID
+     * 
      * @type {number}
-     * @memberof GetStationResponseDto
+     * @memberof GetStationResponseDtoStation
      */
     'orderingBusinessId': number;
     /**
      * 
-     * @type {GetStationResponseDtoPaymentTerminal}
-     * @memberof GetStationResponseDto
+     * @type {object}
+     * @memberof GetStationResponseDtoStation
      */
-    'paymentTerminal': GetStationResponseDtoPaymentTerminal | null;
+    'metadata'?: object;
     /**
-     * Created at
+     * Timestamp when the station record was created.
      * @type {string}
-     * @memberof GetStationResponseDto
+     * @memberof GetStationResponseDtoStation
      */
     'createdAt': string;
     /**
-     * Updated at
+     * Timestamp when the station record was last updated.
      * @type {string}
-     * @memberof GetStationResponseDto
+     * @memberof GetStationResponseDtoStation
      */
     'updatedAt': string;
-}
-
-
-/**
- * Connected payment terminal
- * @export
- * @interface GetStationResponseDtoPaymentTerminal
- */
-export interface GetStationResponseDtoPaymentTerminal {
-    /**
-     * The unique ID of the Payment Terminal.
-     * @type {string}
-     * @memberof GetStationResponseDtoPaymentTerminal
-     */
-    'id': string;
-    /**
-     * The unique ID of the Payment Terminal.
-     * @type {string}
-     * @memberof GetStationResponseDtoPaymentTerminal
-     */
-    'hardwareId': string;
-    /**
-     * The unique ID of the Payment Terminal.
-     * @type {string}
-     * @memberof GetStationResponseDtoPaymentTerminal
-     */
-    'label': string | null;
-    /**
-     * The unique ID of the Payment Terminal.
-     * @type {string}
-     * @memberof GetStationResponseDtoPaymentTerminal
-     */
-    'orderingBusinessId': string;
     /**
      * 
-     * @type {PaymentProvider}
-     * @memberof GetStationResponseDtoPaymentTerminal
+     * @type {StationDetailsDtoPaymentTerminal}
+     * @memberof GetStationResponseDtoStation
      */
-    'provider': PaymentProvider;
-    /**
-     * Timestamp when the payment terminal record was last updated.
-     * @type {string}
-     * @memberof GetStationResponseDtoPaymentTerminal
-     */
-    'updatedAt': string;
+    'paymentTerminal'?: StationDetailsDtoPaymentTerminal | null;
 }
 
 
@@ -10270,7 +10280,8 @@ export const PaymentMethod = {
     Debit: 'Debit',
     Credit: 'Credit',
     GiftCardManual: 'GiftCardManual',
-    WoltBenefit: 'WoltBenefit'
+    WoltBenefit: 'WoltBenefit',
+    Fundis: 'Fundis'
 } as const;
 
 export type PaymentMethod = typeof PaymentMethod[keyof typeof PaymentMethod];
@@ -10665,7 +10676,8 @@ export const TypeEnum = {
     Debit: 'Debit',
     Credit: 'Credit',
     GiftCardManual: 'GiftCardManual',
-    WoltBenefit: 'WoltBenefit'
+    WoltBenefit: 'WoltBenefit',
+    Fundis: 'Fundis'
 } as const;
 
 export type TypeEnum = typeof TypeEnum[keyof typeof TypeEnum];
@@ -15212,6 +15224,120 @@ export interface StaffActivityLogDto {
      * @memberof StaffActivityLogDto
      */
     'productName'?: string | null;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface StationDetailsDto
+ */
+export interface StationDetailsDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof StationDetailsDto
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof StationDetailsDto
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof StationDetailsDto
+     */
+    'hardwareId': string;
+    /**
+     * 
+     * @type {StationType}
+     * @memberof StationDetailsDto
+     */
+    'type': StationType;
+    /**
+     * 
+     * @type {Status}
+     * @memberof StationDetailsDto
+     */
+    'status': Status;
+    /**
+     * 
+     * @type {number}
+     * @memberof StationDetailsDto
+     */
+    'orderingBusinessId': number;
+    /**
+     * 
+     * @type {object}
+     * @memberof StationDetailsDto
+     */
+    'metadata'?: object;
+    /**
+     * Timestamp when the station record was created.
+     * @type {string}
+     * @memberof StationDetailsDto
+     */
+    'createdAt': string;
+    /**
+     * Timestamp when the station record was last updated.
+     * @type {string}
+     * @memberof StationDetailsDto
+     */
+    'updatedAt': string;
+    /**
+     * 
+     * @type {StationDetailsDtoPaymentTerminal}
+     * @memberof StationDetailsDto
+     */
+    'paymentTerminal'?: StationDetailsDtoPaymentTerminal | null;
+}
+
+
+/**
+ * The payment terminal connected to this station, or null if unassigned.
+ * @export
+ * @interface StationDetailsDtoPaymentTerminal
+ */
+export interface StationDetailsDtoPaymentTerminal {
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof StationDetailsDtoPaymentTerminal
+     */
+    'id': string;
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof StationDetailsDtoPaymentTerminal
+     */
+    'hardwareId': string;
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof StationDetailsDtoPaymentTerminal
+     */
+    'label': string | null;
+    /**
+     * The unique ID of the Payment Terminal.
+     * @type {string}
+     * @memberof StationDetailsDtoPaymentTerminal
+     */
+    'orderingBusinessId': string;
+    /**
+     * 
+     * @type {PaymentProvider}
+     * @memberof StationDetailsDtoPaymentTerminal
+     */
+    'provider': PaymentProvider;
+    /**
+     * Timestamp when the payment terminal record was last updated.
+     * @type {string}
+     * @memberof StationDetailsDtoPaymentTerminal
+     */
+    'updatedAt': string;
 }
 
 
@@ -25422,13 +25548,13 @@ export const NotificationApiAxiosParamCreator = function (configuration?: Config
     return {
         /**
          * 
-         * @param {object} body 
+         * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addVenueSubscriptions: async (body: object, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'body' is not null or undefined
-            assertParamExists('addVenueSubscriptions', 'body', body)
+        addVenueSubscriptions: async (deviceSubscriptionDto: DeviceSubscriptionDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'deviceSubscriptionDto' is not null or undefined
+            assertParamExists('addVenueSubscriptions', 'deviceSubscriptionDto', deviceSubscriptionDto)
             const localVarPath = `/api/v1/notification/add-venue-subscriptions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -25448,7 +25574,43 @@ export const NotificationApiAxiosParamCreator = function (configuration?: Config
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(deviceSubscriptionDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Subscribe a device to multiple venue/business notifications using OneSignal ID and hardware ID.
+         * @summary Add venue subscriptions for push notifications
+         * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addVenueSubscriptionsV2: async (deviceSubscriptionDto: DeviceSubscriptionDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'deviceSubscriptionDto' is not null or undefined
+            assertParamExists('addVenueSubscriptionsV2', 'deviceSubscriptionDto', deviceSubscriptionDto)
+            const localVarPath = `/api/v2/notification/add-venue-subscriptions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(deviceSubscriptionDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -25457,13 +25619,13 @@ export const NotificationApiAxiosParamCreator = function (configuration?: Config
         },
         /**
          * 
-         * @param {object} body 
+         * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        removeVenueSubscriptions: async (body: object, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'body' is not null or undefined
-            assertParamExists('removeVenueSubscriptions', 'body', body)
+        removeVenueSubscriptions: async (deviceSubscriptionDto: DeviceSubscriptionDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'deviceSubscriptionDto' is not null or undefined
+            assertParamExists('removeVenueSubscriptions', 'deviceSubscriptionDto', deviceSubscriptionDto)
             const localVarPath = `/api/v1/notification/remove-venue-subscriptions`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -25483,7 +25645,43 @@ export const NotificationApiAxiosParamCreator = function (configuration?: Config
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(deviceSubscriptionDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Unsubscribe a device from multiple venue/business notifications using hardware ID.
+         * @summary Remove venue subscriptions for push notifications
+         * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        removeVenueSubscriptionsV2: async (deviceSubscriptionDto: DeviceSubscriptionDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'deviceSubscriptionDto' is not null or undefined
+            assertParamExists('removeVenueSubscriptionsV2', 'deviceSubscriptionDto', deviceSubscriptionDto)
+            const localVarPath = `/api/v2/notification/remove-venue-subscriptions`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(deviceSubscriptionDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -25502,22 +25700,44 @@ export const NotificationApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {object} body 
+         * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async addVenueSubscriptions(body: object, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.addVenueSubscriptions(body, options);
+        async addVenueSubscriptions(deviceSubscriptionDto: DeviceSubscriptionDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addVenueSubscriptions(deviceSubscriptionDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Subscribe a device to multiple venue/business notifications using OneSignal ID and hardware ID.
+         * @summary Add venue subscriptions for push notifications
+         * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async addVenueSubscriptionsV2(deviceSubscriptionDto: DeviceSubscriptionDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.addVenueSubscriptionsV2(deviceSubscriptionDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
          * 
-         * @param {object} body 
+         * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async removeVenueSubscriptions(body: object, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.removeVenueSubscriptions(body, options);
+        async removeVenueSubscriptions(deviceSubscriptionDto: DeviceSubscriptionDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.removeVenueSubscriptions(deviceSubscriptionDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Unsubscribe a device from multiple venue/business notifications using hardware ID.
+         * @summary Remove venue subscriptions for push notifications
+         * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async removeVenueSubscriptionsV2(deviceSubscriptionDto: DeviceSubscriptionDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.removeVenueSubscriptionsV2(deviceSubscriptionDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -25532,21 +25752,41 @@ export const NotificationApiFactory = function (configuration?: Configuration, b
     return {
         /**
          * 
-         * @param {object} body 
+         * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        addVenueSubscriptions(body: object, options?: any): AxiosPromise<void> {
-            return localVarFp.addVenueSubscriptions(body, options).then((request) => request(axios, basePath));
+        addVenueSubscriptions(deviceSubscriptionDto: DeviceSubscriptionDto, options?: any): AxiosPromise<void> {
+            return localVarFp.addVenueSubscriptions(deviceSubscriptionDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Subscribe a device to multiple venue/business notifications using OneSignal ID and hardware ID.
+         * @summary Add venue subscriptions for push notifications
+         * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        addVenueSubscriptionsV2(deviceSubscriptionDto: DeviceSubscriptionDto, options?: any): AxiosPromise<void> {
+            return localVarFp.addVenueSubscriptionsV2(deviceSubscriptionDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @param {object} body 
+         * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        removeVenueSubscriptions(body: object, options?: any): AxiosPromise<void> {
-            return localVarFp.removeVenueSubscriptions(body, options).then((request) => request(axios, basePath));
+        removeVenueSubscriptions(deviceSubscriptionDto: DeviceSubscriptionDto, options?: any): AxiosPromise<void> {
+            return localVarFp.removeVenueSubscriptions(deviceSubscriptionDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Unsubscribe a device from multiple venue/business notifications using hardware ID.
+         * @summary Remove venue subscriptions for push notifications
+         * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        removeVenueSubscriptionsV2(deviceSubscriptionDto: DeviceSubscriptionDto, options?: any): AxiosPromise<void> {
+            return localVarFp.removeVenueSubscriptionsV2(deviceSubscriptionDto, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -25559,21 +25799,41 @@ export const NotificationApiFactory = function (configuration?: Configuration, b
 export interface NotificationApiInterface {
     /**
      * 
-     * @param {object} body 
+     * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof NotificationApiInterface
      */
-    addVenueSubscriptions(body: object, options?: AxiosRequestConfig): AxiosPromise<void>;
+    addVenueSubscriptions(deviceSubscriptionDto: DeviceSubscriptionDto, options?: AxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * Subscribe a device to multiple venue/business notifications using OneSignal ID and hardware ID.
+     * @summary Add venue subscriptions for push notifications
+     * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationApiInterface
+     */
+    addVenueSubscriptionsV2(deviceSubscriptionDto: DeviceSubscriptionDto, options?: AxiosRequestConfig): AxiosPromise<void>;
 
     /**
      * 
-     * @param {object} body 
+     * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof NotificationApiInterface
      */
-    removeVenueSubscriptions(body: object, options?: AxiosRequestConfig): AxiosPromise<void>;
+    removeVenueSubscriptions(deviceSubscriptionDto: DeviceSubscriptionDto, options?: AxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * Unsubscribe a device from multiple venue/business notifications using hardware ID.
+     * @summary Remove venue subscriptions for push notifications
+     * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationApiInterface
+     */
+    removeVenueSubscriptionsV2(deviceSubscriptionDto: DeviceSubscriptionDto, options?: AxiosRequestConfig): AxiosPromise<void>;
 
 }
 
@@ -25586,24 +25846,48 @@ export interface NotificationApiInterface {
 export class NotificationApi extends BaseAPI implements NotificationApiInterface {
     /**
      * 
-     * @param {object} body 
+     * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof NotificationApi
      */
-    public addVenueSubscriptions(body: object, options?: AxiosRequestConfig) {
-        return NotificationApiFp(this.configuration).addVenueSubscriptions(body, options).then((request) => request(this.axios, this.basePath));
+    public addVenueSubscriptions(deviceSubscriptionDto: DeviceSubscriptionDto, options?: AxiosRequestConfig) {
+        return NotificationApiFp(this.configuration).addVenueSubscriptions(deviceSubscriptionDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Subscribe a device to multiple venue/business notifications using OneSignal ID and hardware ID.
+     * @summary Add venue subscriptions for push notifications
+     * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationApi
+     */
+    public addVenueSubscriptionsV2(deviceSubscriptionDto: DeviceSubscriptionDto, options?: AxiosRequestConfig) {
+        return NotificationApiFp(this.configuration).addVenueSubscriptionsV2(deviceSubscriptionDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @param {object} body 
+     * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof NotificationApi
      */
-    public removeVenueSubscriptions(body: object, options?: AxiosRequestConfig) {
-        return NotificationApiFp(this.configuration).removeVenueSubscriptions(body, options).then((request) => request(this.axios, this.basePath));
+    public removeVenueSubscriptions(deviceSubscriptionDto: DeviceSubscriptionDto, options?: AxiosRequestConfig) {
+        return NotificationApiFp(this.configuration).removeVenueSubscriptions(deviceSubscriptionDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Unsubscribe a device from multiple venue/business notifications using hardware ID.
+     * @summary Remove venue subscriptions for push notifications
+     * @param {DeviceSubscriptionDto} deviceSubscriptionDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof NotificationApi
+     */
+    public removeVenueSubscriptionsV2(deviceSubscriptionDto: DeviceSubscriptionDto, options?: AxiosRequestConfig) {
+        return NotificationApiFp(this.configuration).removeVenueSubscriptionsV2(deviceSubscriptionDto, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -33470,6 +33754,35 @@ export const StationsApiAxiosParamCreator = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        deactivateStation: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/station/deactivate`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         getStation: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/v1/station`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -33579,6 +33892,15 @@ export const StationsApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        async deactivateStation(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deactivateStation(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         async getStation(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetStationResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getStation(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -33613,6 +33935,14 @@ export const StationsApiFp = function(configuration?: Configuration) {
 export const StationsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = StationsApiFp(configuration)
     return {
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deactivateStation(options?: any): AxiosPromise<void> {
+            return localVarFp.deactivateStation(options).then((request) => request(axios, basePath));
+        },
         /**
          * 
          * @param {*} [options] Override http request option.
@@ -33654,6 +33984,14 @@ export interface StationsApiInterface {
      * @throws {RequiredError}
      * @memberof StationsApiInterface
      */
+    deactivateStation(options?: AxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof StationsApiInterface
+     */
     getStation(options?: AxiosRequestConfig): AxiosPromise<GetStationResponseDto>;
 
     /**
@@ -33683,6 +34021,16 @@ export interface StationsApiInterface {
  * @extends {BaseAPI}
  */
 export class StationsApi extends BaseAPI implements StationsApiInterface {
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof StationsApi
+     */
+    public deactivateStation(options?: AxiosRequestConfig) {
+        return StationsApiFp(this.configuration).deactivateStation(options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @param {*} [options] Override http request option.
@@ -33723,6 +34071,42 @@ export class StationsApi extends BaseAPI implements StationsApiInterface {
  */
 export const TerminalApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * Scan for available terminals on the network for the specified provider and business.
+         * @summary Discover available payment terminals
+         * @param {DiscoverTerminalDto} discoverTerminalDto Discover available payment terminals
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        discoverTerminal: async (discoverTerminalDto: DiscoverTerminalDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'discoverTerminalDto' is not null or undefined
+            assertParamExists('discoverTerminal', 'discoverTerminalDto', discoverTerminalDto)
+            const localVarPath = `/api/v1/terminal/discover`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(discoverTerminalDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * 
          * @param {number} businessId The id of the business
@@ -33781,6 +34165,17 @@ export const TerminalApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = TerminalApiAxiosParamCreator(configuration)
     return {
         /**
+         * Scan for available terminals on the network for the specified provider and business.
+         * @summary Discover available payment terminals
+         * @param {DiscoverTerminalDto} discoverTerminalDto Discover available payment terminals
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async discoverTerminal(discoverTerminalDto: DiscoverTerminalDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PaymentTerminalDto>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.discoverTerminal(discoverTerminalDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * 
          * @param {number} businessId The id of the business
          * @param {PaymentProvider} provider The payment gateway or hardware provider handling the transaction.
@@ -33803,6 +34198,16 @@ export const TerminalApiFactory = function (configuration?: Configuration, baseP
     const localVarFp = TerminalApiFp(configuration)
     return {
         /**
+         * Scan for available terminals on the network for the specified provider and business.
+         * @summary Discover available payment terminals
+         * @param {DiscoverTerminalDto} discoverTerminalDto Discover available payment terminals
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        discoverTerminal(discoverTerminalDto: DiscoverTerminalDto, options?: any): AxiosPromise<Array<PaymentTerminalDto>> {
+            return localVarFp.discoverTerminal(discoverTerminalDto, options).then((request) => request(axios, basePath));
+        },
+        /**
          * 
          * @param {number} businessId The id of the business
          * @param {PaymentProvider} provider The payment gateway or hardware provider handling the transaction.
@@ -33823,6 +34228,16 @@ export const TerminalApiFactory = function (configuration?: Configuration, baseP
  */
 export interface TerminalApiInterface {
     /**
+     * Scan for available terminals on the network for the specified provider and business.
+     * @summary Discover available payment terminals
+     * @param {DiscoverTerminalDto} discoverTerminalDto Discover available payment terminals
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof TerminalApiInterface
+     */
+    discoverTerminal(discoverTerminalDto: DiscoverTerminalDto, options?: AxiosRequestConfig): AxiosPromise<Array<PaymentTerminalDto>>;
+
+    /**
      * 
      * @param {number} businessId The id of the business
      * @param {PaymentProvider} provider The payment gateway or hardware provider handling the transaction.
@@ -33842,6 +34257,18 @@ export interface TerminalApiInterface {
  * @extends {BaseAPI}
  */
 export class TerminalApi extends BaseAPI implements TerminalApiInterface {
+    /**
+     * Scan for available terminals on the network for the specified provider and business.
+     * @summary Discover available payment terminals
+     * @param {DiscoverTerminalDto} discoverTerminalDto Discover available payment terminals
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof TerminalApi
+     */
+    public discoverTerminal(discoverTerminalDto: DiscoverTerminalDto, options?: AxiosRequestConfig) {
+        return TerminalApiFp(this.configuration).discoverTerminal(discoverTerminalDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @param {number} businessId The id of the business
