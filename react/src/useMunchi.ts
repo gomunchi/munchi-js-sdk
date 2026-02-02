@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react";
-import { SdkContext } from "./SdkContainer";
-import type { PaymentInteractionState } from "@munchi/payments";
+import { SdkContext, type SdkContextType } from "./SdkContainer";
+import type { IMunchiPaymentSDK, PaymentInteractionState } from "@munchi/payments";
 
 /**
  * Hook to access all Munchi SDK instances.
  */
-export const useMunchi = () => {
+export const useMunchi = (): SdkContextType => {
   const context = useContext(SdkContext);
   if (!context) {
     throw new Error("useMunchi must be used within a SdkContainer");
@@ -16,7 +16,7 @@ export const useMunchi = () => {
 /**
  * Hook to access the Munchi Payment SDK instance.
  */
-export const useSdk = () => {
+export const useSdk = (): IMunchiPaymentSDK => {
   const { sdk } = useMunchi();
   return sdk;
 };

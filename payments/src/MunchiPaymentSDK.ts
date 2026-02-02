@@ -381,9 +381,9 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     }
   };
 
-  public reset(): void {
+  public reset = (): void => {
     if (MunchiPaymentSDK.TERMINAL_STATES.includes(this._currentState)) {
       this.transitionTo(PaymentInteractionState.IDLE);
     }
-  }
+  };
 }
