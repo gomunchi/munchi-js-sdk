@@ -167,21 +167,7 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     }
   }
 
-  public connect = async (): Promise<void> => {
-    this.transitionTo(PaymentInteractionState.CONNECTING);
-    try {
-      await this.strategy.initialize();
-      this.transitionTo(PaymentInteractionState.IDLE);
-    } catch (error) {
-      this.transitionTo(PaymentInteractionState.FAILED);
-      throw error;
-    }
-  };
 
-  public disconnect = async (): Promise<void> => {
-    await this.strategy.disconnect();
-    this.transitionTo(PaymentInteractionState.IDLE);
-  };
 
   public initiateTransaction = async (
     params: PaymentRequest,

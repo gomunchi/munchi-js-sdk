@@ -7,13 +7,7 @@ import {
 import type { IPaymentStrategy } from "./IPaymentStrategy";
 
 export class MockStrategy implements IPaymentStrategy {
-  async initialize(): Promise<void> {
-    console.log("[MockSDK] Initialized");
-  }
 
-  async disconnect(): Promise<void> {
-    console.log("[MockSDK] Disconnected");
-  }
 
   async processPayment(
     request: PaymentRequest,

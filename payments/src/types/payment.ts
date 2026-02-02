@@ -88,8 +88,7 @@ export interface IMunchiPaymentSDK {
   readonly currentState: PaymentInteractionState;
   readonly nextAutoResetAt: number | undefined;
   subscribe(listener: (state: PaymentInteractionState) => void): () => void;
-  connect(): Promise<void>;
-  disconnect(): Promise<void>;
+
   initiateTransaction(
     params: PaymentRequest,
     options?: TransactionOptions,

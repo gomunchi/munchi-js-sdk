@@ -23,6 +23,7 @@ export function setupSuccessfulPaymentMocks(
   MockedPaymentApi.mockImplementation((() => ({
     initiateTerminalTransaction: mockCreateVivaTransaction,
     cancelTransaction: jest.fn(),
+    cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
   })) as any);
 
   (mockMessaging.subscribe as jest.Mock).mockImplementation(
@@ -57,6 +58,7 @@ export function setupFailedPaymentMocks(
   MockedPaymentApi.mockImplementation((() => ({
     initiateTerminalTransaction: mockCreateVivaTransaction,
     cancelTransaction: jest.fn(),
+    cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
   })) as any);
 
   (mockMessaging.subscribe as jest.Mock).mockImplementation(
@@ -87,6 +89,7 @@ export function setupNetworkErrorMocks() {
       .fn()
       .mockRejectedValue(new Error("Network error")),
     cancelTransaction: jest.fn(),
+    cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
   })) as any);
 }
 
@@ -115,6 +118,7 @@ export function setupTimeoutWithPollingMocks(
   MockedPaymentApi.mockImplementation((() => ({
     initiateTerminalTransaction: mockCreateVivaTransaction,
     cancelTransaction: jest.fn(),
+    cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
     getPaymentStatus: mockGetPaymentStatus,
   })) as any);
 

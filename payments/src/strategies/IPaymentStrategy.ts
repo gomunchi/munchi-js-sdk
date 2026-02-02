@@ -5,8 +5,7 @@ import type {
 } from "../types/payment";
 
 export interface IPaymentStrategy {
-  initialize(): Promise<void>;
-  disconnect(): Promise<void>;
+
   processPayment(
     request: PaymentRequest,
     onStateChange: (state: PaymentInteractionState, detail?: { sessionId?: string }) => void,

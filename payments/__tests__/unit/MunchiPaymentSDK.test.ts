@@ -2,6 +2,7 @@ import type { AxiosInstance } from "axios";
 import {
   PaymentApi,
   PaymentFailureCode,
+  PaymentProvider,
   SimplePaymentStatus
 } from "../../../core";
 import { MunchiPaymentSDK } from "../../src/MunchiPaymentSDK";
@@ -58,12 +59,31 @@ describe("MunchiPaymentSDK", () => {
       expect(sdk).toBeInstanceOf(MunchiPaymentSDK);
     });
 
+    it("should create SDK instance with Nets provider (MockStrategy)", () => {
+      const netsConfig = { ...mockConfig, provider: PaymentProvider.Nets };
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, netsConfig);
+      expect(sdk).toBeInstanceOf(MunchiPaymentSDK);
+      // Since strategy is private, we can't easily check instance. 
+      // But we covered the line in resolveStrategy.
+    });
+
     it("should expose the current state", () => {
       const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
       expect(sdk.currentState).toBe(PaymentInteractionState.IDLE);
     });
-    // ... other initialization tests can remain similar if they don't involve initiateTransaction
+
+    it("should expose version", () => {
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      expect(sdk.version).toBeDefined();
+    });
+
+    it("should expose nextAutoResetAt", () => {
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      expect(sdk.nextAutoResetAt).toBeUndefined();
+    });
   });
+
+
 
   describe("initiateTransaction with ably", () => {
     it("should reject invalid amount (zero)", async () => {

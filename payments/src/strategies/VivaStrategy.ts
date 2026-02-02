@@ -30,11 +30,7 @@ export class VivaStrategy implements IPaymentStrategy {
     this.api = new PaymentApi(undefined, "", axios);
   }
 
-  async initialize() {}
-  async disconnect() {
-    this.abortController?.abort();
-    this.currentSessionId = null;
-  }
+
 
   async processPayment(
     request: PaymentRequest,

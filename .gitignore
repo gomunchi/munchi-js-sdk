@@ -50,3 +50,6 @@ app-example
 .env.local
 
 .env
+
+# Testing
+coverage/
