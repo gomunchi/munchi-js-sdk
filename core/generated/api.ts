@@ -3153,6 +3153,19 @@ export interface ConfirmPreorderDto {
 /**
  * 
  * @export
+ * @interface ConnectTerminalDto
+ */
+export interface ConnectTerminalDto {
+    /**
+     * The unique hardware identifier of the physical terminal.
+     * @type {string}
+     * @memberof ConnectTerminalDto
+     */
+    'terminalHardwareId': string;
+}
+/**
+ * 
+ * @export
  * @interface ConnectTerminalPayloadDto
  */
 export interface ConnectTerminalPayloadDto {
@@ -6159,6 +6172,12 @@ export interface KioskDetailsDtoPaymentTerminal {
      */
     'label': string | null;
     /**
+     * 
+     * @type {TerminalConnectionType}
+     * @memberof KioskDetailsDtoPaymentTerminal
+     */
+    'connectionType': TerminalConnectionType;
+    /**
      * The unique ID of the Payment Terminal.
      * @type {string}
      * @memberof KioskDetailsDtoPaymentTerminal
@@ -6176,6 +6195,12 @@ export interface KioskDetailsDtoPaymentTerminal {
      * @memberof KioskDetailsDtoPaymentTerminal
      */
     'updatedAt': string;
+    /**
+     * List of stations connected to this terminal.
+     * @type {Array<LinkedStationDto>}
+     * @memberof KioskDetailsDtoPaymentTerminal
+     */
+    'stations': Array<LinkedStationDto>;
 }
 
 
@@ -6392,6 +6417,39 @@ export interface LapseDtoOpen {
      */
     'minute': number;
 }
+/**
+ * 
+ * @export
+ * @interface LinkedStationDto
+ */
+export interface LinkedStationDto {
+    /**
+     * 
+     * @type {string}
+     * @memberof LinkedStationDto
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LinkedStationDto
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LinkedStationDto
+     */
+    'hardwareId': string;
+    /**
+     * 
+     * @type {Status}
+     * @memberof LinkedStationDto
+     */
+    'status': Status;
+}
+
+
 /**
  * 
  * @export
@@ -10147,6 +10205,12 @@ export interface PaymentErrorDto {
      * @memberof PaymentErrorDto
      */
     'timestamp': string;
+    /**
+     * Reference error from provider
+     * @type {string}
+     * @memberof PaymentErrorDto
+     */
+    'referenceError'?: string;
 }
 
 
@@ -11066,6 +11130,12 @@ export interface PaymentTerminalDto {
      */
     'label': string | null;
     /**
+     * 
+     * @type {TerminalConnectionType}
+     * @memberof PaymentTerminalDto
+     */
+    'connectionType': TerminalConnectionType;
+    /**
      * The unique ID of the Payment Terminal.
      * @type {string}
      * @memberof PaymentTerminalDto
@@ -11083,6 +11153,12 @@ export interface PaymentTerminalDto {
      * @memberof PaymentTerminalDto
      */
     'updatedAt': string;
+    /**
+     * List of stations connected to this terminal.
+     * @type {Array<LinkedStationDto>}
+     * @memberof PaymentTerminalDto
+     */
+    'stations': Array<LinkedStationDto>;
 }
 
 
@@ -15333,6 +15409,12 @@ export interface StationDetailsDtoPaymentTerminal {
      */
     'label': string | null;
     /**
+     * 
+     * @type {TerminalConnectionType}
+     * @memberof StationDetailsDtoPaymentTerminal
+     */
+    'connectionType': TerminalConnectionType;
+    /**
      * The unique ID of the Payment Terminal.
      * @type {string}
      * @memberof StationDetailsDtoPaymentTerminal
@@ -15350,6 +15432,12 @@ export interface StationDetailsDtoPaymentTerminal {
      * @memberof StationDetailsDtoPaymentTerminal
      */
     'updatedAt': string;
+    /**
+     * List of stations connected to this terminal.
+     * @type {Array<LinkedStationDto>}
+     * @memberof StationDetailsDtoPaymentTerminal
+     */
+    'stations': Array<LinkedStationDto>;
 }
 
 
@@ -34084,6 +34172,72 @@ export class StationsApi extends BaseAPI implements StationsApiInterface {
 export const TerminalApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
+         * Connects a physical payment terminal to the station identified by the auth token.
+         * @summary Connect a terminal to the calling station
+         * @param {ConnectTerminalDto} connectTerminalDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        connectTerminal: async (connectTerminalDto: ConnectTerminalDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'connectTerminalDto' is not null or undefined
+            assertParamExists('connectTerminal', 'connectTerminalDto', connectTerminalDto)
+            const localVarPath = `/api/v1/terminal/connect`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(connectTerminalDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Disconnects the currently connected payment terminal from the station identified by the auth token.
+         * @summary Disconnect the terminal from the calling station
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        disconnectTerminal: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/v1/terminal/disconnect`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Scan for available terminals on the network for the specified provider and business.
          * @summary Discover available payment terminals
          * @param {DiscoverTerminalDto} discoverTerminalDto Discover available payment terminals
@@ -34177,6 +34331,27 @@ export const TerminalApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = TerminalApiAxiosParamCreator(configuration)
     return {
         /**
+         * Connects a physical payment terminal to the station identified by the auth token.
+         * @summary Connect a terminal to the calling station
+         * @param {ConnectTerminalDto} connectTerminalDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async connectTerminal(connectTerminalDto: ConnectTerminalDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaymentTerminalDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.connectTerminal(connectTerminalDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Disconnects the currently connected payment terminal from the station identified by the auth token.
+         * @summary Disconnect the terminal from the calling station
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async disconnectTerminal(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.disconnectTerminal(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Scan for available terminals on the network for the specified provider and business.
          * @summary Discover available payment terminals
          * @param {DiscoverTerminalDto} discoverTerminalDto Discover available payment terminals
@@ -34210,6 +34385,25 @@ export const TerminalApiFactory = function (configuration?: Configuration, baseP
     const localVarFp = TerminalApiFp(configuration)
     return {
         /**
+         * Connects a physical payment terminal to the station identified by the auth token.
+         * @summary Connect a terminal to the calling station
+         * @param {ConnectTerminalDto} connectTerminalDto 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        connectTerminal(connectTerminalDto: ConnectTerminalDto, options?: any): AxiosPromise<PaymentTerminalDto> {
+            return localVarFp.connectTerminal(connectTerminalDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Disconnects the currently connected payment terminal from the station identified by the auth token.
+         * @summary Disconnect the terminal from the calling station
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        disconnectTerminal(options?: any): AxiosPromise<void> {
+            return localVarFp.disconnectTerminal(options).then((request) => request(axios, basePath));
+        },
+        /**
          * Scan for available terminals on the network for the specified provider and business.
          * @summary Discover available payment terminals
          * @param {DiscoverTerminalDto} discoverTerminalDto Discover available payment terminals
@@ -34240,6 +34434,25 @@ export const TerminalApiFactory = function (configuration?: Configuration, baseP
  */
 export interface TerminalApiInterface {
     /**
+     * Connects a physical payment terminal to the station identified by the auth token.
+     * @summary Connect a terminal to the calling station
+     * @param {ConnectTerminalDto} connectTerminalDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof TerminalApiInterface
+     */
+    connectTerminal(connectTerminalDto: ConnectTerminalDto, options?: AxiosRequestConfig): AxiosPromise<PaymentTerminalDto>;
+
+    /**
+     * Disconnects the currently connected payment terminal from the station identified by the auth token.
+     * @summary Disconnect the terminal from the calling station
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof TerminalApiInterface
+     */
+    disconnectTerminal(options?: AxiosRequestConfig): AxiosPromise<void>;
+
+    /**
      * Scan for available terminals on the network for the specified provider and business.
      * @summary Discover available payment terminals
      * @param {DiscoverTerminalDto} discoverTerminalDto Discover available payment terminals
@@ -34269,6 +34482,29 @@ export interface TerminalApiInterface {
  * @extends {BaseAPI}
  */
 export class TerminalApi extends BaseAPI implements TerminalApiInterface {
+    /**
+     * Connects a physical payment terminal to the station identified by the auth token.
+     * @summary Connect a terminal to the calling station
+     * @param {ConnectTerminalDto} connectTerminalDto 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof TerminalApi
+     */
+    public connectTerminal(connectTerminalDto: ConnectTerminalDto, options?: AxiosRequestConfig) {
+        return TerminalApiFp(this.configuration).connectTerminal(connectTerminalDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Disconnects the currently connected payment terminal from the station identified by the auth token.
+     * @summary Disconnect the terminal from the calling station
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof TerminalApi
+     */
+    public disconnectTerminal(options?: AxiosRequestConfig) {
+        return TerminalApiFp(this.configuration).disconnectTerminal(options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * Scan for available terminals on the network for the specified provider and business.
      * @summary Discover available payment terminals

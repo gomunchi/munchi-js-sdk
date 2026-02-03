@@ -3695,6 +3695,38 @@ paths:
                   $ref: "#/components/schemas/PaymentTerminalDto"
       summary: Discover available payment terminals
       tags: *a33
+  /api/v1/terminal/connect:
+    post:
+      description: Connects a physical payment terminal to the station identified by
+        the auth token.
+      operationId: connectTerminal
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConnectTerminalDto"
+      responses:
+        "200":
+          description: Terminal connected successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentTerminalDto"
+      summary: Connect a terminal to the calling station
+      tags: *a33
+  /api/v1/terminal/disconnect:
+    post:
+      description: Disconnects the currently connected payment terminal from the
+        station identified by the auth token.
+      operationId: disconnectTerminal
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      summary: Disconnect the terminal from the calling station
+      tags: *a33
   /api/v1/station:
     get:
       operationId: getStation
@@ -8801,6 +8833,9 @@ components:
           format: date-time
           type: string
           description: When this error occurred
+        referenceError:
+          type: string
+          description: Reference error from provider
       required:
         - code
         - retryable
@@ -8858,6 +8893,31 @@ components:
       enum:
         - ACTIVE
         - INACTIVE
+    TerminalConnectionType:
+      type: string
+      enum:
+        - NETWORK
+    LinkedStationDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: cuid123456
+        name:
+          type: string
+          example: Kitchen Station 1
+        hardwareId:
+          type: string
+          example: station-tablet-001
+        status:
+          example: ACTIVE
+          allOf:
+            - $ref: "#/components/schemas/Status"
+      required:
+        - id
+        - name
+        - hardwareId
+        - status
     PaymentTerminalDto:
       type: object
       properties:
@@ -8874,6 +8934,11 @@ components:
           description: The unique ID of the Payment Terminal.
           example: terminal-xyz-7890
           nullable: true
+        connectionType:
+          description: The connection type of the Payment Terminal.
+          example: NETWORK
+          allOf:
+            - $ref: "#/components/schemas/TerminalConnectionType"
         orderingBusinessId:
           type: string
           description: The unique ID of the Payment Terminal.
@@ -8886,13 +8951,20 @@ components:
         updatedAt:
           type: string
           description: Timestamp when the payment terminal record was last updated.
+        stations:
+          description: List of stations connected to this terminal.
+          type: array
+          items:
+            $ref: "#/components/schemas/LinkedStationDto"
       required:
         - id
         - hardwareId
         - label
+        - connectionType
         - orderingBusinessId
         - provider
         - updatedAt
+        - stations
     KioskDetailsDto:
       type: object
       properties:
@@ -12640,6 +12712,15 @@ components:
       required:
         - businessId
         - provider
+    ConnectTerminalDto:
+      type: object
+      properties:
+        terminalHardwareId:
+          type: string
+          description: The unique hardware identifier of the physical terminal.
+          example: TID-99203-AX
+      required:
+        - terminalHardwareId
     StationType:
       type: string
       enum:
@@ -12765,10 +12846,6 @@ components:
           description: A success message indicating the sync was successful
       required:
         - message
-    TerminalConnectionType:
-      type: string
-      enum:
-        - NETWORK
     SyncTerminalDto:
       type: object
       properties:

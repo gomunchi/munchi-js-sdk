@@ -61,6 +61,7 @@ export interface PaymentResult {
   status: SdkPaymentStatus;
   orderId: string;
   transactionId?: string;
+  errorReference?: string;
   errorCode?: string;
   errorMessage?: string;
 }

@@ -184,13 +184,19 @@ export class VivaStrategy implements IPaymentStrategy {
   ): PaymentResult {
     const isSuccess = data.status === SimplePaymentStatus.Success;
     
-    return {
+    const result: PaymentResult = {
       success: isSuccess,
       status: isSuccess ? SdkPaymentStatus.SUCCESS : SdkPaymentStatus.FAILED,
       orderId: data.orderId,
       errorCode: data.error?.code ?? "",
       errorMessage: data.error?.message ?? "",
     };
+
+    if (data.error?.referenceError) {
+      result.errorReference = data.error.referenceError;
+    }
+
+    return result;
   }
 
   async cancelTransaction(
@@ -233,13 +239,19 @@ export class VivaStrategy implements IPaymentStrategy {
 
       const isSuccess = data.status === SimplePaymentStatus.Success;
 
-      return {
+      const result: PaymentResult = {
         success: isSuccess,
         status: isSuccess ? SdkPaymentStatus.SUCCESS : SdkPaymentStatus.FAILED,
         orderId: data.orderId,
         errorCode: data.error?.code ?? "",
         errorMessage: data.error?.message ?? "",
       };
+
+      if (data.error?.referenceError) {
+        result.errorReference = data.error.referenceError;
+      }
+
+      return result;
     } catch (error) {
       throw new PaymentSDKError(
         PaymentErrorCode.NETWORK_ERROR,

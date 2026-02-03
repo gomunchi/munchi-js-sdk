@@ -308,22 +308,33 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     }
 
     this.transitionTo(PaymentInteractionState.FAILED);
-    const errorResult =
-      originalError instanceof PaymentSDKError
-        ? this.generateErrorResult(
-            params.orderRef,
-            originalError.code,
-            originalError.message,
-          )
-        : this.generateErrorResult(
-            params.orderRef,
-            PaymentErrorCode.UNKNOWN,
-            originalError instanceof Error
-              ? originalError.message
-              : "Unknown fatal error",
-          );
+
+    let errorResult: PaymentResult;
+
+    if (this._currentSessionId) {
+      try {
+        const finalStatus = await this.strategy.verifyFinalStatus(params, this._currentSessionId);
+        errorResult = finalStatus;
+      } catch (verifyErr) {
+        this.logger?.warn("Failed to get detailed error from verifyFinalStatus", { verifyErr });
+        errorResult = this.buildErrorResultFromException(params.orderRef, originalError);
+      }
+    } else {
+      errorResult = this.buildErrorResultFromException(params.orderRef, originalError);
+    }
+
     this.safeFireCallback(() => callbacks.onError?.(errorResult));
     return errorResult;
+  }
+
+  private buildErrorResultFromException(orderRef: string, error: unknown): PaymentResult {
+    return error instanceof PaymentSDKError
+      ? this.generateErrorResult(orderRef, error.code, error.message)
+      : this.generateErrorResult(
+          orderRef,
+          PaymentErrorCode.UNKNOWN,
+          error instanceof Error ? error.message : "Unknown fatal error",
+        );
   }
 
   private fireStateCallback(
