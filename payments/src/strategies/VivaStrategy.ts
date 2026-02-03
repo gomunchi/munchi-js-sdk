@@ -5,7 +5,9 @@ import {
     PaymentProviderEnum,
     type PaymentStatusDto,
     SimplePaymentStatus,
+    type TransactionDto,
 } from "../../../core";
+
 import { PaymentErrorCode, PaymentSDKError } from "../error";
 import {
     type IMessagingAdapter,
@@ -192,8 +194,16 @@ export class VivaStrategy implements IPaymentStrategy {
       errorMessage: data.error?.message ?? "",
     };
 
+    if (data.transactionId) {
+      result.transactionId = data.transactionId;
+    }
+
     if (data.error?.referenceError) {
       result.errorReference = data.error.referenceError;
+    }
+
+    if (data.transaction) {
+      result.transaction = data.transaction as unknown as TransactionDto;
     }
 
     return result;
@@ -247,8 +257,16 @@ export class VivaStrategy implements IPaymentStrategy {
         errorMessage: data.error?.message ?? "",
       };
 
+      if (data.transactionId) {
+        result.transactionId = data.transactionId;
+      }
+
       if (data.error?.referenceError) {
         result.errorReference = data.error.referenceError;
+      }
+
+      if (data.transaction) {
+        result.transaction = data.transaction as unknown as TransactionDto;
       }
 
       return result;

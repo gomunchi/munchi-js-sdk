@@ -11102,6 +11102,99 @@ export interface PaymentStatusDto {
      * @memberof PaymentStatusDto
      */
     'error'?: PaymentErrorDto;
+    /**
+     * 
+     * @type {PaymentStatusDtoTransaction}
+     * @memberof PaymentStatusDto
+     */
+    'transaction'?: PaymentStatusDtoTransaction;
+}
+
+
+/**
+ * The full transaction object. Used for POS optimistic updates.
+ * @export
+ * @interface PaymentStatusDtoTransaction
+ */
+export interface PaymentStatusDtoTransaction {
+    /**
+     * 
+     * @type {string}
+     * @memberof PaymentStatusDtoTransaction
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PaymentStatusDtoTransaction
+     */
+    'referenceId': string | null;
+    /**
+     * 
+     * @type {PaymentProvider}
+     * @memberof PaymentStatusDtoTransaction
+     */
+    'provider': PaymentProvider;
+    /**
+     * 
+     * @type {PaymentMethod}
+     * @memberof PaymentStatusDtoTransaction
+     */
+    'type': PaymentMethod;
+    /**
+     * Amount paid in cents
+     * @type {number}
+     * @memberof PaymentStatusDtoTransaction
+     */
+    'amount': number;
+    /**
+     * Difference from cash rounding in cents
+     * @type {number}
+     * @memberof PaymentStatusDtoTransaction
+     */
+    'roundingDifference': number;
+    /**
+     * Raw data from payment provider
+     * @type {object}
+     * @memberof PaymentStatusDtoTransaction
+     */
+    'rawData': object;
+    /**
+     * 
+     * @type {string}
+     * @memberof PaymentStatusDtoTransaction
+     */
+    'createdAt': string;
+    /**
+     * 
+     * @type {TransactionDtoCardDetail}
+     * @memberof PaymentStatusDtoTransaction
+     */
+    'cardDetail': TransactionDtoCardDetail | null;
+    /**
+     * The monetary amount of the voucher value that was *not* used and *not* refunded to the customer (i.e., the overage). This is applicable only when a voucher is used and its value exceeds the order total.
+     * @type {number}
+     * @memberof PaymentStatusDtoTransaction
+     */
+    'voucherForfeitedAmount'?: number | null;
+    /**
+     * The specific line items this transaction paid for. If null or empty, it was a pooled payment against the total bill.
+     * @type {Array<string>}
+     * @memberof PaymentStatusDtoTransaction
+     */
+    'lineItemIds'?: Array<string> | null;
+    /**
+     * The specific split part this transaction paid for. If null, it was not a payment for a split part.
+     * @type {string}
+     * @memberof PaymentStatusDtoTransaction
+     */
+    'splitPartId'?: string | null;
+    /**
+     * Indicates whether this transaction was processed as a pre-authorization.
+     * @type {string}
+     * @memberof PaymentStatusDtoTransaction
+     */
+    'label': string | null;
 }
 
 

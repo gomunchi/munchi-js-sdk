@@ -8854,6 +8854,10 @@ components:
           description: Provider Transaction ID
         error:
           $ref: "#/components/schemas/PaymentErrorDto"
+        transaction:
+          description: The full transaction object. Used for POS optimistic updates.
+          allOf:
+            - $ref: "#/components/schemas/TransactionDto"
       required:
         - status
         - orderId

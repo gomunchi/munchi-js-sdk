@@ -1,9 +1,9 @@
 import type { AxiosInstance } from "axios";
-import { PaymentApi } from "../../../../core";
+import { PaymentApi, PaymentMethod, PaymentProvider, type TransactionDto } from "../../../../core";
 import { VivaStrategy } from "../../../src/strategies/VivaStrategy";
 import {
-  PaymentInteractionState,
   type IMessagingAdapter,
+  PaymentInteractionState,
   type PaymentTerminalConfig,
 } from "../../../src/types/payment";
 import {
@@ -112,6 +112,99 @@ describe("VivaStrategy", () => {
         expect(error.code).toBe("NETWORK_ERROR");
       }
     });
+
+    it("should include transactionId when available in success response", async () => {
+      const mockCreateVivaTransaction = jest.fn().mockResolvedValue({
+        data: { sessionId: "session-123", orderId: "order-123" },
+      });
+
+      (PaymentApi as jest.MockedClass<typeof PaymentApi>).mockImplementation((() => ({
+        initiateTerminalTransaction: mockCreateVivaTransaction,
+        cancelTransaction: jest.fn(),
+        cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
+      })) as any);
+
+      (mockMessaging.subscribe as jest.Mock).mockImplementation(
+        (_channel, _event, callback) => {
+          setTimeout(() => {
+            callback({
+              orderId: "order-123",
+              status: "SUCCESS",
+              transactionId: "trans-456",
+              error: null,
+            });
+          }, 100);
+          return jest.fn();
+        },
+      );
+
+      strategy = new VivaStrategy(mockAxios, mockMessaging, mockConfig);
+      const result = await strategy.processPayment(
+        {
+          orderRef: "order-123",
+          amountCents: 1000,
+          currency: "EUR",
+          displayId: "display-123",
+        },
+        jest.fn(),
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.transactionId).toBe("trans-456");
+    });
+
+    it("should include transaction object when available in success response", async () => {
+      const mockCreateVivaTransaction = jest.fn().mockResolvedValue({
+        data: { sessionId: "session-123", orderId: "order-123" },
+      });
+
+      (PaymentApi as jest.MockedClass<typeof PaymentApi>).mockImplementation((() => ({
+        initiateTerminalTransaction: mockCreateVivaTransaction,
+        cancelTransaction: jest.fn(),
+        cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
+      })) as any);
+
+      const mockTransaction: TransactionDto = {
+        id: "trans-123",
+        amount: 1000,
+        createdAt: new Date().toISOString(),
+        provider: PaymentProvider.Viva,
+        referenceId: "order-viva-123",
+        rawData: {},
+        cardDetail: null,
+        type: PaymentMethod.Card,
+        label: null,
+        roundingDifference: 0
+      };
+
+      (mockMessaging.subscribe as jest.Mock).mockImplementation(
+        (_channel, _event, callback) => {
+          setTimeout(() => {
+            callback({
+              orderId: "order-123",
+              status: "SUCCESS",
+              transaction: mockTransaction,
+              error: null,
+            });
+          }, 100);
+          return jest.fn();
+        },
+      );
+
+      strategy = new VivaStrategy(mockAxios, mockMessaging, mockConfig);
+      const result = await strategy.processPayment(
+        {
+          orderRef: "order-123",
+          amountCents: 1000,
+          currency: "EUR",
+          displayId: "display-123",
+        },
+        jest.fn(),
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.transaction).toEqual(mockTransaction);
+    });
   });
 
   describe("errorReference handling", () => {
@@ -206,24 +299,24 @@ describe("VivaStrategy", () => {
   });
 
   describe("lifecycle", () => {
-      it("should return false when cancelling without an active session", async () => {
-          strategy = new VivaStrategy(mockAxios, mockMessaging, mockConfig);
-          const result = await strategy.cancelTransaction(jest.fn());
-          expect(result).toBe(false);
-      });
+    it("should return false when cancelling without an active session", async () => {
+      strategy = new VivaStrategy(mockAxios, mockMessaging, mockConfig);
+      const result = await strategy.cancelTransaction(jest.fn());
+      expect(result).toBe(false);
+    });
 
-     it("should cancel successfully with active session", async () => {
-          strategy = new VivaStrategy(mockAxios, mockMessaging, mockConfig);
-          
-          // Manually set private property currentSessionId to simulate an active session
-          (strategy as any).currentSessionId = "session-123";
-          
-          // Execute cancellation
-          // The mock for cancelVivaTransactionV2 is set in the jest.mock factory to resolve true by default
-          const result = await strategy.cancelTransaction(jest.fn());
-          
-          expect(result).toBe(true);
-          expect((strategy as any).currentSessionId).toBeNull();
-      });
+    it("should cancel successfully with active session", async () => {
+      strategy = new VivaStrategy(mockAxios, mockMessaging, mockConfig);
+
+      // Manually set private property currentSessionId to simulate an active session
+      (strategy as any).currentSessionId = "session-123";
+
+      // Execute cancellation
+      // The mock for cancelVivaTransactionV2 is set in the jest.mock factory to resolve true by default
+      const result = await strategy.cancelTransaction(jest.fn());
+
+      expect(result).toBe(true);
+      expect((strategy as any).currentSessionId).toBeNull();
+    });
   });
 });

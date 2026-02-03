@@ -64,6 +64,7 @@ export interface PaymentResult {
   errorReference?: string;
   errorCode?: string;
   errorMessage?: string;
+  transaction?: TransactionDto;
 }
 
 export interface TransactionOptions {
