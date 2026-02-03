@@ -561,10 +561,16 @@ describe("MunchiPaymentSDK", () => {
       expect(states[states.length - 1]).toBe(PaymentInteractionState.SUCCESS);
     });
 
-    it("should NOT emit FAILED state even if the cancellation API call fails", async () => {
+    it("should continue transaction if cancellation API call fails (Safe Cancellation)", async () => {
       const orderRef = "order-cancel-fail";
 
-      (mockMessaging.subscribe as jest.Mock).mockReturnValue(jest.fn());
+      let triggerMessage: (data: any) => void = () => {};
+      (mockMessaging.subscribe as jest.Mock).mockImplementation(
+        (_ch, _ev, callback) => {
+          triggerMessage = callback;
+          return jest.fn();
+        },
+      );
 
       (PaymentApi as jest.Mock).mockImplementation((() => ({
         initiateTerminalTransaction: jest.fn().mockResolvedValue({
@@ -598,20 +604,131 @@ describe("MunchiPaymentSDK", () => {
         displayId: "display-123",
       });
 
-      await new Promise((resolve) => setTimeout(resolve, 50)); // Wait for processing
+      // Wait for REQUIRES_INPUT
+      await new Promise((resolve) => {
+        const unsubscribe = sdk.subscribe((state) => {
+          if (state === PaymentInteractionState.REQUIRES_INPUT) {
+            unsubscribe();
+            resolve(null);
+          }
+        });
+      });
 
       // Try to cancel
-      await sdk.cancel();
+      const cancelResult = await sdk.cancel();
+      expect(cancelResult).toBe(false);
+
+      // Verify that we are still verifying or processing (not FAILED yet) because cancellation failed
+      // and we haven't received a terminal message.
+      expect(states[states.length - 1]).not.toBe(PaymentInteractionState.FAILED);
+
+      // Now triggers the actual failure from terminal
+      triggerMessage({
+        orderId: orderRef,
+        status: SimplePaymentStatus.Failed,
+        error: {
+          code: PaymentFailureCode.PaymentCancelledByUser,
+          message: "Cancelled",
+        },
+      });
+
       await transactionPromise;
 
-      // Verification:
-      // 1. Even if cancellation fails, we mark it as FAILED implementation-wise to ensure UI consistency
-      // 2. It should have transitioned to FAILED because of _cancellationIntent.
-      // Verification:
-      // 1. Even if cancellation fails, we mark it as FAILED implementation-wise to ensure UI consistency
-      // 2. It should have transitioned to FAILED because of _cancellationIntent.
+      // Now we should be FAILED
       expect(states).toContain(PaymentInteractionState.FAILED);
       expect(states[states.length - 1]).toBe(PaymentInteractionState.FAILED);
+    });
+
+    it("should throw error when calling cancel on a completed transaction (Reproduction)", async () => {
+      setupSuccessfulPaymentMocks("order-cancel-after-success", "session-cancel-after", mockMessaging);
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+
+      // 1. Complete a transaction successfully
+      await sdk.initiateTransaction({
+        orderRef: "order-cancel-after-success",
+        amountCents: 1000,
+        currency: "EUR",
+        displayId: "display-123",
+      });
+
+      // 2. Call cancel immediately after success
+      // This mimics a race condition or user action where cancel is triggered after completion.
+      // With the fix, this should return false and NOT throw.
+      const cancelResult = await sdk.cancel();
+      expect(cancelResult).toBe(false);
+    });
+
+    it("should recover and succeed if cancel fails with 409 Conflict (e.g. late cancel)", async () => {
+      const orderRef = "order-conflict-409";
+      
+      let triggerMessage: (data: any) => void = () => {};
+      (mockMessaging.subscribe as jest.Mock).mockImplementation(
+        (_ch, _ev, callback) => {
+          triggerMessage = callback;
+          return jest.fn();
+        },
+      );
+
+      (PaymentApi as jest.Mock).mockImplementation((() => ({
+        initiateTerminalTransaction: jest.fn().mockResolvedValue({
+          data: { sessionId: "session-conflict", orderId: orderRef },
+        }),
+        // Simulate 409 Conflict on Cancel
+        cancelTransaction: jest.fn().mockRejectedValue({
+          response: { status: 409 }
+        }),
+        // getPaymentStatus returns PENDING initially (simulating race condition where provider hasn't updated yet)
+        getPaymentStatus: jest.fn().mockResolvedValueOnce({
+            data: {
+              orderId: orderRef,
+              status: SimplePaymentStatus.Pending, // Still pending
+              error: null,
+            },
+        }),
+      })) as any);
+
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      const states: PaymentInteractionState[] = [];
+      sdk.subscribe((state) => states.push(state));
+
+      const transactionPromise = sdk.initiateTransaction({
+        orderRef,
+        amountCents: 1000,
+        currency: "EUR",
+        displayId: "display-123",
+      });
+
+      // Wait for REQUIRES_INPUT
+      await new Promise((resolve) => {
+        const unsubscribe = sdk.subscribe((state) => {
+          if (state === PaymentInteractionState.REQUIRES_INPUT) {
+            unsubscribe();
+            resolve(null);
+          }
+        });
+      });
+
+      // 1. User clicks cancel
+      const cancelPromise = sdk.cancel();
+
+      // 2. Cancellation fails (409). 
+      // Current behavior: Eager abort stops listening. verifyFinalStatus sees Pending. Result -> FAILED/CANCELLED.
+      // Desired behavior: Listener stays active. Eventual Success message arrives. Result -> SUCCESS.
+      
+      await cancelPromise;
+
+      // 3. Late Success Message arrives
+      triggerMessage({
+        orderId: orderRef,
+        status: SimplePaymentStatus.Success,
+        error: null,
+      });
+
+      const result = await transactionPromise;
+
+      expect(result.success).toBe(true);
+      expect(result.status).toBe(SdkPaymentStatus.SUCCESS);
+      expect(states).toContain(PaymentInteractionState.SUCCESS);
     });
   });
 

@@ -6,14 +6,14 @@ import type { IPaymentStrategy } from "./strategies/IPaymentStrategy";
 import { MockStrategy } from "./strategies/MockStrategy";
 import { VivaStrategy } from "./strategies/VivaStrategy";
 import {
-    type IMessagingAdapter,
-    type IMunchiPaymentSDK,
-    PaymentInteractionState,
-    type PaymentRequest,
-    type PaymentResult,
-    type PaymentTerminalConfig,
-    SdkPaymentStatus,
-    type TransactionOptions,
+  type IMessagingAdapter,
+  type IMunchiPaymentSDK,
+  PaymentInteractionState,
+  type PaymentRequest,
+  type PaymentResult,
+  type PaymentTerminalConfig,
+  SdkPaymentStatus,
+  type TransactionOptions,
 } from "./types/payment";
 import type { ILogger, SDKOptions } from "./types/sdk";
 
@@ -151,7 +151,7 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     this.logger?.info(`Scheduling auto-reset to IDLE in ${delay}ms`);
 
     this._resetScheduledAt = Date.now() + delay;
-    
+
     this._autoResetTimer = setTimeout(() => {
       this.logger?.info("Auto-reset triggered");
       this.reset();
@@ -266,9 +266,9 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
   ): Promise<PaymentResult> {
     this.transitionTo(PaymentInteractionState.VERIFYING);
     this.safeFireCallback(() =>
-      callbacks.onVerifying?.({ 
+      callbacks.onVerifying?.({
         orderRef: params.orderRef,
-        refPaymentId: this._currentSessionId 
+        refPaymentId: this._currentSessionId
       }),
     );
 
@@ -293,9 +293,9 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
       // Removed cancelAutoReset() to allow the auto-reset timer (scheduled by FAILED state) to persist.
 
       this.safeFireCallback(() =>
-        callbacks.onCancelled?.({ 
+        callbacks.onCancelled?.({
           orderRef: params.orderRef,
-          refPaymentId: this._currentSessionId 
+          refPaymentId: this._currentSessionId
         }),
       );
       return {
@@ -331,10 +331,10 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     return error instanceof PaymentSDKError
       ? this.generateErrorResult(orderRef, error.code, error.message)
       : this.generateErrorResult(
-          orderRef,
-          PaymentErrorCode.UNKNOWN,
-          error instanceof Error ? error.message : "Unknown fatal error",
-        );
+        orderRef,
+        PaymentErrorCode.UNKNOWN,
+        error instanceof Error ? error.message : "Unknown fatal error",
+      );
   }
 
   private fireStateCallback(
@@ -342,7 +342,7 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     callbacks: TransactionOptions,
     orderRef: string,
   ) {
-    const ctx = { 
+    const ctx = {
       orderRef,
       refPaymentId: this._currentSessionId
     };
@@ -369,17 +369,25 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
 
   public cancel = async (): Promise<boolean> => {
     this.logger?.info("Attempting cancellation");
+
+    if (MunchiPaymentSDK.TERMINAL_STATES.includes(this._currentState)) {
+      this.logger?.warn("Cannot cancel: Transaction already in terminal state", {
+        state: this._currentState,
+      });
+      return false;
+    }
+
     this._cancellationIntent = true;
 
     this.transitionTo(PaymentInteractionState.VERIFYING);
 
     try {
       const result = await this.strategy.cancelTransaction((state) => this.transitionTo(state));
-      
+
       // If cancellation failed (e.g. no active session) AND we are just verifying,
       // we should probably revert to IDLE or FAILED to avoid getting stuck.
       if (!result && this._currentState === PaymentInteractionState.VERIFYING) {
-         this.transitionTo(PaymentInteractionState.IDLE);
+        this.transitionTo(PaymentInteractionState.IDLE);
       }
       return result;
     } catch (error) {

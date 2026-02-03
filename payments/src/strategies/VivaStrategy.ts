@@ -212,8 +212,6 @@ export class VivaStrategy implements IPaymentStrategy {
   async cancelTransaction(
     _onStateChange: (state: PaymentInteractionState) => void,
   ): Promise<boolean> {
-    this.abortController?.abort();
-    
     if (!this.currentSessionId) {
       return false;
     }
@@ -225,8 +223,11 @@ export class VivaStrategy implements IPaymentStrategy {
         cashRegisterId: this.config.storeId,
         sessionId: sessionIdToCancel,
       });
+      this.abortController?.abort();
       return true;
     } catch (error) {
+      // If we failed to cancel (e.g. 409 Conflict), we should NOT abort the controller
+      // because the transaction might still be valid/processing.
       this.currentSessionId = null;
       throw new PaymentSDKError(
         PaymentErrorCode.NETWORK_ERROR,
