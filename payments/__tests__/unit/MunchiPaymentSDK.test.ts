@@ -1,17 +1,18 @@
-import type { AxiosInstance } from "axios";
 import {
   PaymentApi,
   PaymentFailureCode,
   PaymentProvider,
   SimplePaymentStatus
-} from "../../../core";
+} from "@munchi/core";
+import type { AxiosInstance } from "axios";
+import { PaymentErrorCode } from "./../../src/error";
 import { MunchiPaymentSDK } from "../../src/MunchiPaymentSDK";
 import { VivaStrategy } from "../../src/strategies/VivaStrategy";
 import {
-  PaymentInteractionState,
-  SdkPaymentStatus,
   type IMessagingAdapter,
+  PaymentInteractionState,
   type PaymentTerminalConfig,
+  SdkPaymentStatus,
 } from "../../src/types/payment";
 import {
   createMockAxios,
@@ -25,8 +26,8 @@ import {
   setupSuccessfulPaymentMocks,
   setupTimeoutWithPollingMocks,
 } from "../helpers/mocks";
-import { PaymentErrorCode } from "./../../src/error";
-jest.mock("../../../core", () => {
+
+jest.mock("@munchi/core", () => {
   const actual = jest.requireActual("@munchi/core");
   return {
     ...actual,

@@ -1,5 +1,5 @@
 import type { AxiosInstance } from "axios";
-import { PaymentApi, PaymentMethod, PaymentProvider, type TransactionDto } from "../../../../core";
+import { PaymentApi, PaymentMethod, PaymentProvider, type TransactionDto } from "@munchi/core";
 import { VivaStrategy } from "../../../src/strategies/VivaStrategy";
 import {
   type IMessagingAdapter,
@@ -17,7 +17,7 @@ import {
 } from "../../helpers/mocks";
 
 // Mock the PaymentApi class
-jest.mock("../../../../core", () => {
+jest.mock("@munchi/core", () => {
   const actual = jest.requireActual("@munchi/core");
   return {
     ...actual,

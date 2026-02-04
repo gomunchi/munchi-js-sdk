@@ -1,4 +1,4 @@
-import { PaymentApi, SimplePaymentStatus } from "../../../core";
+import { PaymentApi, SimplePaymentStatus } from "@munchi/core";
 import type { IMessagingAdapter } from "../../src/types/payment";
 
 // Type assertion to access mock methods
