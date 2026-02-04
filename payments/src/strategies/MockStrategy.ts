@@ -2,6 +2,7 @@ import {
   type PaymentInteractionState,
   type PaymentRequest,
   type PaymentResult,
+  type RefundRequest,
   SdkPaymentStatus,
 } from "../types/payment";
 import type { IPaymentStrategy } from "./IPaymentStrategy";
@@ -35,6 +36,19 @@ export class MockStrategy implements IPaymentStrategy {
     return {
       success: false,
       status: SdkPaymentStatus.FAILED,
+      orderId: request.orderRef,
+    };
+  }
+
+  async refundTransaction(
+    request: RefundRequest,
+    _onStateChange: (state: PaymentInteractionState, detail?: { sessionId?: string }) => void,
+  ): Promise<PaymentResult> {
+    console.log("[MockSDK] Refunding...", request);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return {
+      success: true,
+      status: SdkPaymentStatus.SUCCESS,
       orderId: request.orderRef,
     };
   }

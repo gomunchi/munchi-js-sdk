@@ -41,12 +41,35 @@ export interface NetsOptions {
   operatorId?: string;
 }
 
+export interface VivaRefundOptions extends VivaOptions {
+  // Viva specific extensions if needed
+}
+
+export interface NetsRefundOptions extends NetsOptions {
+  allowPinBypass?: boolean;
+}
+
 export interface PaymentRequest {
   orderRef: string;
   amountCents: number;
   currency: CurrencyCode;
   displayId: string;
   options?: VivaOptions | NetsOptions;
+}
+
+export interface RefundRequest {
+  amountCents: number;
+  orderRef: string;
+  currency: CurrencyCode;
+  displayId: string;
+  /**
+   * The ID of the original payment transaction.
+   * Maps to:
+   * - Viva: parentSessionId
+   * - Nets: preAuthorizationInfo (or reference)
+   */
+  originalTransactionId?: string;
+  options?: VivaRefundOptions | NetsRefundOptions;
 }
 
 export interface PaymentTerminalConfig {
@@ -95,5 +118,6 @@ export interface IMunchiPaymentSDK {
     options?: TransactionOptions,
   ): Promise<PaymentResult>;
   cancel(): Promise<boolean>;
+  refund(params: RefundRequest): Promise<PaymentResult>;
   reset(): void;
 }

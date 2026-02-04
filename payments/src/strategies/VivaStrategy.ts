@@ -4,6 +4,7 @@ import {
     PaymentApi,
     PaymentProviderEnum,
     type PaymentStatusDto,
+    type RefundPayloadDtoV4,
     SimplePaymentStatus,
     type TransactionDto,
 } from "@munchi/core";
@@ -15,6 +16,7 @@ import {
     type PaymentRequest,
     type PaymentResult,
     type PaymentTerminalConfig,
+    type RefundRequest,
     SdkPaymentStatus,
 } from "../types/payment";
 import type { IPaymentStrategy } from "./IPaymentStrategy";
@@ -275,6 +277,44 @@ export class VivaStrategy implements IPaymentStrategy {
       throw new PaymentSDKError(
         PaymentErrorCode.NETWORK_ERROR,
         "Failed to verify final transaction status",
+        error,
+      );
+    }
+  }
+
+  async refundTransaction(
+    request: RefundRequest,
+    _onStateChange: (state: PaymentInteractionState, detail?: { sessionId?: string }) => void,
+  ): Promise<PaymentResult> {
+    try {
+      const payload: RefundPayloadDtoV4 = {
+        amount: request.amountCents,
+        merchantId: this.config.storeId, // storeId is used as merchantId/businessId context usually
+        parentSessionId: request.originalTransactionId ?? "",
+        orderId: request.orderRef,
+        businessId: this.config.storeId,
+        terminalId: this.config.kioskId,
+      };
+
+      const { data } = await this.api.refundVivaTransactionV4(payload);
+      
+      const isSuccess = data.success;
+      
+      const result: PaymentResult = {
+        success: isSuccess,
+        status: isSuccess ? SdkPaymentStatus.SUCCESS : SdkPaymentStatus.FAILED,
+        orderId: request.orderRef,
+        transactionId: data.transactionId,
+         // Viva V4 response uses eventId for error/status codes
+        errorCode: String(data.eventId),
+        errorMessage: data.success ? "" : `Viva Error ID: ${data.eventId}`,
+      };
+
+      return result;
+    } catch (error) {
+       throw new PaymentSDKError(
+        PaymentErrorCode.NETWORK_ERROR,
+        "Failed to refund Viva transaction",
         error,
       );
     }

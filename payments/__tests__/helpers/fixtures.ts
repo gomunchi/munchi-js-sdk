@@ -1,9 +1,11 @@
+
 import { PaymentProvider, ProviderEnum } from "@munchi/core";
 import type { AxiosInstance } from "axios";
 import type {
     IMessagingAdapter,
     PaymentTerminalConfig,
 } from "../../src/types/payment";
+import type { ILogger } from "../../src/types/sdk";
 
 /**
  * Creates a mock AxiosInstance for testing
@@ -25,6 +27,7 @@ export function createMockMessaging(): jest.Mocked<IMessagingAdapter> {
     send: jest.fn(),
     subscribe: jest.fn(),
     unsubscribe: jest.fn(),
+    publish: jest.fn(),
   } as jest.Mocked<IMessagingAdapter>;
 }
 
@@ -48,5 +51,17 @@ export function createMockConfigWithoutProvider(): PaymentTerminalConfig {
     channel: ProviderEnum.MunchiKiosk,
     kioskId: "test-kiosk-123",
     storeId: "351",
+  };
+}
+
+/**
+ * Creates a mock ILogger for testing
+ */
+export function createMockLogger(): jest.Mocked<ILogger> {
+  return {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
   };
 }

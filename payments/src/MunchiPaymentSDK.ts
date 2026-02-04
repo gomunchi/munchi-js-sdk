@@ -1,5 +1,5 @@
-import type { AxiosInstance } from "axios";
 import { PaymentProvider } from "@munchi/core";
+import type { AxiosInstance } from "axios";
 import { version } from "../package.json";
 import { PaymentErrorCode, PaymentSDKError } from "./error";
 import type { IPaymentStrategy } from "./strategies/IPaymentStrategy";
@@ -9,9 +9,10 @@ import {
   type IMessagingAdapter,
   type IMunchiPaymentSDK,
   PaymentInteractionState,
-  type PaymentRequest,
   type PaymentResult,
   type PaymentTerminalConfig,
+  type RefundRequest,
+  type PaymentRequest as SdkPaymentRequest,
   SdkPaymentStatus,
   type TransactionOptions,
 } from "./types/payment";
@@ -48,13 +49,14 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     messaging: IMessagingAdapter,
     config: PaymentTerminalConfig,
     options: SDKOptions = {},
+    strategy?: IPaymentStrategy,
   ) {
     this.axios = axios;
     this.messaging = messaging;
     this.logger = options.logger;
     this.timeoutMs = options.timeoutMs || 60000;
     this.autoResetOptions = options.autoResetOnPaymentComplete;
-    this.strategy = this.resolveStrategy(config);
+    this.strategy = strategy ?? this.resolveStrategy(config);
   }
 
   public get version() {
@@ -170,7 +172,7 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
 
 
   public initiateTransaction = async (
-    params: PaymentRequest,
+    params: SdkPaymentRequest,
     options?: TransactionOptions,
   ): Promise<PaymentResult> => {
     const callbacks = options ?? {};
@@ -260,7 +262,7 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
   }
 
   private async handleTransactionError(
-    params: PaymentRequest,
+    params: SdkPaymentRequest,
     originalError: unknown,
     callbacks: TransactionOptions = {},
   ): Promise<PaymentResult> {
@@ -405,4 +407,65 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
       this.transitionTo(PaymentInteractionState.IDLE);
     }
   };
+
+  public refund = async (
+    params: RefundRequest,
+    options?: TransactionOptions,
+  ): Promise<PaymentResult> => {
+    const callbacks = options ?? {};
+    this.logger?.info("Initiating refund", { orderRef: params.orderRef });
+
+    // Ensure we are in a valid state to start a refund
+    const isRestingState = MunchiPaymentSDK.RESTING_STATES.includes(
+      this._currentState,
+    );
+
+    if (!isRestingState) {
+      return this.generateErrorResult(
+        params.orderRef,
+        PaymentErrorCode.UNKNOWN,
+        "A transaction is already in progress",
+      );
+    }
+
+    this.transitionTo(PaymentInteractionState.IDLE);
+
+    try {
+      const internalStateCallback = (state: PaymentInteractionState, detail?: { sessionId?: string }) => {
+        if (detail?.sessionId) {
+          this._currentSessionId = detail.sessionId;
+        }
+        if (state !== PaymentInteractionState.FAILED) {
+          this.transitionTo(state);
+          this.fireStateCallback(state, callbacks, params.orderRef);
+        }
+      };
+
+      const result = await this.strategy.refundTransaction(params, internalStateCallback);
+
+      if (result.success) {
+        this.transitionTo(PaymentInteractionState.SUCCESS);
+        this.safeFireCallback(() => callbacks.onSuccess?.(result));
+      } else {
+        this.transitionTo(PaymentInteractionState.FAILED);
+        this.safeFireCallback(() => callbacks.onError?.(result));
+      }
+
+      this.logger?.info("Refund completed", { success: result.success, orderRef: params.orderRef });
+      return result;
+    } catch (error) {
+      this.logger?.error("Refund failed", error);
+
+      this.transitionTo(PaymentInteractionState.FAILED);
+
+      const errorResult = this.generateErrorResult(
+        params.orderRef,
+        PaymentErrorCode.UNKNOWN,
+        error instanceof Error ? error.message : "Refund failed"
+      );
+      this.safeFireCallback(() => callbacks.onError?.(errorResult));
+      return errorResult;
+    }
+  };
+
 }
