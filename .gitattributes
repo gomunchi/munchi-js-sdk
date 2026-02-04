@@ -1,0 +1,8 @@
+# Reduce GitHub source archive size (used by pnpm git installs)
+openapistorage/ export-ignore
+docs/ export-ignore
+scripts/ export-ignore
+coverage/ export-ignore
+tmp/ export-ignore
+**/__tests__/ export-ignore
+**/*.test.* export-ignore
