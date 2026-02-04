@@ -118,6 +118,6 @@ export interface IMunchiPaymentSDK {
     options?: TransactionOptions,
   ): Promise<PaymentResult>;
   cancel(): Promise<boolean>;
-  refund(params: RefundRequest): Promise<PaymentResult>;
+  refund(params: RefundRequest, options?: TransactionOptions): Promise<PaymentResult>;
   reset(): void;
 }
