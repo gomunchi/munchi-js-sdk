@@ -35,13 +35,12 @@ source ~/.zshrc  # or ~/.bashrc
 
 ### Step 2: Install Packages
 
-Add to your `package.json`:
+Add to your `package.json` (stable tag `v1.1.8`):
 
 ```json
 {
   "dependencies": {
-    "@munchi/core": "github:gomunchi/munchi-js-sdk#core",
-    "@munchi/payments": "github:gomunchi/munchi-js-sdk#payments"
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.8"
   }
 }
 ```
@@ -54,6 +53,18 @@ pnpm install
 ```
 
 **Note:** The first install will take a bit longer as it builds the packages automatically.
+
+> [!NOTE]
+> With pnpm, GitHub installs resolve the repo root package. If you prefer explicit package names:
+> ```json
+> {
+>   "dependencies": {
+>     "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.8",
+>     "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.8",
+>     "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.8"
+>   }
+> }
+> ```
 
 ## Usage
 
@@ -83,8 +94,7 @@ To install a specific version (once tags are created):
 ```json
 {
   "dependencies": {
-    "@munchi/core": "github:gomunchi/munchi-js-sdk#core-v1.0.0",
-    "@munchi/payments": "github:gomunchi/munchi-js-sdk#payments-v1.0.0"
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.8"
   }
 }
 ```
@@ -94,15 +104,14 @@ To install a specific version (once tags are created):
 To update to the latest version:
 
 ```bash
-npm update @munchi/core @munchi/payments
+npm update @munchi/sdk
 # or
-pnpm update @munchi/core @munchi/payments
+pnpm update @munchi/sdk
 ```
 
 Or reinstall:
 ```bash
-npm install github:gomunchi/munchi-js-sdk#core
-npm install github:gomunchi/munchi-js-sdk#payments
+npm install github:gomunchi/munchi-js-sdk#v1.1.8
 ```
 
 ## CI/CD Setup
@@ -187,8 +196,7 @@ Here's a complete example `package.json`:
   "name": "my-munchi-app",
   "version": "1.0.0",
   "dependencies": {
-    "@munchi/core": "github:gomunchi/munchi-js-sdk#core",
-    "@munchi/payments": "github:gomunchi/munchi-js-sdk#payments",
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.8",
     "axios": "^1.6.0"
   },
   "devDependencies": {

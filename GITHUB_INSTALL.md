@@ -12,39 +12,33 @@ This guide explains how to install and use the `@munchi` packages directly from 
 
 ### Method 1: Install from GitHub URL (Recommended)
 
-Install packages directly from GitHub using the repository URL:
+Install packages directly from GitHub using the repository URL and a version tag:
 
 ```bash
-# Install @munchi/core
-npm install github:gomunchi/munchi-js-sdk#core
-
-# Install @munchi/payments
-npm install github:gomunchi/munchi-js-sdk#payments
+# Install latest stable
+npm install github:gomunchi/munchi-js-sdk#v1.1.8
 ```
 
 Or with pnpm:
 ```bash
-pnpm add github:gomunchi/munchi-js-sdk#core
-pnpm add github:gomunchi/munchi-js-sdk#payments
+pnpm add github:gomunchi/munchi-js-sdk#v1.1.8
 ```
 
 ### Method 2: Install from Git URL
 
 ```bash
 # Using HTTPS
-npm install git+https://github.com/gomunchi/munchi-js-sdk.git#core
-npm install git+https://github.com/gomunchi/munchi-js-sdk.git#payments
+npm install git+https://github.com/gomunchi/munchi-js-sdk.git#v1.1.8
 
 # Using SSH (recommended for private repos)
-npm install git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#core
-npm install git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#payments
+npm install git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#v1.1.8
 ```
 
 ### Method 3: Install Specific Version/Tag
 
 ```bash
 # Install specific tag
-npm install github:gomunchi/munchi-js-sdk#v1.0.0
+npm install github:gomunchi/munchi-js-sdk#v1.1.8
 
 # Install specific commit
 npm install github:gomunchi/munchi-js-sdk#abc1234
@@ -60,27 +54,31 @@ Add to your `package.json`:
 ```json
 {
   "dependencies": {
-    "@munchi/core": "github:gomunchi/munchi-js-sdk#core",
-    "@munchi/payments": "github:gomunchi/munchi-js-sdk#payments"
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.8"
   }
 }
 ```
 
-Or with version tags:
+Or with explicit package names (same tag):
 ```json
 {
   "dependencies": {
-    "@munchi/core": "github:gomunchi/munchi-js-sdk#core-v1.0.0",
-    "@munchi/payments": "github:gomunchi/munchi-js-sdk#payments-v1.0.0"
+    "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.8",
+    "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.8",
+    "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.8"
   }
 }
 ```
+
+## Known pnpm Limitation
+pnpm installs GitHub URLs as the **repository root package**. Subdirectory installs are not supported.
+If you need true split packages, publish to npm or install from tarballs.
 
 ## Authentication for Private Repositories
 
 ### Option 1: SSH Key (Recommended)
 1. Set up SSH key with GitHub: https://docs.github.com/en/authentication/connecting-to-github-with-ssh
-2. Use SSH URLs: `git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#core`
+2. Use SSH URLs: `git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#v1.1.8`
 
 ### Option 2: Personal Access Token
 1. Create a GitHub Personal Access Token with `repo` scope
@@ -111,12 +109,10 @@ import { /* your exports */ } from '@munchi/payments';
 
 ```bash
 # Update to latest commit on branch
-npm update @munchi/core
-npm update @munchi/payments
+npm update @munchi/sdk
 
 # Or reinstall
-npm install github:gomunchi/munchi-js-sdk#core
-npm install github:gomunchi/munchi-js-sdk#payments
+npm install github:gomunchi/munchi-js-sdk#v1.1.8
 ```
 
 ## Version Management with Git Tags
@@ -125,18 +121,17 @@ To enable version-specific installations, create git tags:
 
 ```bash
 # Tag core package
-git tag core-v1.0.0
-git push origin core-v1.0.0
+git tag core-v1.1.8
+git push origin core-v1.1.8
 
 # Tag payments package
-git tag payments-v1.0.0
-git push origin payments-v1.0.0
+git tag payments-v1.1.8
+git push origin payments-v1.1.8
 ```
 
 Then install specific versions:
 ```bash
-npm install github:gomunchi/munchi-js-sdk#core-v1.0.0
-npm install github:gomunchi/munchi-js-sdk#payments-v1.0.0
+npm install github:gomunchi/munchi-js-sdk#v1.1.8
 ```
 
 ## CI/CD Integration
@@ -220,8 +215,7 @@ jobs:
   "name": "my-app",
   "version": "1.0.0",
   "dependencies": {
-    "@munchi/core": "github:gomunchi/munchi-js-sdk#core-v1.0.0",
-    "@munchi/payments": "github:gomunchi/munchi-js-sdk#payments-v1.0.0",
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.8",
     "axios": "^1.6.0"
   }
 }

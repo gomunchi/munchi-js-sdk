@@ -7,9 +7,20 @@ This package is installed directly from GitHub. When updating to a new version, 
 ### Installation
 
 ```bash
-pnpm add github:gomunchi/munchi-js-sdk#core-v1.0.4
-pnpm add github:gomunchi/munchi-js-sdk#payments-v1.0.4
+pnpm add github:gomunchi/munchi-js-sdk#v1.1.8
 ```
+
+> [!NOTE]
+> With pnpm, GitHub installs resolve the repo root package. If you prefer explicit package names:
+> ```json
+> {
+>   "dependencies": {
+>     "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.8",
+>     "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.8",
+>     "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.8"
+>   }
+> }
+> ```
 
 ### Updating to a New Version
 
@@ -66,12 +77,10 @@ if [ "$VERSION" = "latest" ]; then
   # Get latest tag from GitHub
   LATEST=$(git ls-remote --tags https://github.com/gomunchi/munchi-js-sdk.git | grep -o 'v[0-9]*\.[0-9]*\.[0-9]*$' | sort -V | tail -1 | sed 's/v//')
   echo "📦 Installing version $LATEST"
-  pnpm add "github:gomunchi/munchi-js-sdk#core-v$LATEST"
-  pnpm add "github:gomunchi/munchi-js-sdk#payments-v$LATEST"
+  pnpm add "github:gomunchi/munchi-js-sdk#v$LATEST"
 else
   echo "📦 Installing version $VERSION"
-  pnpm add "github:gomunchi/munchi-js-sdk#core-v$VERSION"
-  pnpm add "github:gomunchi/munchi-js-sdk#payments-v$VERSION"
+  pnpm add "github:gomunchi/munchi-js-sdk#v$VERSION"
 fi
 
 # Clean up old versions
@@ -97,7 +106,7 @@ Then use it:
 
 ## Why This Happens
 
-pnpm uses content-addressable storage where each unique package URL is stored separately. When you install from GitHub with different tags (e.g., `core-v1.0.3` vs `core-v1.0.4`), pnpm sees these as different packages because the resolved URLs are different:
+pnpm uses content-addressable storage where each unique package URL is stored separately. When you install from GitHub with different tags (e.g., `v1.1.7` vs `v1.1.8`), pnpm sees these as different packages because the resolved URLs are different:
 
 - `https://codeload.github.com/gomunchi/munchi-js-sdk/tar.gz/[commit-hash-for-1.0.3]`
 - `https://codeload.github.com/gomunchi/munchi-js-sdk/tar.gz/[commit-hash-for-1.0.4]`

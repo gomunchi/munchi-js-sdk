@@ -6,6 +6,7 @@ TypeScript SDK for Munchi services, providing core utilities and payment process
 
 - **[@munchi/core](./core)** - Core utilities and types
 - **[@munchi/payments](./payments)** - Payment processing utilities
+- **[@munchi/react](./react)** - React hooks and context for Payments
 
 ## Installation
 
@@ -13,30 +14,49 @@ TypeScript SDK for Munchi services, providing core utilities and payment process
 
 ### Quick Install (Latest Stable)
 
-We recommend using a specific version tag to ensure stability. The current stable version is `v1.1.0`.
+We recommend using a specific version tag to ensure stability.
+The current stable version is `v1.1.8`.
 
 ```bash
 # npm
-npm install github:gomunchi/munchi-js-sdk#v1.1.0
+npm install github:gomunchi/munchi-js-sdk#v1.1.8
 
 # pnpm
-pnpm add github:gomunchi/munchi-js-sdk#v1.1.0
+pnpm add github:gomunchi/munchi-js-sdk#v1.1.8
 ```
 
 > [!TIP]
-> Always use a version tag (e.g., `#v1.1.0`) instead of `#master` in production. This ensures your build remains the same even when newer versions are released.
+> Always use a version tag (e.g., `#v1.1.8`) instead of `#master` in production. This ensures your build remains the same even when newer versions are released.
 
 ### In your package.json
 
 ```json
 {
   "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.0"
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.8"
   }
 }
 ```
 
 Then run `npm install` or `pnpm install` - no authentication setup needed!
+
+### Optional: Explicit Package Entries (same tag)
+
+If you want explicit package names in `package.json`, you can do this:
+
+```json
+{
+  "dependencies": {
+    "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.8",
+    "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.8",
+    "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.8"
+  }
+}
+```
+
+> [!NOTE]
+> With pnpm, GitHub installs always resolve the repo root package.
+> The three entries above will point to the same GitHub tag.
 
 ## Quick Start
 
@@ -115,19 +135,19 @@ The script will:
 ### Git Tags
 
 Each release creates three tags:
-- `v1.1.0` - Main version tag (use this for installing)
-- `core-v1.1.0` - Core package tag
-- `payments-v1.1.0` - Payments package tag
-- `react-v1.1.0` - React package tag
+- `v1.1.8` - Main version tag (use this for installing)
+- `core-v1.1.8` - Core package tag
+- `payments-v1.1.8` - Payments package tag
+- `react-v1.1.8` - React package tag
 
 ### Install Specific Version
 
 ```bash
 # npm
-npm install github:gomunchi/munchi-js-sdk#v1.1.0
+npm install github:gomunchi/munchi-js-sdk#v1.1.8
 
 # pnpm
-pnpm add github:gomunchi/munchi-js-sdk#v1.1.0
+pnpm add github:gomunchi/munchi-js-sdk#v1.1.8
 ```
 
 ## Contributing
@@ -201,6 +221,10 @@ When installing via GitHub URL, `pnpm` heavily caches the repository content. If
 1. Run `pnpm install --force`
 2. If that fails, run `pnpm store prune` and try again.
 3. As a last resort, delete `node_modules` and the lockfile.
+
+### Known pnpm GitHub Limitation
+pnpm installs GitHub URLs as the **repository root package**. Subdirectory installs are not supported.
+If you need true split packages, publish to npm or use tarballs for each package.
 
 ### Build fails on install
 - Ensure you have the required devDependencies installed
