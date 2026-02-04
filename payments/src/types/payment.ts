@@ -68,7 +68,7 @@ export interface RefundRequest {
    * - Viva: parentSessionId
    * - Nets: preAuthorizationInfo (or reference)
    */
-  originalTransactionId?: string;
+  originalTransactionId: string;
   options?: VivaRefundOptions | NetsRefundOptions;
 }
 

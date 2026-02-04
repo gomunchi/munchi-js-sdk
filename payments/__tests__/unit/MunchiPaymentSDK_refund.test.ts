@@ -59,6 +59,7 @@ describe("MunchiPaymentSDK Refund", () => {
       orderRef: "order-123",
       currency: "EUR",
       displayId: "refund-1",
+      originalTransactionId: "tx-123",
     };
 
     const error = new Error("Refund failed");

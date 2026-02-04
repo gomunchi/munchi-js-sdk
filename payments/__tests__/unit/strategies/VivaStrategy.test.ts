@@ -1,5 +1,5 @@
-import type { AxiosInstance } from "axios";
 import { PaymentApi, PaymentMethod, PaymentProvider, type TransactionDto } from "@munchi/core";
+import type { AxiosInstance } from "axios";
 import { VivaStrategy } from "../../../src/strategies/VivaStrategy";
 import {
   type IMessagingAdapter,
@@ -322,84 +322,85 @@ describe("VivaStrategy", () => {
   });
 
   describe("refundTransaction", () => {
-      it("should refund successfully", async () => {
-         const mockRefundTransaction = jest.fn().mockResolvedValue({
-              data: {
-                  success: true,
-                  eventId: 0,
-                  transactionId: "refund-trans-123",
-                  sessionId: "session-refund",
-                  amount: 1000,
-                  terminalId: "term-1",
-                  cashRegisterId: "reg-1",
-                  currencyCode: 978, // EUR
-              }
-         });
-
-          (PaymentApi as jest.MockedClass<typeof PaymentApi>).mockImplementation((() => ({
-              createVivaTransactionV3: jest.fn(),
-              initiateTerminalTransaction: jest.fn(),
-              cancelTransaction: jest.fn(),
-              cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
-              getPaymentStatus: jest.fn(),
-              refundVivaTransactionV4: mockRefundTransaction
-          })) as any);
-
-          strategy = new VivaStrategy(mockAxios, mockMessaging, mockConfig);
-
-          const result = await strategy.refundTransaction({
-              amountCents: 1000,
-              orderRef: "order-123",
-              currency: "EUR", // Assume generic currency code maps to Viva code internally if needed, or passes through
-              displayId: "refund-1",
-              originalTransactionId: "parent-session-123",
-          }, jest.fn());
-
-          expect(result.success).toBe(true);
-          expect(result.transactionId).toBe("refund-trans-123");
-          expect(mockRefundTransaction).toHaveBeenCalledWith(expect.objectContaining({
-              amount: 1000,
-              orderId: "order-123",
-              parentSessionId: "parent-session-123",
-          }));
+    it("should refund successfully", async () => {
+      const mockRefundTransaction = jest.fn().mockResolvedValue({
+        data: {
+          success: true,
+          eventId: 0,
+          transactionId: "refund-trans-123",
+          sessionId: "session-refund",
+          amount: 1000,
+          terminalId: "term-1",
+          cashRegisterId: "reg-1",
+          currencyCode: 978, // EUR
+        }
       });
 
-      it("should handle refund failure", async () => {
-          const mockRefundTransaction = jest.fn().mockResolvedValue({
-              data: {
-                  success: false,
-                  eventId: 1234, // Some error code
-                  transactionId: "refund-fail-123",
-                  sessionId: "session-refund-fail",
-                  amount: 1000,
-                  terminalId: "term-1",
-                  cashRegisterId: "reg-1",
-                  currencyCode: 978,
-              }
-          });
+      (PaymentApi as jest.MockedClass<typeof PaymentApi>).mockImplementation((() => ({
+        createVivaTransactionV3: jest.fn(),
+        initiateTerminalTransaction: jest.fn(),
+        cancelTransaction: jest.fn(),
+        cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
+        getPaymentStatus: jest.fn(),
+        refundSingleVivaTransaction: mockRefundTransaction
+      })) as any);
 
-          (PaymentApi as jest.MockedClass<typeof PaymentApi>).mockImplementation((() => ({
-              createVivaTransactionV3: jest.fn(),
-              initiateTerminalTransaction: jest.fn(),
-              cancelTransaction: jest.fn(),
-              cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
-              getPaymentStatus: jest.fn(),
-              refundVivaTransactionV4: mockRefundTransaction
-          })) as any);
+      strategy = new VivaStrategy(mockAxios, mockMessaging, mockConfig);
 
-          strategy = new VivaStrategy(mockAxios, mockMessaging, mockConfig);
+      const result = await strategy.refundTransaction({
+        amountCents: 1000,
+        orderRef: "order-123",
+        currency: "EUR",
+        displayId: "refund-1",
+        originalTransactionId: "parent-session-123",
+      }, jest.fn());
 
-          const result = await strategy.refundTransaction({
-              amountCents: 1000,
-              orderRef: "order-123",
-              currency: "EUR",
-              displayId: "refund-1",
-              originalTransactionId: "parent-session-123",
-          }, jest.fn());
+      expect(result.success).toBe(true);
+      expect(result.transactionId).toBe("session-refund");
+      expect(mockRefundTransaction).toHaveBeenCalledWith(expect.objectContaining({
+        amount: 1000,
+        businessId: 351,
+        currency: "EUR",
+        displayId: "test-kiosk-123",
+        orderReferenceId: "order-123",
+        referenceId: "parent-session-123",
+      }));
+    });
 
-          expect(result.success).toBe(false);
-          expect(result.errorCode).toBe("1234");
-          expect(result.errorMessage).toContain("Viva Error ID: 1234");
+    it("should handle refund failure", async () => {
+      const mockRefundTransaction = jest.fn().mockResolvedValue({
+        data: {
+          success: false,
+          eventId: 1234, // Some error code
+          transactionId: "refund-fail-123",
+          sessionId: "session-refund-fail",
+          amount: 1000,
+          terminalId: "term-1",
+          cashRegisterId: "reg-1",
+          currencyCode: 978,
+        }
       });
+
+      (PaymentApi as jest.MockedClass<typeof PaymentApi>).mockImplementation((() => ({
+        createVivaTransactionV3: jest.fn(),
+        initiateTerminalTransaction: jest.fn(),
+        cancelTransaction: jest.fn(),
+        cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
+        getPaymentStatus: jest.fn(),
+        refundSingleVivaTransaction: mockRefundTransaction
+      })) as any);
+
+      strategy = new VivaStrategy(mockAxios, mockMessaging, mockConfig);
+
+      const result = await strategy.refundTransaction({
+        amountCents: 1000,
+        orderRef: "order-123",
+        currency: "EUR",
+        displayId: "refund-1",
+        originalTransactionId: "parent-session-123",
+      }, jest.fn());
+
+      expect(result.success).toBe(false);
+    });
   });
 });

@@ -1,23 +1,23 @@
-import type { AxiosInstance } from "axios";
 import {
+  type CreateRefundDto,
   type CreateTerminalPaymentDto,
-    PaymentApi,
-    PaymentProviderEnum,
-    type PaymentStatusDto,
-    type RefundPayloadDtoV4,
-    SimplePaymentStatus,
-    type TransactionDto,
+  PaymentApi,
+  PaymentProviderEnum,
+  type PaymentStatusDto,
+  SimplePaymentStatus,
+  type TransactionDto,
 } from "@munchi/core";
+import type { AxiosInstance } from "axios";
 
 import { PaymentErrorCode, PaymentSDKError } from "../error";
 import {
-    type IMessagingAdapter,
-    PaymentInteractionState,
-    type PaymentRequest,
-    type PaymentResult,
-    type PaymentTerminalConfig,
-    type RefundRequest,
-    SdkPaymentStatus,
+  type IMessagingAdapter,
+  PaymentInteractionState,
+  type PaymentRequest,
+  type PaymentResult,
+  type PaymentTerminalConfig,
+  type RefundRequest,
+  SdkPaymentStatus,
 } from "../types/payment";
 import type { IPaymentStrategy } from "./IPaymentStrategy";
 
@@ -187,7 +187,7 @@ export class VivaStrategy implements IPaymentStrategy {
     data: PaymentStatusDto,
   ): PaymentResult {
     const isSuccess = data.status === SimplePaymentStatus.Success;
-    
+
     const result: PaymentResult = {
       success: isSuccess,
       status: isSuccess ? SdkPaymentStatus.SUCCESS : SdkPaymentStatus.FAILED,
@@ -287,32 +287,29 @@ export class VivaStrategy implements IPaymentStrategy {
     _onStateChange: (state: PaymentInteractionState, detail?: { sessionId?: string }) => void,
   ): Promise<PaymentResult> {
     try {
-      const payload: RefundPayloadDtoV4 = {
+      const payload: CreateRefundDto = {
         amount: request.amountCents,
-        merchantId: this.config.storeId, // storeId is used as merchantId/businessId context usually
-        parentSessionId: request.originalTransactionId ?? "",
-        orderId: request.orderRef,
-        businessId: this.config.storeId,
-        terminalId: this.config.kioskId,
+        businessId: Number(this.config.storeId),
+        displayId: this.config.kioskId,
+        currency: request.currency,
+        orderReferenceId: request.orderRef,
+        referenceId: request.originalTransactionId,
       };
 
-      const { data } = await this.api.refundVivaTransactionV4(payload);
-      
+      const { data } = await this.api.refundSingleVivaTransaction(payload);
+
       const isSuccess = data.success;
-      
+
       const result: PaymentResult = {
         success: isSuccess,
         status: isSuccess ? SdkPaymentStatus.SUCCESS : SdkPaymentStatus.FAILED,
         orderId: request.orderRef,
-        transactionId: data.transactionId,
-         // Viva V4 response uses eventId for error/status codes
-        errorCode: String(data.eventId),
-        errorMessage: data.success ? "" : `Viva Error ID: ${data.eventId}`,
+        transactionId: data.sessionId,
       };
 
       return result;
     } catch (error) {
-       throw new PaymentSDKError(
+      throw new PaymentSDKError(
         PaymentErrorCode.NETWORK_ERROR,
         "Failed to refund Viva transaction",
         error,

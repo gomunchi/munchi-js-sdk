@@ -404,68 +404,6 @@ paths:
         "200":
           description: ""
       tags: *a6
-  /api/v1/orders/pos/park:
-    get:
-      operationId: getParkedPosOrder
-      parameters:
-        - name: businessId
-          required: true
-          in: query
-          description: Id of the pos
-          schema:
-            example: "1234"
-            type: string
-      responses:
-        "200":
-          description: Get all park POS order successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/FirebasePosOrderResponse"
-        "400":
-          description: Bad request - Failed to park order
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseDto"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseDto"
-      summary: Get all Pos park order
-      tags: &a7
-        - orders
-    delete:
-      operationId: deletePosParkedOrder
-      parameters: []
-      requestBody:
-        required: true
-        description: Id of the pos
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DeletePosOrderDto"
-      responses:
-        "202":
-          description: Delete order successfully
-        "400":
-          description: Bad request - invalid order ID
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseDto"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseDto"
-      summary: Remove a parked pos order
-      tags: *a7
   /api/v1/orders/reject:
     post:
       operationId: rejectOrder
@@ -496,7 +434,8 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Reject an order
-      tags: *a7
+      tags: &a7
+        - orders
   /api/v1/orders/accept:
     post:
       operationId: acceptOrder
@@ -527,37 +466,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Accept an order
-      tags: *a7
-  /api/v1/orders/pos/update:
-    post:
-      operationId: updatePosOrder
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PosUpdateOrderDto"
-      responses:
-        "200":
-          description: Order status successfully updated
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OrderStatusResponseDto"
-        "400":
-          description: Bad request - invalid order update
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseDto"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseDto"
-      summary: Update a POS order status
       tags: *a7
   /api/v1/orders/ready:
     post:
@@ -651,68 +559,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Confirm a pre-order
-      tags: *a7
-  /api/v1/orders/pos/ticket:
-    post:
-      operationId: sendPosOrderTicket
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SendPosOrderTicketDto"
-      responses:
-        "200":
-          description: POS order ticket successfully sent
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FirebasePosOrderResponse"
-        "400":
-          description: Bad request - invalid order ID
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseDto"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseDto"
-      summary: Send a POS order ticket
-      tags: *a7
-  /api/v1/orders/pos/place:
-    post:
-      operationId: placePosOrder
-      parameters: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PosOrderPayloadDto"
-      responses:
-        "200":
-          description: POS order ticket successfully placed
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/FirebasePosOrderResponse"
-        "400":
-          description: Bad request - invalid order ID
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseDto"
-        "500":
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseDto"
-      summary: Place an POS order
       tags: *a7
   /api/v1/provider:
     post:
@@ -885,14 +731,6 @@ paths:
   /api/v1/ably/refresh-config:
     post:
       operationId: refreshConfig
-      parameters: []
-      responses:
-        "201":
-          description: ""
-      tags: *a10
-  /api/v1/ably/refresh-tax:
-    post:
-      operationId: refreshTax
       parameters: []
       responses:
         "201":
@@ -2668,130 +2506,6 @@ paths:
                 $ref: "#/components/schemas/ErrorResponseDto"
       summary: Get order history
       tags: *a25
-  /api/v1/history/orders/pos:
-    get:
-      operationId: getOrderHistoryPOS
-      parameters:
-        - name: timeSpan
-          required: false
-          in: query
-          description: Time span
-          schema:
-            $ref: "#/components/schemas/TimeSpan"
-        - name: start
-          required: false
-          in: query
-          description: Start date
-          schema:
-            type: string
-        - name: end
-          required: false
-          in: query
-          description: End date
-          schema:
-            type: string
-        - name: businessIds
-          required: true
-          in: query
-          description: Business ID selected
-          schema:
-            type: array
-            items:
-              type: number
-        - name: page
-          required: false
-          in: query
-          description: Page number
-          schema:
-            type: number
-        - name: rowPerPage
-          required: false
-          in: query
-          description: Number of rows per page
-          schema:
-            type: number
-        - name: provider
-          required: false
-          in: query
-          description: Provider
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/ProviderEnum"
-        - name: paymentType
-          required: false
-          in: query
-          description: Payment type
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/PaymentTypeEnum"
-        - name: orderStatus
-          required: false
-          in: query
-          description: Order status
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/OrderStatusEnum"
-        - name: paymentStatus
-          required: false
-          in: query
-          description: Payment status
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/PaymentStatus"
-        - name: orderType
-          required: false
-          in: query
-          description: Order type
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/OrderType"
-        - name: paymentTypePos
-          required: false
-          in: query
-          description: Payment type POS
-          schema:
-            type: array
-            items:
-              $ref: "#/components/schemas/PaymentMethod"
-        - name: invoiceCompanyId
-          required: false
-          in: query
-          description: Filter by invoice company ID
-          schema:
-            example: clxxx123
-            type: string
-        - name: timezone
-          required: false
-          in: query
-          description: Timezone (default is "UTC")
-          schema:
-            type: string
-      responses:
-        "201":
-          description: Get order history for POS
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/OrderHistoryPosResponseDto"
-        "400":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseDto"
-        "500":
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ErrorResponseDto"
-      summary: Get order history for POS
-      tags: *a25
   /api/v1/payment/status:
     post:
       description: Retrieves the current status of a payment transaction by its
@@ -2943,26 +2657,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/VivaPaymentIntent"
-        "400": *a27
-        "404": *a28
-      summary: Create Viva payment
-      tags: *a26
-  /api/v1/payment/refund:
-    post:
-      deprecated: true
-      description: Creates a new Viva payment intent.
-      operationId: refundPayment
-      parameters: []
-      requestBody:
-        required: true
-        description: Viva payment creation payload
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RefundPayloadDto"
-      responses:
-        "200":
-          description: The Viva payment intent was successfully created
         "400": *a27
         "404": *a28
       summary: Create Viva payment
@@ -5199,6 +4893,52 @@ paths:
       summary: Refund a pos order
       tags: &a53
         - Payment
+  /api/v4/payment/viva/refund/single:
+    post:
+      description: Refund a single viva transaction
+      operationId: refundSingleVivaTransaction
+      parameters: []
+      requestBody:
+        required: true
+        description: Refund payload
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRefundDto"
+      responses:
+        "200":
+          description: The transaction was successfully refunded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VivaPaymentResultDto"
+        "400": *a51
+        "404": *a52
+      summary: Refund a single viva transaction
+      tags: *a53
+  /api/v4/payment/nets/refund/transaction:
+    post:
+      description: Refund a nets transaction
+      operationId: createNetsRefundTransaction
+      parameters: []
+      requestBody:
+        required: true
+        description: Refund payload
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateRefundDto"
+      responses:
+        "200":
+          description: The transaction was successfully refunded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateNetsRefundResponseDto"
+        "400": *a51
+        "404": *a52
+      summary: Refund a nets transaction
+      tags: *a53
   /api/v4/payment/viva/terminal/initiate:
     post:
       description: Initiate a terminal transaction
@@ -6381,910 +6121,6 @@ components:
         - oneSignalId
         - hardwareId
         - businessIds
-    OrderingItemExtraSubOptionDto:
-      type: object
-      properties:
-        id:
-          type: number
-        name:
-          type: string
-        price:
-          type: number
-        image:
-          type: string
-          nullable: true
-        rank:
-          type: number
-        description:
-          type: string
-          nullable: true
-        max:
-          type: number
-        enabled:
-          type: boolean
-      required:
-        - id
-        - name
-        - price
-        - image
-        - rank
-        - description
-        - max
-        - enabled
-    OrderingItemExtraOptionDto:
-      type: object
-      properties:
-        id:
-          type: number
-        name:
-          type: string
-        image:
-          type: string
-          nullable: true
-        min:
-          type: number
-        max:
-          type: number
-        rank:
-          type: number
-        allow_suboption_quantity:
-          type: boolean
-        limit_suboptions_by_max:
-          type: boolean
-        enabled:
-          type: boolean
-        suboptions:
-          type: array
-          items:
-            $ref: "#/components/schemas/OrderingItemExtraSubOptionDto"
-      required:
-        - id
-        - name
-        - image
-        - min
-        - max
-        - rank
-        - allow_suboption_quantity
-        - limit_suboptions_by_max
-        - enabled
-        - suboptions
-    OrderingItemExtraDto:
-      type: object
-      properties:
-        id:
-          type: number
-        name:
-          type: string
-        description:
-          type: string
-          nullable: true
-        enabled:
-          type: boolean
-        rank:
-          type: number
-        options:
-          type: array
-          items:
-            $ref: "#/components/schemas/OrderingItemExtraOptionDto"
-      required:
-        - id
-        - name
-        - description
-        - enabled
-        - rank
-        - options
-    PrinterTypeEnum:
-      type: string
-      enum:
-        - KITCHEN
-        - BAR
-        - RECEIPT
-        - CLOUD
-    ReportingCategoryDto:
-      type: object
-      properties:
-        id:
-          type: number
-          description: Reporting Category ID
-          example: 1
-        business_id:
-          type: string
-          description: Business ID
-          example: "351"
-        reporting_category_name:
-          type: string
-          description: Reporting Category Name
-          example: Beverages
-        index:
-          type: number
-          description: Index/Order
-          example: 1
-        created_at:
-          type: string
-          description: Created at timestamp
-        updated_at:
-          type: string
-          description: Updated at timestamp
-      required:
-        - id
-        - business_id
-        - reporting_category_name
-        - index
-        - created_at
-        - updated_at
-    ChannelConfig:
-      type: object
-      properties:
-        channel:
-          type: string
-          example: Kiosk
-          enum:
-            - Wolt
-            - MunchiOnline
-            - MunchiKiosk
-            - MunchiPos
-            - UberEats
-            - Foodora
-            - Bolt
-            - MunchiKioskV2
-            - Kiosk
-        quantity:
-          type: number
-          example: 10
-        inventoried:
-          type: boolean
-          example: true
-        enabled:
-          type: boolean
-          example: true
-        external_id:
-          type: string
-          example: abc_1234
-          nullable: true
-      required:
-        - channel
-        - quantity
-        - inventoried
-        - enabled
-    PosSubOptionDto:
-      type: object
-      properties:
-        subOptionId:
-          type: string
-          description: Sub-option ID
-        name:
-          type: string
-          description: Sub-option name
-        price:
-          type: number
-          description: Sub-option price
-        quantity:
-          type: number
-          description: Sub-option quantity
-      required:
-        - subOptionId
-        - name
-        - price
-        - quantity
-    PosSelectedOptionDto:
-      type: object
-      properties:
-        optionId:
-          type: string
-          description: Option id
-        name:
-          type: string
-          description: Option name
-        totalPrice:
-          type: number
-          description: Total price
-        subOption:
-          description: Sub-options for the discount
-          type: array
-          items:
-            $ref: "#/components/schemas/PosSubOptionDto"
-      required:
-        - optionId
-        - name
-        - totalPrice
-        - subOption
-    PosItemDto:
-      type: object
-      properties:
-        id:
-          type: number
-          example: 12345
-          description: Product ID
-        name:
-          type: string
-          example: Cheeseburger
-          description: Product name
-        price:
-          type: number
-          example: 9.99
-          description: Product price
-        description:
-          type: string
-          example: A delicious cheeseburger
-          description: Product description
-        images:
-          type: string
-          example: https://example.com/image.jpg
-          description: Product image URL
-        category_id:
-          type: number
-          example: 1
-          description: Category ID the product belongs to
-        inventoried:
-          type: boolean
-          example: true
-          description: Whether the product is tracked for inventory
-        quantity:
-          type: number
-          example: 10
-          description: Available quantity if inventoried
-        featured:
-          type: boolean
-          example: true
-          description: Whether the product is marked as featured
-        enabled:
-          type: boolean
-          example: true
-          description: Whether the product is currently enabled
-        upselling:
-          type: boolean
-          example: false
-          description: Whether upselling is enabled for this product
-        in_offer:
-          type: boolean
-          example: false
-          description: Whether the product is part of an offer
-        offer_price:
-          type: object
-          example: null
-          nullable: true
-          description: Offer price if applicable
-        rank:
-          type: number
-          example: 1
-          description: Display order rank of the product
-        weight_unit:
-          type: object
-          example: g
-          description: Weight unit (e.g., g, kg, ml)
-        updated_at:
-          type: string
-          example: 2024-03-16T12:00:00Z
-          description: Last update timestamp
-        created_at:
-          type: string
-          example: 2024-03-16T12:00:00Z
-          description: Product creation timestamp
-        deleted_at:
-          type: object
-          example: null
-          nullable: true
-          description: Deletion timestamp if soft-deleted
-        extras:
-          description: List of product extras (e.g., toppings, add-ons)
-          type: array
-          items:
-            $ref: "#/components/schemas/OrderingItemExtraDto"
-        is_restricted:
-          type: boolean
-          example: true
-          description: Whether the product is restricted
-        tax:
-          allOf: &a57
-            - $ref: "#/components/schemas/BusinessTaxResponseDto"
-          nullable: true
-        colorCode:
-          type: string
-          description: Product color code in hex format
-          example: "#FF5733"
-        printer_type:
-          description: Printer type for the product
-          example: BAR
-          allOf:
-            - $ref: "#/components/schemas/PrinterTypeEnum"
-        custom_color_code:
-          type: string
-          description: "Custom UI override color in hex, e.g., #RRGGBB"
-          example: "#FF5733"
-        display_photo:
-          type: boolean
-          description: Whether the product has a display label
-          example: false
-          default: false
-        reporting_category:
-          description: Reporting category details
-          nullable: true
-          allOf:
-            - $ref: "#/components/schemas/ReportingCategoryDto"
-        pos_inventoried:
-          type: boolean
-          description: Indicates if the product is inventoried in POS
-          example: true
-        pos_quantity:
-          type: number
-          description: Quantity of the product in POS
-          example: 10
-        channel_configs:
-          description: Channel config of inventoried per product
-          type: array
-          items:
-            $ref: "#/components/schemas/ChannelConfig"
-            minLength: 2
-        orderId:
-          type: string
-          description: Order identifier
-          example: ORD-2024-001
-        options:
-          description: Selected options for the item
-          example:
-            - id: size-large
-              name: Large Size
-              price: 2.5
-          type: array
-          items:
-            $ref: "#/components/schemas/PosSelectedOptionDto"
-        subTotal:
-          type: number
-          description: Subtotal amount for the item
-          example: 15.99
-        comment:
-          type: string
-          description: Additional comments for the item
-          example: Extra spicy, no onions
-        discount:
-          allOf:
-            - $ref: "#/components/schemas/DiscountOptionsDto"
-          nullable: true
-        printed:
-          type: boolean
-          description: Whether the item has been printed
-          example: false
-        paid:
-          type: boolean
-          description: Whether the item has been paid for
-          example: true
-      required:
-        - id
-        - name
-        - price
-        - description
-        - images
-        - category_id
-        - inventoried
-        - quantity
-        - featured
-        - enabled
-        - upselling
-        - in_offer
-        - offer_price
-        - rank
-        - weight_unit
-        - updated_at
-        - created_at
-        - deleted_at
-        - extras
-        - is_restricted
-        - tax
-        - pos_inventoried
-        - pos_quantity
-        - channel_configs
-        - orderId
-        - options
-        - subTotal
-        - comment
-        - discount
-        - printed
-        - paid
-    BusinessTaxResponseDto:
-      type: object
-      properties:
-        id:
-          type: number
-          example: 1
-        name:
-          type: string
-          example: VAT
-        description:
-          type: string
-          example: Value Added Tax
-        rate:
-          type: number
-          example: 14
-        type:
-          type: number
-          example: 1
-      required:
-        - id
-        - name
-        - description
-        - rate
-        - type
-    TaxDetailsDto:
-      type: object
-      properties:
-        alcoholItems:
-          description: Array of alcohol items
-          type: array
-          items:
-            $ref: "#/components/schemas/PosItemDto"
-        alcoholTotalWithoutTax:
-          type: number
-          description: Total amount for alcohol items without tax
-        totalWithouAlcohol:
-          type: number
-          description: Total amount for non-alcohol items
-        alcoholTaxAmount:
-          type: number
-          description: Tax amount for alcohol items
-        taxAmount:
-          type: number
-          description: Total tax amount
-        alcoholTotal:
-          type: number
-          description: Total amount for alcohol items including tax
-        totalWithoutTax:
-          type: number
-          description: Total amount without tax
-        selectedTax:
-          description: Tax information for this item
-          allOf:
-            - $ref: "#/components/schemas/BusinessTaxResponseDto"
-        alcoholTax:
-          description: Tax information for this item
-          allOf:
-            - $ref: "#/components/schemas/BusinessTaxResponseDto"
-      required:
-        - alcoholItems
-        - alcoholTotalWithoutTax
-        - totalWithouAlcohol
-        - alcoholTaxAmount
-        - taxAmount
-        - alcoholTotal
-        - totalWithoutTax
-        - selectedTax
-    OrderTypePOS:
-      type: string
-      enum:
-        - dine_in
-        - pick_up
-    ServiceType:
-      type: string
-      enum:
-        - table
-        - counter
-    LocatorType:
-      type: string
-      enum:
-        - table
-        - indicator
-    PosDiscountType:
-      type: string
-      enum:
-        - percentage
-        - fixed
-    DiscountOptionsDto:
-      type: object
-      properties:
-        type:
-          description: Discount type (percentage or fixed)
-          allOf:
-            - $ref: "#/components/schemas/PosDiscountType"
-        value:
-          type: number
-          description: Discount value (percentage or amount)
-      required:
-        - type
-        - value
-    PaymentMethod:
-      type: string
-      enum:
-        - Cash
-        - Card
-        - Voucher
-        - EPassi
-        - Edenred
-        - Munchi
-        - Flatpay
-        - GiftUp
-        - MobilePay
-        - CardManual
-        - EdenredManual
-        - EmployeeDiscount
-        - LunchVoucher
-        - EdenredVoucher
-        - SmartumVoucher
-        - Invoice
-        - Smartum
-        - GiftCard
-        - Debit
-        - Credit
-        - GiftCardManual
-        - WoltBenefit
-        - Fundis
-    PaymentProvider:
-      type: string
-      enum:
-        - stripe
-        - viva
-        - nets
-    PaymentMethodTypeDto:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Payment method ID
-        referenceId:
-          type: string
-          description: Payment method ID
-          nullable: true
-        type:
-          type: string
-          description: Payment method type
-          enum:
-            - Cash
-            - Card
-            - Voucher
-            - EPassi
-            - Edenred
-            - Munchi
-            - Flatpay
-            - GiftUp
-            - MobilePay
-            - CardManual
-            - EdenredManual
-            - EmployeeDiscount
-            - LunchVoucher
-            - EdenredVoucher
-            - SmartumVoucher
-            - Invoice
-            - Smartum
-            - GiftCard
-            - Debit
-            - Credit
-            - GiftCardManual
-            - WoltBenefit
-            - Fundis
-        amount:
-          type: number
-          description: Payment amount
-        change:
-          type: number
-          description: Change returned to customer
-        provider:
-          description: The payment provider for this transaction.
-          nullable: true
-          allOf:
-            - $ref: "#/components/schemas/PaymentProvider"
-        data:
-          description: Payment-specific data. This could be a Stripe PaymentIntent, Viva
-            session data, or null for cash payments.
-          nullable: true
-          oneOf:
-            - type: object
-            - type: "null"
-      required:
-        - id
-        - type
-        - amount
-    SplitPartStatus:
-      type: string
-      enum:
-        - paid
-        - unpaid
-    SplitPartDto:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Split part ID
-        amount:
-          type: number
-          description: Split amount
-        status:
-          description: Payment status of the split part
-          example: unpaid
-          allOf:
-            - $ref: "#/components/schemas/SplitPartStatus"
-      required:
-        - id
-        - amount
-        - status
-    PaymentProviderEnum:
-      type: string
-      enum:
-        - stripe
-        - viva
-        - nets
-    RefundStatusEnum:
-      type: string
-      enum:
-        - PENDING
-        - SUCCESS
-        - FAILED
-        - CANCELED
-    RefundedItemDto:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique ID for this refunded item record (response only)
-          example: clxvf0q8g000008l0g1h2g3i4
-          nullable: true
-        lineItemId:
-          type: string
-          description: Reference to the unique line item from the original order
-          example: p1s1der2pp0ym8oy0janwsg4
-        itemId:
-          type: string
-          description: Reference to the general product's ID (e.g., SKU or posId)
-          example: "15358"
-        name:
-          type: string
-          description: Product name
-          example: Deluxe Burger
-        unitPrice:
-          type: number
-          description: The price of a single unit of this item at the time of refund
-          example: 12.5
-        quantity:
-          type: number
-          description: Quantity refunded for this item
-          example: 1
-        amount:
-          type: number
-          description: Total amount refunded for this line (quantity * unitPrice)
-          example: 12.5
-      required:
-        - lineItemId
-        - itemId
-        - name
-        - unitPrice
-        - quantity
-        - amount
-    PaymentRefundDto:
-      type: object
-      properties:
-        id:
-          type: string
-          description: Unique internal ID for this refund transaction
-        refundId:
-          type: string
-          description: Unique internal ID for this refund transaction
-        providerRefundId:
-          type: string
-          description: Refund ID from the payment provider (e.g., Stripe refund ID).
-            Deprecated soon
-        sourceTransactionId:
-          type: string
-          description: Refund ID from the payment provider V2 (e.g., Stripe refund ID)
-          nullable: true
-        originalPaymentId:
-          type: string
-          description: ID of the original payment being refunded
-          nullable: true
-          deprecated: true
-        originalPaymentEventId:
-          type: string
-          description: ID of the original payment being refunded
-          nullable: true
-        paymentProvider:
-          allOf:
-            - $ref: "#/components/schemas/PaymentProviderEnum"
-        amount:
-          type: number
-          description: The amount refunded
-        currency:
-          type: string
-          description: Currency of the refund (ISO 4217 code, e.g., EUR)
-        status:
-          allOf:
-            - $ref: "#/components/schemas/RefundStatusEnum"
-        processedAt:
-          format: date-time
-          type: string
-          description: Timestamp when the refund was processed
-        reason:
-          type: string
-          description: Reason for the refund
-          nullable: true
-        items:
-          description: Specific items refunded
-          type: array
-          items:
-            $ref: "#/components/schemas/RefundedItemDto"
-        type:
-          allOf:
-            - $ref: "#/components/schemas/PaymentMethod"
-        metadata:
-          type: object
-          description: Additional metadata from the payment provider or system
-          additionalProperties: true
-      required:
-        - id
-        - refundId
-        - providerRefundId
-        - sourceTransactionId
-        - paymentProvider
-        - amount
-        - currency
-        - status
-        - processedAt
-    OrderRefundStatus:
-      type: string
-      enum:
-        - NONE
-        - PARTIAL
-        - FULL
-    CartOrderDto:
-      type: object
-      properties:
-        cartId:
-          type: string
-          description: Cart ID
-        documentId:
-          type: string
-          description: Document id
-        orderNumber:
-          type: string
-          description: Order number
-        tableValue:
-          type: string
-          description: Table value or number
-          nullable: true
-        orderType:
-          description: Order type (dine-in or takeaway)
-          allOf:
-            - $ref: "#/components/schemas/OrderTypePOS"
-        serviceType:
-          description: Service type
-          allOf:
-            - $ref: "#/components/schemas/ServiceType"
-        locatorType:
-          description: Locator type
-          allOf:
-            - $ref: "#/components/schemas/LocatorType"
-        items:
-          description: Order items
-          type: array
-          items:
-            $ref: "#/components/schemas/PosItemDto"
-        discount:
-          description: Discount applied to the entire order
-          nullable: true
-          allOf:
-            - $ref: "#/components/schemas/DiscountOptionsDto"
-        comments:
-          type: string
-          description: Additional comments for the order
-          nullable: true
-        total:
-          type: number
-          description: Total order amount
-        subtotal:
-          type: number
-          description: Subtotal before discounts and taxes
-        leftToPay:
-          type: number
-          description: Amount left to pay
-        paid:
-          type: number
-          description: Amount already paid
-        paymentMethods:
-          type: array
-          description: Available payment methods
-          items:
-            $ref: "#/components/schemas/PaymentMethod"
-        paidByPaymentMethods:
-          description: Payments made with different methods
-          type: array
-          items:
-            $ref: "#/components/schemas/PaymentMethodTypeDto"
-        savedAt:
-          format: date-time
-          type: string
-          description: Start date
-          nullable: true
-          example: 2025-05-22T15:30:00.000Z
-        currentlyPaidSplitPartId:
-          type: string
-        customer:
-          description: Customer information
-          nullable: true
-          allOf:
-            - $ref: "#/components/schemas/LoyaltyUserDto"
-        splitParts:
-          description: Split bill parts if applicable
-          type: array
-          items:
-            $ref: "#/components/schemas/SplitPartDto"
-        refunds:
-          description: Details of any refunds processed for this order.
-          type: array
-          items:
-            $ref: "#/components/schemas/PaymentRefundDto"
-        orderRefundStatus:
-          description: Overall refund status of the order. Calculated based on successful
-            refunds versus the paid amount.
-          allOf:
-            - $ref: "#/components/schemas/OrderRefundStatus"
-      required:
-        - cartId
-        - documentId
-        - orderNumber
-        - tableValue
-        - orderType
-        - serviceType
-        - locatorType
-        - items
-        - discount
-        - comments
-        - total
-        - subtotal
-        - leftToPay
-        - paid
-        - paymentMethods
-        - paidByPaymentMethods
-        - savedAt
-        - currentlyPaidSplitPartId
-        - customer
-        - splitParts
-        - orderRefundStatus
-    OrderStatusEnum:
-      type: string
-      enum:
-        - pending
-        - in_progress
-        - ready
-        - delivered
-        - rejected
-        - pick_up_by_driver
-        - preorder
-        - accept_by_driver
-        - parked
-        - refunded
-        - draft
-    FirebaseTimeDto:
-      type: object
-      properties:
-        _seconds:
-          type: number
-          description: Seconds since Unix epoch
-        _nanoseconds:
-          type: number
-          description: Nanoseconds component
-      required:
-        - _seconds
-        - _nanoseconds
-    FirebasePosOrderResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        createdAt:
-          format: date-time
-          type: string
-          description: Creation time of the order
-        taxDetails:
-          $ref: "#/components/schemas/TaxDetailsDto"
-        cartOrder:
-          $ref: "#/components/schemas/CartOrderDto"
-        status:
-          allOf:
-            - $ref: "#/components/schemas/OrderStatusEnum"
-        updatedAt:
-          description: Last update time (original format)
-          allOf:
-            - $ref: "#/components/schemas/FirebaseTimeDto"
-      required:
-        - id
-        - createdAt
-        - taxDetails
-        - cartOrder
     ProviderEnum:
       type: string
       enum:
@@ -7323,6 +6159,20 @@ components:
       enum:
         - cash
         - card
+    OrderStatusEnum:
+      type: string
+      enum:
+        - pending
+        - in_progress
+        - ready
+        - delivered
+        - rejected
+        - pick_up_by_driver
+        - preorder
+        - accept_by_driver
+        - parked
+        - refunded
+        - draft
     Type:
       type: string
       enum:
@@ -7678,6 +6528,19 @@ components:
         - orderingBusinessId
         - bic
         - enabled
+    PaymentProvider:
+      type: string
+      enum:
+        - stripe
+        - viva
+        - nets
+    RefundStatusEnum:
+      type: string
+      enum:
+        - PENDING
+        - SUCCESS
+        - FAILED
+        - CANCELED
     RefundDto:
       type: object
       properties:
@@ -7914,33 +6777,6 @@ components:
         - orderId
         - orderingBusinessId
         - provider
-    PosUpdateOrderDto:
-      type: object
-      properties:
-        orderId:
-          type: string
-          description: Unique identifier for the order
-        orderingBusinessId:
-          type: number
-          description: ID of the business updating the order
-        provider:
-          description: Name of the provider handling the order
-          allOf:
-            - $ref: "#/components/schemas/ProviderEnum"
-        status:
-          description: New status of the order
-          example: in_progress
-          allOf:
-            - $ref: "#/components/schemas/OrderStatusEnum"
-        isTicket:
-          type: boolean
-          description: Whether the order is a ticket
-          example: true
-      required:
-        - orderId
-        - orderingBusinessId
-        - provider
-        - status
     ReadyOrderDto:
       type: object
       properties:
@@ -7997,414 +6833,114 @@ components:
         - orderingBusinessId
         - provider
         - preparedIn
-    SendPosOrderTicketDto:
+    RegisterProviderDto:
+      type: object
+      properties: {}
+    RegisterCredentialDto:
+      type: object
+      properties: {}
+    SupportedChannelDto:
       type: object
       properties:
-        data:
-          description: Order data
+        channel:
+          example: MunchiPos
           allOf:
-            - $ref: "#/components/schemas/PosOrderDto"
-        businessId:
+            - $ref: "#/components/schemas/ProviderEnum"
+        label:
           type: string
-          description: Business ID
-        sendNotification:
+          example: Munchi POS
+      required:
+        - channel
+        - label
+    GetSupportedChannelsResponseDto:
+      type: object
+      properties:
+        channels:
+          type: array
+          items:
+            $ref: "#/components/schemas/SupportedChannelDto"
+      required:
+        - channels
+    TerminalValidationResponseDto:
+      type: object
+      properties:
+        isValid:
           type: boolean
-          description: Send notification to the business
+          description: Is valid terminal id or not for the current user session
       required:
-        - data
-        - businessId
-    CurrencyCode:
+        - isValid
+    SimplePaymentStatus:
       type: string
       enum:
-        - EUR
-        - GBP
-        - CHF
-        - SEK
-        - NOK
-        - DKK
-        - PLN
-        - CZK
-        - HUF
-        - RON
-        - BGN
-        - HRK
-        - ISK
-        - RSD
-        - TRY
-        - UAH
-        - RUB
-        - ALL
-        - MKD
-        - MDL
-        - BAM
-        - AED
-    PosBusinessDto:
-      type: object
-      properties:
-        orderingBusinessId:
-          type: string
-        name:
-          type: string
-        address:
-          type: string
-          nullable: true
-        email:
-          type: string
-          nullable: true
-        companyName:
-          type: string
-          nullable: true
-        companyPhone:
-          type: string
-          nullable: true
-        timezone:
-          type: string
-        bic:
-          type: string
-          nullable: true
-      required:
-        - orderingBusinessId
-        - name
-        - address
-        - email
-        - companyName
-        - companyPhone
-        - timezone
-        - bic
-    MoneyDto:
-      type: object
-      properties:
-        amount:
-          type: number
-          description: Amount in the smallest currency unit (e.g., cents)
-          example: 1250
-        currency:
-          type: string
-          description: The ISO 4217 currency code
-          example: EUR
-      required:
-        - amount
-        - currency
-    PriceBreakdownDto:
-      type: object
-      properties:
-        totalBeforeDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-        subtotalItemDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-        subtotalBasketDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-        totalDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-      required:
-        - totalBeforeDiscounts
-        - subtotalItemDiscounts
-        - subtotalBasketDiscounts
-        - totalDiscounts
-    PosOrderPriceDto:
-      type: object
-      properties:
-        priceBreakdown:
-          $ref: "#/components/schemas/PriceBreakdownDto"
-        total:
-          $ref: "#/components/schemas/MoneyDto"
-      required:
-        - priceBreakdown
-        - total
-    ItemPriceBreakdownDto:
-      type: object
-      properties:
-        totalBeforeDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-        subtotalItemDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-        subtotalBasketDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-        totalDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-        basePriceBeforeDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-        unitPriceBeforeDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-        subtotalOptionsBasketDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-        subtotalOptionsItemDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-      required:
-        - totalBeforeDiscounts
-        - subtotalItemDiscounts
-        - subtotalBasketDiscounts
-        - totalDiscounts
-        - basePriceBeforeDiscounts
-        - unitPriceBeforeDiscounts
-        - subtotalOptionsBasketDiscounts
-        - subtotalOptionsItemDiscounts
-    ItemPriceDto:
-      type: object
-      properties:
-        unitPrice:
-          $ref: "#/components/schemas/MoneyDto"
-        basePrice:
-          $ref: "#/components/schemas/MoneyDto"
-        vatPercentage:
-          type: number
-        total:
-          $ref: "#/components/schemas/MoneyDto"
-        priceBreakdown:
-          $ref: "#/components/schemas/ItemPriceBreakdownDto"
-      required:
-        - unitPrice
-        - basePrice
-        - vatPercentage
-        - total
-        - priceBreakdown
-    KitchenStatus:
+        - PENDING
+        - SUCCESS
+        - FAILED
+    PaymentFailureCode:
       type: string
       enum:
-        - not_applicable
-        - pending
-        - on_hold
-        - sent_to_om
-        - dispatched_to_kitchen
-        - completed
-        - cancelled
-    PosPaymentStatus:
-      type: string
-      enum:
-        - unpaid
-        - paying
-        - paid
-    DiscountType:
-      type: string
-      enum:
-        - PERCENTAGE
-        - FIXED
-    DiscountScope:
-      type: string
-      enum:
-        - ITEM
-        - CART
-    PosDiscountDto:
+        - payment.aborted
+        - payment.cancelled_by_user
+        - payment.insufficient_funds
+        - payment.card_expired
+        - payment.card_invalid
+        - payment.pin_error
+        - payment.declined
+        - terminal.offline
+        - terminal.timeout
+        - terminal.busy
+        - system.provider_error
+        - system.unknown
+    PaymentErrorDto:
       type: object
       properties:
-        id:
-          type: string
-        type:
+        code:
+          example: payment.declined
           allOf:
-            - $ref: "#/components/schemas/DiscountType"
-        value:
-          type: number
-        lineItemId:
+            - $ref: "#/components/schemas/PaymentFailureCode"
+        retryable:
+          type: boolean
+          example: true
+        message:
           type: string
-          nullable: true
-        scope:
-          allOf:
-            - $ref: "#/components/schemas/DiscountScope"
-        name:
-          type: string
-          nullable: true
-        createdAt:
+          example: Insufficient Funds
+        timestamp:
           format: date-time
           type: string
-        appliedAmount:
-          $ref: "#/components/schemas/MoneyDto"
+          description: When this error occurred
+        referenceError:
+          type: string
+          description: Reference error from provider
       required:
-        - id
-        - type
-        - value
-        - lineItemId
-        - scope
-        - name
-        - createdAt
-    SuboptionPriceBreakdownDto:
-      type: object
-      properties:
-        totalBeforeDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-        totalDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-        subtotalBasketDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-        subtotalItemDiscounts:
-          $ref: "#/components/schemas/MoneyDto"
-      required:
-        - totalBeforeDiscounts
-        - totalDiscounts
-        - subtotalBasketDiscounts
-        - subtotalItemDiscounts
-    PosOrderSuboptionDto:
-      type: object
-      properties:
-        id:
-          type: string
-        posId:
-          type: string
-        name:
-          type: string
-        taxRate:
-          type: number
-        price:
-          $ref: "#/components/schemas/MoneyDto"
-        quantity:
-          type: number
-        priceBreakdown:
-          $ref: "#/components/schemas/SuboptionPriceBreakdownDto"
-        value_pos_id:
-          type: string
-          nullable: true
-      required:
-        - id
-        - posId
-        - name
-        - taxRate
-        - price
-        - quantity
-        - priceBreakdown
-        - value_pos_id
-    PosOrderOptionDto:
-      type: object
-      properties:
-        id:
-          type: string
-        posId:
-          type: string
-        name:
-          type: string
-        suboptions:
-          type: array
-          items:
-            $ref: "#/components/schemas/PosOrderSuboptionDto"
-      required:
-        - id
-        - posId
-        - name
-        - suboptions
-    PosOrderItemDto:
-      type: object
-      properties:
-        id:
-          type: string
-        lineItemId:
-          type: string
-        posId:
-          type: string
-        name:
-          type: string
-        basePrice:
-          $ref: "#/components/schemas/MoneyDto"
-        taxRate:
-          type: number
-        quantity:
-          type: number
-        itemPrice:
-          $ref: "#/components/schemas/ItemPriceDto"
-        kitchenStatus:
-          allOf:
-            - $ref: "#/components/schemas/KitchenStatus"
-        paymentStatus:
-          allOf:
-            - $ref: "#/components/schemas/PosPaymentStatus"
-        discount:
-          nullable: true
-          allOf:
-            - $ref: "#/components/schemas/PosDiscountDto"
-        isBundleOffer:
-          type: boolean
-        isAlcohol:
-          type: boolean
-        comments:
-          type: string
-          nullable: true
-        logo:
-          type: string
-          nullable: true
-        printerType:
-          description: Printer type for the product
-          example: BAR
-          allOf:
-            - $ref: "#/components/schemas/PrinterTypeEnum"
-        options:
-          type: array
-          items:
-            $ref: "#/components/schemas/PosOrderOptionDto"
-        display_photo:
-          type: boolean
-          description: Whether the product has a display label
-          example: false
-          default: false
-        reporting_category:
-          description: Reporting category details
-          nullable: true
-          allOf:
-            - $ref: "#/components/schemas/ReportingCategoryDto"
-        category_id:
-          type: number
-          description: Category ID of the item
-          example: 5
-          nullable: true
-      required:
-        - id
-        - lineItemId
-        - posId
-        - name
-        - basePrice
-        - taxRate
-        - quantity
-        - itemPrice
-        - kitchenStatus
-        - paymentStatus
-        - discount
-        - isBundleOffer
-        - isAlcohol
-        - comments
-        - logo
-        - options
-        - category_id
-    PosCustomerDto:
-      type: object
-      properties:
-        id:
-          type: number
-          description: The unique identifier of the customer.
-          example: 6
-        first_name:
-          type: string
-          description: The customer's first name at the time of the order.
-          example: John
-          nullable: true
-        last_name:
-          type: string
-          description: The customer's last name at the time of the order.
-          example: Doe
-          nullable: true
-        email:
-          type: string
-          description: The primary email address of the customer.
-          example: test@gmail.com
-          nullable: true
-        phone:
-          type: string
-          description: The primary phone number of the customer (without country code).
-          example: "505346484"
-          nullable: true
-        country_code:
-          type: string
-          description: The customer's phone country code.
-          example: "+358"
-          nullable: true
-        logo:
-          type: string
-          description: The logo of the customer.
-          example: logo_url
-          nullable: true
-      required:
-        - id
-        - first_name
-        - last_name
-        - email
-        - phone
-        - country_code
-        - logo
+        - code
+        - retryable
+        - message
+        - timestamp
+    PaymentMethod:
+      type: string
+      enum:
+        - Cash
+        - Card
+        - Voucher
+        - EPassi
+        - Edenred
+        - Munchi
+        - Flatpay
+        - GiftUp
+        - MobilePay
+        - CardManual
+        - EdenredManual
+        - EmployeeDiscount
+        - LunchVoucher
+        - EdenredVoucher
+        - SmartumVoucher
+        - Invoice
+        - Smartum
+        - GiftCard
+        - Debit
+        - Credit
+        - GiftCardManual
+        - WoltBenefit
+        - Fundis
     CardDetailDto:
       type: object
       properties:
@@ -8507,340 +7043,6 @@ components:
         - createdAt
         - cardDetail
         - label
-    OrderFormat:
-      type: string
-      enum:
-        - OPEN
-        - INSTANT
-    OrderTaxSummaryDto:
-      type: object
-      properties:
-        taxRate:
-          type: number
-          description: Tax rate percentage
-          example: 14
-        totalWithoutTax:
-          type: number
-          description: Total without tax in cents
-          example: 774
-        totalTax:
-          type: number
-          description: Total tax amount in cents
-          example: 95
-        totalWithTax:
-          type: number
-          description: Total with tax in cents
-          example: 869
-      required:
-        - taxRate
-        - totalWithoutTax
-        - totalTax
-        - totalWithTax
-    OrderTaxSummaryDetailedDto:
-      type: object
-      properties:
-        taxSummaries:
-          description: Tax breakdown by rate
-          type: array
-          items:
-            $ref: "#/components/schemas/OrderTaxSummaryDto"
-        totalWithoutTax:
-          type: number
-          description: Total without tax in cents
-          example: 774
-        totalTax:
-          type: number
-          description: Total tax amount in cents
-          example: 95
-        grandTotal:
-          type: number
-          description: Grand total in cents
-          example: 869
-      required:
-        - taxSummaries
-        - totalWithoutTax
-        - totalTax
-        - grandTotal
-    InvoiceCompanyResponseDto:
-      type: object
-      properties:
-        id:
-          type: string
-        businessId:
-          type: number
-        name:
-          type: string
-        email:
-          type: string
-        countryCode:
-          type: string
-        phone:
-          type: string
-        bic:
-          type: string
-        address:
-          type: string
-        createdAt:
-          format: date-time
-          type: string
-        updatedAt:
-          format: date-time
-          type: string
-      required:
-        - id
-        - businessId
-        - name
-        - email
-        - countryCode
-        - phone
-        - createdAt
-        - updatedAt
-    PosOrderDto:
-      type: object
-      properties:
-        id:
-          type: string
-        businessId:
-          type: string
-        currency:
-          allOf:
-            - $ref: "#/components/schemas/CurrencyCode"
-        business:
-          $ref: "#/components/schemas/PosBusinessDto"
-        createdAt:
-          format: date-time
-          type: string
-        status:
-          allOf:
-            - $ref: "#/components/schemas/OrderStatusEnum"
-        updatedAt:
-          format: date-time
-          type: string
-        orderNumber:
-          type: string
-        orderType:
-          allOf:
-            - $ref: "#/components/schemas/OrderTypePOS"
-        spotNumber:
-          type: string
-          nullable: true
-        comments:
-          type: string
-          nullable: true
-        staffId:
-          type: string
-          nullable: true
-          description: Id of the staff in shift
-        shiftId:
-          type: string
-          nullable: true
-          description: Id of the shift
-        orderRefundStatus:
-          allOf:
-            - $ref: "#/components/schemas/OrderRefundStatus"
-        locatorType:
-          allOf:
-            - $ref: "#/components/schemas/LocatorType"
-        basketPrice:
-          $ref: "#/components/schemas/PosOrderPriceDto"
-        items:
-          type: array
-          items:
-            $ref: "#/components/schemas/PosOrderItemDto"
-        discounts:
-          type: array
-          items:
-            $ref: "#/components/schemas/PosDiscountDto"
-        customer:
-          nullable: true
-          allOf:
-            - $ref: "#/components/schemas/PosCustomerDto"
-        paymentEvents:
-          type: array
-          items:
-            $ref: "#/components/schemas/TransactionDto"
-        refunds:
-          type: array
-          items:
-            $ref: "#/components/schemas/PaymentRefundDto"
-        version:
-          type: string
-          description: Data version code
-        orderFormat:
-          description: Order format (e.g., open, instant)
-          allOf:
-            - $ref: "#/components/schemas/OrderFormat"
-        loyaltyProgramId:
-          type: string
-          description: The ID of the loyalty program active during this order.
-          example: 68274e2987e02a582e0e697f
-          nullable: true
-        loyaltyTransactionIds:
-          description: An array of loyalty transaction IDs related to this order.
-          example:
-            - loy-tx-12345
-            - loy-tx-67890
-          type: array
-          items:
-            type: string
-        taxSummary:
-          description: Tax breakdown for this order
-          allOf:
-            - $ref: "#/components/schemas/OrderTaxSummaryDetailedDto"
-        staffName:
-          type: string
-          nullable: true
-          description: Name of staff member who created the order
-        invoiceCompany:
-          nullable: true
-          description: Invoice company information for this order
-          allOf:
-            - $ref: "#/components/schemas/InvoiceCompanyResponseDto"
-        lastPaymentError:
-          type: object
-      required:
-        - id
-        - businessId
-        - currency
-        - business
-        - createdAt
-        - status
-        - updatedAt
-        - orderNumber
-        - orderType
-        - spotNumber
-        - comments
-        - staffId
-        - shiftId
-        - orderRefundStatus
-        - locatorType
-        - basketPrice
-        - items
-        - discounts
-        - customer
-        - paymentEvents
-        - version
-        - loyaltyProgramId
-        - loyaltyTransactionIds
-    PosOrderPayloadDto:
-      type: object
-      properties:
-        order:
-          description: The finalized order data.
-          allOf:
-            - $ref: "#/components/schemas/PosOrderDto"
-        businessId:
-          type: number
-          description: The business ID.
-        sentToOm:
-          type: boolean
-          description: For sending to OM
-        isTicket:
-          type: boolean
-          description: For sending to OM as a ticket
-        sendNotification:
-          type: boolean
-          description: For sending notification to tablet
-      required:
-        - order
-        - businessId
-        - sentToOm
-        - isTicket
-    DeletePosOrderDto:
-      type: object
-      properties:
-        businessId:
-          type: number
-          example: 1234
-          description: Id of the business
-        orderId:
-          type: string
-          description: Id of the order
-      required:
-        - businessId
-        - orderId
-    RegisterProviderDto:
-      type: object
-      properties: {}
-    RegisterCredentialDto:
-      type: object
-      properties: {}
-    SupportedChannelDto:
-      type: object
-      properties:
-        channel:
-          example: MunchiPos
-          allOf:
-            - $ref: "#/components/schemas/ProviderEnum"
-        label:
-          type: string
-          example: Munchi POS
-      required:
-        - channel
-        - label
-    GetSupportedChannelsResponseDto:
-      type: object
-      properties:
-        channels:
-          type: array
-          items:
-            $ref: "#/components/schemas/SupportedChannelDto"
-      required:
-        - channels
-    TerminalValidationResponseDto:
-      type: object
-      properties:
-        isValid:
-          type: boolean
-          description: Is valid terminal id or not for the current user session
-      required:
-        - isValid
-    SimplePaymentStatus:
-      type: string
-      enum:
-        - PENDING
-        - SUCCESS
-        - FAILED
-    PaymentFailureCode:
-      type: string
-      enum:
-        - payment.aborted
-        - payment.cancelled_by_user
-        - payment.insufficient_funds
-        - payment.card_expired
-        - payment.card_invalid
-        - payment.pin_error
-        - payment.declined
-        - terminal.offline
-        - terminal.timeout
-        - terminal.busy
-        - system.provider_error
-        - system.unknown
-    PaymentErrorDto:
-      type: object
-      properties:
-        code:
-          example: payment.declined
-          allOf:
-            - $ref: "#/components/schemas/PaymentFailureCode"
-        retryable:
-          type: boolean
-          example: true
-        message:
-          type: string
-          example: Insufficient Funds
-        timestamp:
-          format: date-time
-          type: string
-          description: When this error occurred
-        referenceError:
-          type: string
-          description: Reference error from provider
-      required:
-        - code
-        - retryable
-        - message
-        - timestamp
     PaymentStatusDto:
       type: object
       properties:
@@ -9092,6 +7294,861 @@ components:
             - $ref: "#/components/schemas/KioskDetailsDto"
       required:
         - kiosk
+    CurrencyCode:
+      type: string
+      enum:
+        - EUR
+        - GBP
+        - CHF
+        - SEK
+        - NOK
+        - DKK
+        - PLN
+        - CZK
+        - HUF
+        - RON
+        - BGN
+        - HRK
+        - ISK
+        - RSD
+        - TRY
+        - UAH
+        - RUB
+        - ALL
+        - MKD
+        - MDL
+        - BAM
+        - AED
+    PosBusinessDto:
+      type: object
+      properties:
+        orderingBusinessId:
+          type: string
+        name:
+          type: string
+        address:
+          type: string
+          nullable: true
+        email:
+          type: string
+          nullable: true
+        companyName:
+          type: string
+          nullable: true
+        companyPhone:
+          type: string
+          nullable: true
+        timezone:
+          type: string
+        bic:
+          type: string
+          nullable: true
+      required:
+        - orderingBusinessId
+        - name
+        - address
+        - email
+        - companyName
+        - companyPhone
+        - timezone
+        - bic
+    OrderTypePOS:
+      type: string
+      enum:
+        - dine_in
+        - pick_up
+    OrderRefundStatus:
+      type: string
+      enum:
+        - NONE
+        - PARTIAL
+        - FULL
+    LocatorType:
+      type: string
+      enum:
+        - table
+        - indicator
+    MoneyDto:
+      type: object
+      properties:
+        amount:
+          type: number
+          description: Amount in the smallest currency unit (e.g., cents)
+          example: 1250
+        currency:
+          type: string
+          description: The ISO 4217 currency code
+          example: EUR
+      required:
+        - amount
+        - currency
+    PriceBreakdownDto:
+      type: object
+      properties:
+        totalBeforeDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+        subtotalItemDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+        subtotalBasketDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+        totalDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+      required:
+        - totalBeforeDiscounts
+        - subtotalItemDiscounts
+        - subtotalBasketDiscounts
+        - totalDiscounts
+    PosOrderPriceDto:
+      type: object
+      properties:
+        priceBreakdown:
+          $ref: "#/components/schemas/PriceBreakdownDto"
+        total:
+          $ref: "#/components/schemas/MoneyDto"
+      required:
+        - priceBreakdown
+        - total
+    ItemPriceBreakdownDto:
+      type: object
+      properties:
+        totalBeforeDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+        subtotalItemDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+        subtotalBasketDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+        totalDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+        basePriceBeforeDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+        unitPriceBeforeDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+        subtotalOptionsBasketDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+        subtotalOptionsItemDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+      required:
+        - totalBeforeDiscounts
+        - subtotalItemDiscounts
+        - subtotalBasketDiscounts
+        - totalDiscounts
+        - basePriceBeforeDiscounts
+        - unitPriceBeforeDiscounts
+        - subtotalOptionsBasketDiscounts
+        - subtotalOptionsItemDiscounts
+    ItemPriceDto:
+      type: object
+      properties:
+        unitPrice:
+          $ref: "#/components/schemas/MoneyDto"
+        basePrice:
+          $ref: "#/components/schemas/MoneyDto"
+        vatPercentage:
+          type: number
+        total:
+          $ref: "#/components/schemas/MoneyDto"
+        priceBreakdown:
+          $ref: "#/components/schemas/ItemPriceBreakdownDto"
+      required:
+        - unitPrice
+        - basePrice
+        - vatPercentage
+        - total
+        - priceBreakdown
+    KitchenStatus:
+      type: string
+      enum:
+        - not_applicable
+        - pending
+        - on_hold
+        - sent_to_om
+        - dispatched_to_kitchen
+        - completed
+        - cancelled
+    PosPaymentStatus:
+      type: string
+      enum:
+        - unpaid
+        - paying
+        - paid
+    DiscountType:
+      type: string
+      enum:
+        - PERCENTAGE
+        - FIXED
+    DiscountScope:
+      type: string
+      enum:
+        - ITEM
+        - CART
+    PosDiscountDto:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          allOf:
+            - $ref: "#/components/schemas/DiscountType"
+        value:
+          type: number
+        lineItemId:
+          type: string
+          nullable: true
+        scope:
+          allOf:
+            - $ref: "#/components/schemas/DiscountScope"
+        name:
+          type: string
+          nullable: true
+        createdAt:
+          format: date-time
+          type: string
+        appliedAmount:
+          $ref: "#/components/schemas/MoneyDto"
+      required:
+        - id
+        - type
+        - value
+        - lineItemId
+        - scope
+        - name
+        - createdAt
+    PrinterTypeEnum:
+      type: string
+      enum:
+        - KITCHEN
+        - BAR
+        - RECEIPT
+        - CLOUD
+    SuboptionPriceBreakdownDto:
+      type: object
+      properties:
+        totalBeforeDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+        totalDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+        subtotalBasketDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+        subtotalItemDiscounts:
+          $ref: "#/components/schemas/MoneyDto"
+      required:
+        - totalBeforeDiscounts
+        - totalDiscounts
+        - subtotalBasketDiscounts
+        - subtotalItemDiscounts
+    PosOrderSuboptionDto:
+      type: object
+      properties:
+        id:
+          type: string
+        posId:
+          type: string
+        name:
+          type: string
+        taxRate:
+          type: number
+        price:
+          $ref: "#/components/schemas/MoneyDto"
+        quantity:
+          type: number
+        priceBreakdown:
+          $ref: "#/components/schemas/SuboptionPriceBreakdownDto"
+        value_pos_id:
+          type: string
+          nullable: true
+      required:
+        - id
+        - posId
+        - name
+        - taxRate
+        - price
+        - quantity
+        - priceBreakdown
+        - value_pos_id
+    PosOrderOptionDto:
+      type: object
+      properties:
+        id:
+          type: string
+        posId:
+          type: string
+        name:
+          type: string
+        suboptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/PosOrderSuboptionDto"
+      required:
+        - id
+        - posId
+        - name
+        - suboptions
+    ReportingCategoryDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Reporting Category ID
+          example: 1
+        business_id:
+          type: string
+          description: Business ID
+          example: "351"
+        reporting_category_name:
+          type: string
+          description: Reporting Category Name
+          example: Beverages
+        index:
+          type: number
+          description: Index/Order
+          example: 1
+        created_at:
+          type: string
+          description: Created at timestamp
+        updated_at:
+          type: string
+          description: Updated at timestamp
+      required:
+        - id
+        - business_id
+        - reporting_category_name
+        - index
+        - created_at
+        - updated_at
+    PosOrderItemDto:
+      type: object
+      properties:
+        id:
+          type: string
+        lineItemId:
+          type: string
+        posId:
+          type: string
+        name:
+          type: string
+        basePrice:
+          $ref: "#/components/schemas/MoneyDto"
+        taxRate:
+          type: number
+        quantity:
+          type: number
+        itemPrice:
+          $ref: "#/components/schemas/ItemPriceDto"
+        kitchenStatus:
+          allOf:
+            - $ref: "#/components/schemas/KitchenStatus"
+        paymentStatus:
+          allOf:
+            - $ref: "#/components/schemas/PosPaymentStatus"
+        discount:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/PosDiscountDto"
+        isBundleOffer:
+          type: boolean
+        isAlcohol:
+          type: boolean
+        comments:
+          type: string
+          nullable: true
+        logo:
+          type: string
+          nullable: true
+        printerType:
+          description: Printer type for the product
+          example: BAR
+          allOf:
+            - $ref: "#/components/schemas/PrinterTypeEnum"
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/PosOrderOptionDto"
+        display_photo:
+          type: boolean
+          description: Whether the product has a display label
+          example: false
+          default: false
+        reporting_category:
+          description: Reporting category details
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/ReportingCategoryDto"
+        category_id:
+          type: number
+          description: Category ID of the item
+          example: 5
+          nullable: true
+      required:
+        - id
+        - lineItemId
+        - posId
+        - name
+        - basePrice
+        - taxRate
+        - quantity
+        - itemPrice
+        - kitchenStatus
+        - paymentStatus
+        - discount
+        - isBundleOffer
+        - isAlcohol
+        - comments
+        - logo
+        - options
+        - category_id
+    PosCustomerDto:
+      type: object
+      properties:
+        id:
+          type: number
+          description: The unique identifier of the customer.
+          example: 6
+        first_name:
+          type: string
+          description: The customer's first name at the time of the order.
+          example: John
+          nullable: true
+        last_name:
+          type: string
+          description: The customer's last name at the time of the order.
+          example: Doe
+          nullable: true
+        email:
+          type: string
+          description: The primary email address of the customer.
+          example: test@gmail.com
+          nullable: true
+        phone:
+          type: string
+          description: The primary phone number of the customer (without country code).
+          example: "505346484"
+          nullable: true
+        country_code:
+          type: string
+          description: The customer's phone country code.
+          example: "+358"
+          nullable: true
+        logo:
+          type: string
+          description: The logo of the customer.
+          example: logo_url
+          nullable: true
+      required:
+        - id
+        - first_name
+        - last_name
+        - email
+        - phone
+        - country_code
+        - logo
+    PaymentProviderEnum:
+      type: string
+      enum:
+        - stripe
+        - viva
+        - nets
+    RefundedItemDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique ID for this refunded item record (response only)
+          example: clxvf0q8g000008l0g1h2g3i4
+          nullable: true
+        lineItemId:
+          type: string
+          description: Reference to the unique line item from the original order
+          example: p1s1der2pp0ym8oy0janwsg4
+        itemId:
+          type: string
+          description: Reference to the general product's ID (e.g., SKU or posId)
+          example: "15358"
+        name:
+          type: string
+          description: Product name
+          example: Deluxe Burger
+        unitPrice:
+          type: number
+          description: The price of a single unit of this item at the time of refund
+          example: 12.5
+        quantity:
+          type: number
+          description: Quantity refunded for this item
+          example: 1
+        amount:
+          type: number
+          description: Total amount refunded for this line (quantity * unitPrice)
+          example: 12.5
+      required:
+        - lineItemId
+        - itemId
+        - name
+        - unitPrice
+        - quantity
+        - amount
+    PaymentRefundDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique internal ID for this refund transaction
+        refundId:
+          type: string
+          description: Unique internal ID for this refund transaction
+        providerRefundId:
+          type: string
+          description: Refund ID from the payment provider (e.g., Stripe refund ID).
+            Deprecated soon
+        sourceTransactionId:
+          type: string
+          description: Refund ID from the payment provider V2 (e.g., Stripe refund ID)
+          nullable: true
+        originalPaymentId:
+          type: string
+          description: ID of the original payment being refunded
+          nullable: true
+          deprecated: true
+        originalPaymentEventId:
+          type: string
+          description: ID of the original payment being refunded
+          nullable: true
+        paymentProvider:
+          allOf:
+            - $ref: "#/components/schemas/PaymentProviderEnum"
+        amount:
+          type: number
+          description: The amount refunded
+        currency:
+          type: string
+          description: Currency of the refund (ISO 4217 code, e.g., EUR)
+        status:
+          allOf:
+            - $ref: "#/components/schemas/RefundStatusEnum"
+        processedAt:
+          format: date-time
+          type: string
+          description: Timestamp when the refund was processed
+        reason:
+          type: string
+          description: Reason for the refund
+          nullable: true
+        items:
+          description: Specific items refunded
+          type: array
+          items:
+            $ref: "#/components/schemas/RefundedItemDto"
+        type:
+          allOf:
+            - $ref: "#/components/schemas/PaymentMethod"
+        metadata:
+          type: object
+          description: Additional metadata from the payment provider or system
+          additionalProperties: true
+      required:
+        - id
+        - refundId
+        - providerRefundId
+        - sourceTransactionId
+        - paymentProvider
+        - amount
+        - currency
+        - status
+        - processedAt
+    OrderFormat:
+      type: string
+      enum:
+        - OPEN
+        - INSTANT
+    OrderTaxSummaryDto:
+      type: object
+      properties:
+        taxRate:
+          type: number
+          description: Tax rate percentage
+          example: 14
+        totalWithoutTax:
+          type: number
+          description: Total without tax in cents
+          example: 774
+        totalTax:
+          type: number
+          description: Total tax amount in cents
+          example: 95
+        totalWithTax:
+          type: number
+          description: Total with tax in cents
+          example: 869
+      required:
+        - taxRate
+        - totalWithoutTax
+        - totalTax
+        - totalWithTax
+    OrderTaxSummaryDetailedDto:
+      type: object
+      properties:
+        taxSummaries:
+          description: Tax breakdown by rate
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderTaxSummaryDto"
+        totalWithoutTax:
+          type: number
+          description: Total without tax in cents
+          example: 774
+        totalTax:
+          type: number
+          description: Total tax amount in cents
+          example: 95
+        grandTotal:
+          type: number
+          description: Grand total in cents
+          example: 869
+      required:
+        - taxSummaries
+        - totalWithoutTax
+        - totalTax
+        - grandTotal
+    InvoiceCompanyResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+        businessId:
+          type: number
+        name:
+          type: string
+        email:
+          type: string
+        countryCode:
+          type: string
+        phone:
+          type: string
+        bic:
+          type: string
+        address:
+          type: string
+        createdAt:
+          format: date-time
+          type: string
+        updatedAt:
+          format: date-time
+          type: string
+      required:
+        - id
+        - businessId
+        - name
+        - email
+        - countryCode
+        - phone
+        - createdAt
+        - updatedAt
+    PosOrderDto:
+      type: object
+      properties:
+        id:
+          type: string
+        businessId:
+          type: string
+        currency:
+          allOf:
+            - $ref: "#/components/schemas/CurrencyCode"
+        business:
+          $ref: "#/components/schemas/PosBusinessDto"
+        createdAt:
+          format: date-time
+          type: string
+        status:
+          allOf:
+            - $ref: "#/components/schemas/OrderStatusEnum"
+        updatedAt:
+          format: date-time
+          type: string
+        orderNumber:
+          type: string
+        orderType:
+          allOf:
+            - $ref: "#/components/schemas/OrderTypePOS"
+        spotNumber:
+          type: string
+          nullable: true
+        comments:
+          type: string
+          nullable: true
+        staffId:
+          type: string
+          nullable: true
+          description: Id of the staff in shift
+        shiftId:
+          type: string
+          nullable: true
+          description: Id of the shift
+        orderRefundStatus:
+          allOf:
+            - $ref: "#/components/schemas/OrderRefundStatus"
+        locatorType:
+          allOf:
+            - $ref: "#/components/schemas/LocatorType"
+        basketPrice:
+          $ref: "#/components/schemas/PosOrderPriceDto"
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/PosOrderItemDto"
+        discounts:
+          type: array
+          items:
+            $ref: "#/components/schemas/PosDiscountDto"
+        customer:
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/PosCustomerDto"
+        paymentEvents:
+          type: array
+          items:
+            $ref: "#/components/schemas/TransactionDto"
+        refunds:
+          type: array
+          items:
+            $ref: "#/components/schemas/PaymentRefundDto"
+        version:
+          type: string
+          description: Data version code
+        orderFormat:
+          description: Order format (e.g., open, instant)
+          allOf:
+            - $ref: "#/components/schemas/OrderFormat"
+        loyaltyProgramId:
+          type: string
+          description: The ID of the loyalty program active during this order.
+          example: 68274e2987e02a582e0e697f
+          nullable: true
+        loyaltyTransactionIds:
+          description: An array of loyalty transaction IDs related to this order.
+          example:
+            - loy-tx-12345
+            - loy-tx-67890
+          type: array
+          items:
+            type: string
+        taxSummary:
+          description: Tax breakdown for this order
+          allOf:
+            - $ref: "#/components/schemas/OrderTaxSummaryDetailedDto"
+        staffName:
+          type: string
+          nullable: true
+          description: Name of staff member who created the order
+        invoiceCompany:
+          nullable: true
+          description: Invoice company information for this order
+          allOf:
+            - $ref: "#/components/schemas/InvoiceCompanyResponseDto"
+        lastPaymentError:
+          type: object
+      required:
+        - id
+        - businessId
+        - currency
+        - business
+        - createdAt
+        - status
+        - updatedAt
+        - orderNumber
+        - orderType
+        - spotNumber
+        - comments
+        - staffId
+        - shiftId
+        - orderRefundStatus
+        - locatorType
+        - basketPrice
+        - items
+        - discounts
+        - customer
+        - paymentEvents
+        - version
+        - loyaltyProgramId
+        - loyaltyTransactionIds
+    PosUpdateOrderDto:
+      type: object
+      properties:
+        orderId:
+          type: string
+          description: Unique identifier for the order
+        orderingBusinessId:
+          type: number
+          description: ID of the business updating the order
+        provider:
+          description: Name of the provider handling the order
+          allOf:
+            - $ref: "#/components/schemas/ProviderEnum"
+        status:
+          description: New status of the order
+          example: in_progress
+          allOf:
+            - $ref: "#/components/schemas/OrderStatusEnum"
+        isTicket:
+          type: boolean
+          description: Whether the order is a ticket
+          example: true
+      required:
+        - orderId
+        - orderingBusinessId
+        - provider
+        - status
+    SendPosOrderTicketDto:
+      type: object
+      properties:
+        data:
+          description: Order data
+          allOf:
+            - $ref: "#/components/schemas/PosOrderDto"
+        businessId:
+          type: string
+          description: Business ID
+        sendNotification:
+          type: boolean
+          description: Send notification to the business
+      required:
+        - data
+        - businessId
+    PosOrderPayloadDto:
+      type: object
+      properties:
+        order:
+          description: The finalized order data.
+          allOf:
+            - $ref: "#/components/schemas/PosOrderDto"
+        businessId:
+          type: number
+          description: The business ID.
+        sentToOm:
+          type: boolean
+          description: For sending to OM
+        isTicket:
+          type: boolean
+          description: For sending to OM as a ticket
+        sendNotification:
+          type: boolean
+          description: For sending notification to tablet
+      required:
+        - order
+        - businessId
+        - sentToOm
+        - isTicket
+    DeletePosOrderDto:
+      type: object
+      properties:
+        businessId:
+          type: number
+          example: 1234
+          description: Id of the business
+        orderId:
+          type: string
+          description: Id of the order
+      required:
+        - businessId
+        - orderId
     BusinessValidationResponseDto:
       type: object
       properties:
@@ -9131,6 +8188,132 @@ components:
             type: number
       required:
         - cid
+    OrderingItemExtraSubOptionDto:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        price:
+          type: number
+        image:
+          type: string
+          nullable: true
+        rank:
+          type: number
+        description:
+          type: string
+          nullable: true
+        max:
+          type: number
+        enabled:
+          type: boolean
+      required:
+        - id
+        - name
+        - price
+        - image
+        - rank
+        - description
+        - max
+        - enabled
+    OrderingItemExtraOptionDto:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        image:
+          type: string
+          nullable: true
+        min:
+          type: number
+        max:
+          type: number
+        rank:
+          type: number
+        allow_suboption_quantity:
+          type: boolean
+        limit_suboptions_by_max:
+          type: boolean
+        enabled:
+          type: boolean
+        suboptions:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderingItemExtraSubOptionDto"
+      required:
+        - id
+        - name
+        - image
+        - min
+        - max
+        - rank
+        - allow_suboption_quantity
+        - limit_suboptions_by_max
+        - enabled
+        - suboptions
+    OrderingItemExtraDto:
+      type: object
+      properties:
+        id:
+          type: number
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        enabled:
+          type: boolean
+        rank:
+          type: number
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderingItemExtraOptionDto"
+      required:
+        - id
+        - name
+        - description
+        - enabled
+        - rank
+        - options
+    ChannelConfig:
+      type: object
+      properties:
+        channel:
+          type: string
+          example: Kiosk
+          enum:
+            - Wolt
+            - MunchiOnline
+            - MunchiKiosk
+            - MunchiPos
+            - UberEats
+            - Foodora
+            - Bolt
+            - MunchiKioskV2
+            - Kiosk
+        quantity:
+          type: number
+          example: 10
+        inventoried:
+          type: boolean
+          example: true
+        enabled:
+          type: boolean
+          example: true
+        external_id:
+          type: string
+          example: abc_1234
+          nullable: true
+      required:
+        - channel
+        - quantity
+        - inventoried
+        - enabled
     ExtendedProductDto:
       type: object
       properties:
@@ -9218,7 +8401,8 @@ components:
           example: true
           description: Whether the product is restricted
         tax:
-          allOf: *a57
+          allOf: &a57
+            - $ref: "#/components/schemas/BusinessTaxResponseDto"
           nullable: true
         colorCode:
           type: string
@@ -9907,6 +9091,30 @@ components:
             - $ref: "#/components/schemas/ProviderStatusResponseDto"
       required:
         - activeChannel
+    BusinessTaxResponseDto:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        name:
+          type: string
+          example: VAT
+        description:
+          type: string
+          example: Value Added Tax
+        rate:
+          type: number
+          example: 14
+        type:
+          type: number
+          example: 1
+      required:
+        - id
+        - name
+        - description
+        - rate
+        - type
     BusinessDiscountDto:
       type: object
       properties:
@@ -11431,45 +10639,6 @@ components:
         - orders
         - summary
         - pagination
-    OrderHistoryPosDto:
-      type: object
-      properties:
-        cartOrder:
-          description: Order history details
-          allOf:
-            - $ref: "#/components/schemas/CartOrderDto"
-        taxDetails:
-          description: Tax details for the order
-          allOf:
-            - $ref: "#/components/schemas/TaxDetailsDto"
-        createdAt:
-          format: date-time
-          type: string
-          description: Creation date of the order
-      required:
-        - cartOrder
-        - taxDetails
-        - createdAt
-    OrderHistoryPosResponseDto:
-      type: object
-      properties:
-        orders:
-          description: Cart order data
-          type: array
-          items:
-            $ref: "#/components/schemas/OrderHistoryPosDto"
-        summary:
-          description: Order summary
-          allOf:
-            - $ref: "#/components/schemas/OrderSummaryDto"
-        pagination:
-          description: Pagination details
-          allOf:
-            - $ref: "#/components/schemas/PaginationDto"
-      required:
-        - orders
-        - summary
-        - pagination
     GetPaymentStatusDto:
       type: object
       properties:
@@ -11817,42 +10986,6 @@ components:
         - preauth
         - showTransactionResult
         - showReceipt
-    RefundPayloadDto:
-      type: object
-      properties:
-        orderingBusinessId:
-          type: number
-          description: The ordering business ID for this transaction.
-        posOrderId:
-          type: string
-          description: The POS order id for this transaction.
-        transactionIds:
-          description: The transaction IDs to refund.
-          nullable: true
-          type: array
-          items:
-            type: string
-        items:
-          description: The item data to be refunded
-          nullable: true
-          type: array
-          items:
-            $ref: "#/components/schemas/RefundedItemDto"
-        refundTransactionId:
-          type: string
-          description: The unique ID of the transaction to be refunded
-          nullable: true
-          format: uuid
-        terminalId:
-          type: string
-          description: The terminal id for this transaction.
-      required:
-        - orderingBusinessId
-        - posOrderId
-        - transactionIds
-        - items
-        - refundTransactionId
-        - terminalId
     VivaDiscoverDevicesDto:
       type: object
       properties:
@@ -13201,6 +12334,42 @@ components:
         - id
         - name
         - connectedAt
+    RefundPayloadDto:
+      type: object
+      properties:
+        orderingBusinessId:
+          type: number
+          description: The ordering business ID for this transaction.
+        posOrderId:
+          type: string
+          description: The POS order id for this transaction.
+        transactionIds:
+          description: The transaction IDs to refund.
+          nullable: true
+          type: array
+          items:
+            type: string
+        items:
+          description: The item data to be refunded
+          nullable: true
+          type: array
+          items:
+            $ref: "#/components/schemas/RefundedItemDto"
+        refundTransactionId:
+          type: string
+          description: The unique ID of the transaction to be refunded
+          nullable: true
+          format: uuid
+        terminalId:
+          type: string
+          description: The terminal id for this transaction.
+      required:
+        - orderingBusinessId
+        - posOrderId
+        - transactionIds
+        - items
+        - refundTransactionId
+        - terminalId
     NetsRemoveFailedTransactionPayloadDto:
       type: object
       properties:
@@ -14545,6 +13714,43 @@ components:
         - cardType
         - bankId
         - surchargeAmount
+    CreateRefundDto:
+      type: object
+      properties:
+        businessId:
+          type: number
+          description: The internal business ID.
+        orderReferenceId:
+          type: string
+          description: The order reference id.
+        referenceId:
+          type: string
+          description: The unique reference for the order to be refunded.
+        displayId:
+          type: string
+          description: The display reference for the order (e.g., visual ID).
+        amount:
+          type: number
+          description: Amount to refund in the smallest currency unit (e.g., cents).
+        currency:
+          allOf:
+            - $ref: "#/components/schemas/CurrencyCode"
+      required:
+        - businessId
+        - orderReferenceId
+        - referenceId
+        - displayId
+        - amount
+        - currency
+    CreateNetsRefundResponseDto:
+      type: object
+      properties:
+        referenceId:
+          type: string
+          description: The reference ID of the refund transaction from Nets.
+          example: req_123456789
+      required:
+        - referenceId
     CreateTerminalPaymentDto:
       type: object
       properties:
@@ -14757,27 +13963,257 @@ components:
         - orderType
         - itemSummary
         - order
-    CartStoreDto:
+    PosSubOptionDto:
       type: object
       properties:
-        cartOrder:
-          description: Cart order information
-          allOf:
-            - $ref: "#/components/schemas/CartOrderDto"
-        selectedItems:
-          description: Selected items in the cart
-          type: array
-          items:
-            $ref: "#/components/schemas/PosItemDto"
-        paymentIntent:
-          description: Stripe payment intents
-          type: array
-          items:
-            $ref: "#/components/schemas/StripePaymentIntentDto"
+        subOptionId:
+          type: string
+          description: Sub-option ID
+        name:
+          type: string
+          description: Sub-option name
+        price:
+          type: number
+          description: Sub-option price
+        quantity:
+          type: number
+          description: Sub-option quantity
       required:
-        - cartOrder
-        - selectedItems
-        - paymentIntent
+        - subOptionId
+        - name
+        - price
+        - quantity
+    PosSelectedOptionDto:
+      type: object
+      properties:
+        optionId:
+          type: string
+          description: Option id
+        name:
+          type: string
+          description: Option name
+        totalPrice:
+          type: number
+          description: Total price
+        subOption:
+          description: Sub-options for the discount
+          type: array
+          items:
+            $ref: "#/components/schemas/PosSubOptionDto"
+      required:
+        - optionId
+        - name
+        - totalPrice
+        - subOption
+    PosDiscountType:
+      type: string
+      enum:
+        - percentage
+        - fixed
+    DiscountOptionsDto:
+      type: object
+      properties:
+        type:
+          description: Discount type (percentage or fixed)
+          allOf:
+            - $ref: "#/components/schemas/PosDiscountType"
+        value:
+          type: number
+          description: Discount value (percentage or amount)
+      required:
+        - type
+        - value
+    PosItemDto:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 12345
+          description: Product ID
+        name:
+          type: string
+          example: Cheeseburger
+          description: Product name
+        price:
+          type: number
+          example: 9.99
+          description: Product price
+        description:
+          type: string
+          example: A delicious cheeseburger
+          description: Product description
+        images:
+          type: string
+          example: https://example.com/image.jpg
+          description: Product image URL
+        category_id:
+          type: number
+          example: 1
+          description: Category ID the product belongs to
+        inventoried:
+          type: boolean
+          example: true
+          description: Whether the product is tracked for inventory
+        quantity:
+          type: number
+          example: 10
+          description: Available quantity if inventoried
+        featured:
+          type: boolean
+          example: true
+          description: Whether the product is marked as featured
+        enabled:
+          type: boolean
+          example: true
+          description: Whether the product is currently enabled
+        upselling:
+          type: boolean
+          example: false
+          description: Whether upselling is enabled for this product
+        in_offer:
+          type: boolean
+          example: false
+          description: Whether the product is part of an offer
+        offer_price:
+          type: object
+          example: null
+          nullable: true
+          description: Offer price if applicable
+        rank:
+          type: number
+          example: 1
+          description: Display order rank of the product
+        weight_unit:
+          type: object
+          example: g
+          description: Weight unit (e.g., g, kg, ml)
+        updated_at:
+          type: string
+          example: 2024-03-16T12:00:00Z
+          description: Last update timestamp
+        created_at:
+          type: string
+          example: 2024-03-16T12:00:00Z
+          description: Product creation timestamp
+        deleted_at:
+          type: object
+          example: null
+          nullable: true
+          description: Deletion timestamp if soft-deleted
+        extras:
+          description: List of product extras (e.g., toppings, add-ons)
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderingItemExtraDto"
+        is_restricted:
+          type: boolean
+          example: true
+          description: Whether the product is restricted
+        tax:
+          allOf: *a57
+          nullable: true
+        colorCode:
+          type: string
+          description: Product color code in hex format
+          example: "#FF5733"
+        printer_type:
+          description: Printer type for the product
+          example: BAR
+          allOf:
+            - $ref: "#/components/schemas/PrinterTypeEnum"
+        custom_color_code:
+          type: string
+          description: "Custom UI override color in hex, e.g., #RRGGBB"
+          example: "#FF5733"
+        display_photo:
+          type: boolean
+          description: Whether the product has a display label
+          example: false
+          default: false
+        reporting_category:
+          description: Reporting category details
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/ReportingCategoryDto"
+        pos_inventoried:
+          type: boolean
+          description: Indicates if the product is inventoried in POS
+          example: true
+        pos_quantity:
+          type: number
+          description: Quantity of the product in POS
+          example: 10
+        channel_configs:
+          description: Channel config of inventoried per product
+          type: array
+          items:
+            $ref: "#/components/schemas/ChannelConfig"
+            minLength: 2
+        orderId:
+          type: string
+          description: Order identifier
+          example: ORD-2024-001
+        options:
+          description: Selected options for the item
+          example:
+            - id: size-large
+              name: Large Size
+              price: 2.5
+          type: array
+          items:
+            $ref: "#/components/schemas/PosSelectedOptionDto"
+        subTotal:
+          type: number
+          description: Subtotal amount for the item
+          example: 15.99
+        comment:
+          type: string
+          description: Additional comments for the item
+          example: Extra spicy, no onions
+        discount:
+          description: Discount applied to the item
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/DiscountOptionsDto"
+        printed:
+          type: boolean
+          description: Whether the item has been printed
+          example: false
+        paid:
+          type: boolean
+          description: Whether the item has been paid for
+          example: true
+      required:
+        - id
+        - name
+        - price
+        - description
+        - images
+        - category_id
+        - inventoried
+        - quantity
+        - featured
+        - enabled
+        - upselling
+        - in_offer
+        - offer_price
+        - rank
+        - weight_unit
+        - updated_at
+        - created_at
+        - deleted_at
+        - extras
+        - is_restricted
+        - tax
+        - pos_inventoried
+        - pos_quantity
+        - channel_configs
+        - orderId
+        - options
+        - subTotal
+        - comment
+        - printed
+        - paid
     CardPresentDetailsDto:
       type: object
       properties:

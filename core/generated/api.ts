@@ -1623,419 +1623,6 @@ export interface CardPresentDetailsDtoWallet {
 /**
  * 
  * @export
- * @interface CartOrderDto
- */
-export interface CartOrderDto {
-    /**
-     * Cart ID
-     * @type {string}
-     * @memberof CartOrderDto
-     */
-    'cartId': string;
-    /**
-     * Document id
-     * @type {string}
-     * @memberof CartOrderDto
-     */
-    'documentId': string;
-    /**
-     * Order number
-     * @type {string}
-     * @memberof CartOrderDto
-     */
-    'orderNumber': string;
-    /**
-     * Table value or number
-     * @type {string}
-     * @memberof CartOrderDto
-     */
-    'tableValue': string | null;
-    /**
-     * 
-     * @type {OrderTypePOS}
-     * @memberof CartOrderDto
-     */
-    'orderType': OrderTypePOS;
-    /**
-     * 
-     * @type {ServiceType}
-     * @memberof CartOrderDto
-     */
-    'serviceType': ServiceType;
-    /**
-     * 
-     * @type {LocatorType}
-     * @memberof CartOrderDto
-     */
-    'locatorType': LocatorType;
-    /**
-     * Order items
-     * @type {Array<PosItemDto>}
-     * @memberof CartOrderDto
-     */
-    'items': Array<PosItemDto>;
-    /**
-     * 
-     * @type {CartOrderDtoDiscount}
-     * @memberof CartOrderDto
-     */
-    'discount': CartOrderDtoDiscount | null;
-    /**
-     * Additional comments for the order
-     * @type {string}
-     * @memberof CartOrderDto
-     */
-    'comments': string | null;
-    /**
-     * Total order amount
-     * @type {number}
-     * @memberof CartOrderDto
-     */
-    'total': number;
-    /**
-     * Subtotal before discounts and taxes
-     * @type {number}
-     * @memberof CartOrderDto
-     */
-    'subtotal': number;
-    /**
-     * Amount left to pay
-     * @type {number}
-     * @memberof CartOrderDto
-     */
-    'leftToPay': number;
-    /**
-     * Amount already paid
-     * @type {number}
-     * @memberof CartOrderDto
-     */
-    'paid': number;
-    /**
-     * Available payment methods
-     * @type {Array<PaymentMethod>}
-     * @memberof CartOrderDto
-     */
-    'paymentMethods': Array<PaymentMethod>;
-    /**
-     * Payments made with different methods
-     * @type {Array<PaymentMethodTypeDto>}
-     * @memberof CartOrderDto
-     */
-    'paidByPaymentMethods': Array<PaymentMethodTypeDto>;
-    /**
-     * Start date
-     * @type {string}
-     * @memberof CartOrderDto
-     */
-    'savedAt': string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof CartOrderDto
-     */
-    'currentlyPaidSplitPartId': string;
-    /**
-     * 
-     * @type {CartOrderDtoCustomer}
-     * @memberof CartOrderDto
-     */
-    'customer': CartOrderDtoCustomer | null;
-    /**
-     * Split bill parts if applicable
-     * @type {Array<SplitPartDto>}
-     * @memberof CartOrderDto
-     */
-    'splitParts': Array<SplitPartDto>;
-    /**
-     * Details of any refunds processed for this order.
-     * @type {Array<PaymentRefundDto>}
-     * @memberof CartOrderDto
-     */
-    'refunds'?: Array<PaymentRefundDto>;
-    /**
-     * 
-     * @type {OrderRefundStatus}
-     * @memberof CartOrderDto
-     */
-    'orderRefundStatus': OrderRefundStatus;
-}
-
-
-/**
- * Customer information
- * @export
- * @interface CartOrderDtoCustomer
- */
-export interface CartOrderDtoCustomer {
-    /**
-     * The ID of the user
-     * @type {number}
-     * @memberof CartOrderDtoCustomer
-     */
-    'id': number;
-    /**
-     * The landline phone number of the user
-     * @type {object}
-     * @memberof CartOrderDtoCustomer
-     */
-    'phone': object | null;
-    /**
-     * The mobile phone number of the user
-     * @type {string}
-     * @memberof CartOrderDtoCustomer
-     */
-    'cellphone': string;
-    /**
-     * The first name of the user
-     * @type {string}
-     * @memberof CartOrderDtoCustomer
-     */
-    'name': string;
-    /**
-     * The last name of the user
-     * @type {string}
-     * @memberof CartOrderDtoCustomer
-     */
-    'lastname': string;
-    /**
-     * The level of the user
-     * @type {number}
-     * @memberof CartOrderDtoCustomer
-     */
-    'level': number;
-    /**
-     * Whether the user account is enabled
-     * @type {boolean}
-     * @memberof CartOrderDtoCustomer
-     */
-    'enabled': boolean;
-    /**
-     * The address of the user
-     * @type {object}
-     * @memberof CartOrderDtoCustomer
-     */
-    'address': object | null;
-    /**
-     * Loyalty points accumulated by the user
-     * @type {number}
-     * @memberof CartOrderDtoCustomer
-     */
-    'loyalty_level_points': number;
-    /**
-     * Country code of the user
-     * @type {string}
-     * @memberof CartOrderDtoCustomer
-     */
-    'country_code': string;
-    /**
-     * Number of orders placed by the user
-     * @type {number}
-     * @memberof CartOrderDtoCustomer
-     */
-    'orders_count': number;
-    /**
-     * URL to the user\'s profile photo
-     * @type {object}
-     * @memberof CartOrderDtoCustomer
-     */
-    'photo': object | null;
-    /**
-     * List of wallets associated with the user
-     * @type {Array<WalletDto>}
-     * @memberof CartOrderDtoCustomer
-     */
-    'wallets': Array<WalletDto>;
-}
-/**
- * Discount applied to the entire order
- * @export
- * @interface CartOrderDtoDiscount
- */
-export interface CartOrderDtoDiscount {
-    /**
-     * 
-     * @type {PosDiscountType}
-     * @memberof CartOrderDtoDiscount
-     */
-    'type': PosDiscountType;
-    /**
-     * Discount value (percentage or amount)
-     * @type {number}
-     * @memberof CartOrderDtoDiscount
-     */
-    'value': number;
-}
-
-
-/**
- * 
- * @export
- * @interface CartStoreDto
- */
-export interface CartStoreDto {
-    /**
-     * 
-     * @type {CartStoreDtoCartOrder}
-     * @memberof CartStoreDto
-     */
-    'cartOrder': CartStoreDtoCartOrder;
-    /**
-     * Selected items in the cart
-     * @type {Array<PosItemDto>}
-     * @memberof CartStoreDto
-     */
-    'selectedItems': Array<PosItemDto>;
-    /**
-     * Stripe payment intents
-     * @type {Array<StripePaymentIntentDto>}
-     * @memberof CartStoreDto
-     */
-    'paymentIntent': Array<StripePaymentIntentDto>;
-}
-/**
- * Cart order information
- * @export
- * @interface CartStoreDtoCartOrder
- */
-export interface CartStoreDtoCartOrder {
-    /**
-     * Cart ID
-     * @type {string}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'cartId': string;
-    /**
-     * Document id
-     * @type {string}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'documentId': string;
-    /**
-     * Order number
-     * @type {string}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'orderNumber': string;
-    /**
-     * Table value or number
-     * @type {string}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'tableValue': string | null;
-    /**
-     * 
-     * @type {OrderTypePOS}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'orderType': OrderTypePOS;
-    /**
-     * 
-     * @type {ServiceType}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'serviceType': ServiceType;
-    /**
-     * 
-     * @type {LocatorType}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'locatorType': LocatorType;
-    /**
-     * Order items
-     * @type {Array<PosItemDto>}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'items': Array<PosItemDto>;
-    /**
-     * 
-     * @type {CartOrderDtoDiscount}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'discount': CartOrderDtoDiscount | null;
-    /**
-     * Additional comments for the order
-     * @type {string}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'comments': string | null;
-    /**
-     * Total order amount
-     * @type {number}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'total': number;
-    /**
-     * Subtotal before discounts and taxes
-     * @type {number}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'subtotal': number;
-    /**
-     * Amount left to pay
-     * @type {number}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'leftToPay': number;
-    /**
-     * Amount already paid
-     * @type {number}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'paid': number;
-    /**
-     * Available payment methods
-     * @type {Array<PaymentMethod>}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'paymentMethods': Array<PaymentMethod>;
-    /**
-     * Payments made with different methods
-     * @type {Array<PaymentMethodTypeDto>}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'paidByPaymentMethods': Array<PaymentMethodTypeDto>;
-    /**
-     * Start date
-     * @type {string}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'savedAt': string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'currentlyPaidSplitPartId': string;
-    /**
-     * 
-     * @type {CartOrderDtoCustomer}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'customer': CartOrderDtoCustomer | null;
-    /**
-     * Split bill parts if applicable
-     * @type {Array<SplitPartDto>}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'splitParts': Array<SplitPartDto>;
-    /**
-     * Details of any refunds processed for this order.
-     * @type {Array<PaymentRefundDto>}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'refunds'?: Array<PaymentRefundDto>;
-    /**
-     * 
-     * @type {OrderRefundStatus}
-     * @memberof CartStoreDtoCartOrder
-     */
-    'orderRefundStatus': OrderRefundStatus;
-}
-
-
-/**
- * 
- * @export
  * @interface CashLogDto
  */
 export interface CashLogDto {
@@ -3463,6 +3050,19 @@ export interface CreateMerchantDto {
 /**
  * 
  * @export
+ * @interface CreateNetsRefundResponseDto
+ */
+export interface CreateNetsRefundResponseDto {
+    /**
+     * The reference ID of the refund transaction from Nets.
+     * @type {string}
+     * @memberof CreateNetsRefundResponseDto
+     */
+    'referenceId': string;
+}
+/**
+ * 
+ * @export
  * @interface CreateNetsTransactionDto
  */
 export interface CreateNetsTransactionDto {
@@ -3790,6 +3390,51 @@ export const ScopeTypeEnum = {
 } as const;
 
 export type ScopeTypeEnum = typeof ScopeTypeEnum[keyof typeof ScopeTypeEnum];
+
+/**
+ * 
+ * @export
+ * @interface CreateRefundDto
+ */
+export interface CreateRefundDto {
+    /**
+     * The internal business ID.
+     * @type {number}
+     * @memberof CreateRefundDto
+     */
+    'businessId': number;
+    /**
+     * The order reference id.
+     * @type {string}
+     * @memberof CreateRefundDto
+     */
+    'orderReferenceId': string;
+    /**
+     * The unique reference for the order to be refunded.
+     * @type {string}
+     * @memberof CreateRefundDto
+     */
+    'referenceId': string;
+    /**
+     * The display reference for the order (e.g., visual ID).
+     * @type {string}
+     * @memberof CreateRefundDto
+     */
+    'displayId': string;
+    /**
+     * Amount to refund in the smallest currency unit (e.g., cents).
+     * @type {number}
+     * @memberof CreateRefundDto
+     */
+    'amount': number;
+    /**
+     * 
+     * @type {CurrencyCode}
+     * @memberof CreateRefundDto
+     */
+    'currency': CurrencyCode;
+}
+
 
 /**
  * 
@@ -5280,10 +4925,10 @@ export interface ExtendedProductDto {
     'display_photo'?: boolean;
     /**
      * 
-     * @type {PosItemDtoReportingCategory}
+     * @type {PosOrderItemDtoReportingCategory}
      * @memberof ExtendedProductDto
      */
-    'reporting_category'?: PosItemDtoReportingCategory | null;
+    'reporting_category'?: PosOrderItemDtoReportingCategory | null;
     /**
      * Indicates if the product is inventoried in POS
      * @type {boolean}
@@ -5458,89 +5103,6 @@ export interface ExternalBusinessConfigResponseDto {
      * @memberof ExternalBusinessConfigResponseDto
      */
     'config': ExternalBusinessConfigDto;
-}
-/**
- * 
- * @export
- * @interface FirebasePosOrderResponse
- */
-export interface FirebasePosOrderResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof FirebasePosOrderResponse
-     */
-    'id': string;
-    /**
-     * Creation time of the order
-     * @type {string}
-     * @memberof FirebasePosOrderResponse
-     */
-    'createdAt': string;
-    /**
-     * 
-     * @type {TaxDetailsDto}
-     * @memberof FirebasePosOrderResponse
-     */
-    'taxDetails': TaxDetailsDto;
-    /**
-     * 
-     * @type {CartOrderDto}
-     * @memberof FirebasePosOrderResponse
-     */
-    'cartOrder': CartOrderDto;
-    /**
-     * 
-     * @type {OrderStatusEnum}
-     * @memberof FirebasePosOrderResponse
-     */
-    'status'?: OrderStatusEnum;
-    /**
-     * 
-     * @type {FirebasePosOrderResponseUpdatedAt}
-     * @memberof FirebasePosOrderResponse
-     */
-    'updatedAt'?: FirebasePosOrderResponseUpdatedAt;
-}
-
-
-/**
- * Last update time (original format)
- * @export
- * @interface FirebasePosOrderResponseUpdatedAt
- */
-export interface FirebasePosOrderResponseUpdatedAt {
-    /**
-     * Seconds since Unix epoch
-     * @type {number}
-     * @memberof FirebasePosOrderResponseUpdatedAt
-     */
-    '_seconds': number;
-    /**
-     * Nanoseconds component
-     * @type {number}
-     * @memberof FirebasePosOrderResponseUpdatedAt
-     */
-    '_nanoseconds': number;
-}
-/**
- * 
- * @export
- * @interface FirebaseTimeDto
- */
-export interface FirebaseTimeDto {
-    /**
-     * Seconds since Unix epoch
-     * @type {number}
-     * @memberof FirebaseTimeDto
-     */
-    '_seconds': number;
-    /**
-     * Nanoseconds component
-     * @type {number}
-     * @memberof FirebaseTimeDto
-     */
-    '_nanoseconds': number;
 }
 /**
  * 
@@ -8392,289 +7954,6 @@ export type OrderFormat = typeof OrderFormat[keyof typeof OrderFormat];
 /**
  * 
  * @export
- * @interface OrderHistoryPosDto
- */
-export interface OrderHistoryPosDto {
-    /**
-     * 
-     * @type {OrderHistoryPosDtoCartOrder}
-     * @memberof OrderHistoryPosDto
-     */
-    'cartOrder': OrderHistoryPosDtoCartOrder;
-    /**
-     * 
-     * @type {OrderHistoryPosDtoTaxDetails}
-     * @memberof OrderHistoryPosDto
-     */
-    'taxDetails': OrderHistoryPosDtoTaxDetails;
-    /**
-     * Creation date of the order
-     * @type {string}
-     * @memberof OrderHistoryPosDto
-     */
-    'createdAt': string;
-}
-/**
- * Order history details
- * @export
- * @interface OrderHistoryPosDtoCartOrder
- */
-export interface OrderHistoryPosDtoCartOrder {
-    /**
-     * Cart ID
-     * @type {string}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'cartId': string;
-    /**
-     * Document id
-     * @type {string}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'documentId': string;
-    /**
-     * Order number
-     * @type {string}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'orderNumber': string;
-    /**
-     * Table value or number
-     * @type {string}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'tableValue': string | null;
-    /**
-     * 
-     * @type {OrderTypePOS}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'orderType': OrderTypePOS;
-    /**
-     * 
-     * @type {ServiceType}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'serviceType': ServiceType;
-    /**
-     * 
-     * @type {LocatorType}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'locatorType': LocatorType;
-    /**
-     * Order items
-     * @type {Array<PosItemDto>}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'items': Array<PosItemDto>;
-    /**
-     * 
-     * @type {CartOrderDtoDiscount}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'discount': CartOrderDtoDiscount | null;
-    /**
-     * Additional comments for the order
-     * @type {string}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'comments': string | null;
-    /**
-     * Total order amount
-     * @type {number}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'total': number;
-    /**
-     * Subtotal before discounts and taxes
-     * @type {number}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'subtotal': number;
-    /**
-     * Amount left to pay
-     * @type {number}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'leftToPay': number;
-    /**
-     * Amount already paid
-     * @type {number}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'paid': number;
-    /**
-     * Available payment methods
-     * @type {Array<PaymentMethod>}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'paymentMethods': Array<PaymentMethod>;
-    /**
-     * Payments made with different methods
-     * @type {Array<PaymentMethodTypeDto>}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'paidByPaymentMethods': Array<PaymentMethodTypeDto>;
-    /**
-     * Start date
-     * @type {string}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'savedAt': string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'currentlyPaidSplitPartId': string;
-    /**
-     * 
-     * @type {CartOrderDtoCustomer}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'customer': CartOrderDtoCustomer | null;
-    /**
-     * Split bill parts if applicable
-     * @type {Array<SplitPartDto>}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'splitParts': Array<SplitPartDto>;
-    /**
-     * Details of any refunds processed for this order.
-     * @type {Array<PaymentRefundDto>}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'refunds'?: Array<PaymentRefundDto>;
-    /**
-     * 
-     * @type {OrderRefundStatus}
-     * @memberof OrderHistoryPosDtoCartOrder
-     */
-    'orderRefundStatus': OrderRefundStatus;
-}
-
-
-/**
- * Tax details for the order
- * @export
- * @interface OrderHistoryPosDtoTaxDetails
- */
-export interface OrderHistoryPosDtoTaxDetails {
-    /**
-     * Array of alcohol items
-     * @type {Array<PosItemDto>}
-     * @memberof OrderHistoryPosDtoTaxDetails
-     */
-    'alcoholItems': Array<PosItemDto>;
-    /**
-     * Total amount for alcohol items without tax
-     * @type {number}
-     * @memberof OrderHistoryPosDtoTaxDetails
-     */
-    'alcoholTotalWithoutTax': number;
-    /**
-     * Total amount for non-alcohol items
-     * @type {number}
-     * @memberof OrderHistoryPosDtoTaxDetails
-     */
-    'totalWithouAlcohol': number;
-    /**
-     * Tax amount for alcohol items
-     * @type {number}
-     * @memberof OrderHistoryPosDtoTaxDetails
-     */
-    'alcoholTaxAmount': number;
-    /**
-     * Total tax amount
-     * @type {number}
-     * @memberof OrderHistoryPosDtoTaxDetails
-     */
-    'taxAmount': number;
-    /**
-     * Total amount for alcohol items including tax
-     * @type {number}
-     * @memberof OrderHistoryPosDtoTaxDetails
-     */
-    'alcoholTotal': number;
-    /**
-     * Total amount without tax
-     * @type {number}
-     * @memberof OrderHistoryPosDtoTaxDetails
-     */
-    'totalWithoutTax': number;
-    /**
-     * 
-     * @type {TaxDetailsDtoSelectedTax}
-     * @memberof OrderHistoryPosDtoTaxDetails
-     */
-    'selectedTax': TaxDetailsDtoSelectedTax;
-    /**
-     * 
-     * @type {TaxDetailsDtoSelectedTax}
-     * @memberof OrderHistoryPosDtoTaxDetails
-     */
-    'alcoholTax'?: TaxDetailsDtoSelectedTax;
-}
-/**
- * 
- * @export
- * @interface OrderHistoryPosResponseDto
- */
-export interface OrderHistoryPosResponseDto {
-    /**
-     * Cart order data
-     * @type {Array<OrderHistoryPosDto>}
-     * @memberof OrderHistoryPosResponseDto
-     */
-    'orders': Array<OrderHistoryPosDto>;
-    /**
-     * 
-     * @type {OrderHistoryPosResponseDtoSummary}
-     * @memberof OrderHistoryPosResponseDto
-     */
-    'summary': OrderHistoryPosResponseDtoSummary;
-    /**
-     * 
-     * @type {OrderHistoryResponseDtoPagination}
-     * @memberof OrderHistoryPosResponseDto
-     */
-    'pagination': OrderHistoryResponseDtoPagination;
-}
-/**
- * Order summary
- * @export
- * @interface OrderHistoryPosResponseDtoSummary
- */
-export interface OrderHistoryPosResponseDtoSummary {
-    /**
-     * Total orders
-     * @type {number}
-     * @memberof OrderHistoryPosResponseDtoSummary
-     */
-    'totalOrders': number;
-    /**
-     * Rejected orders
-     * @type {number}
-     * @memberof OrderHistoryPosResponseDtoSummary
-     */
-    'rejectedOrders': number;
-    /**
-     * Total sales
-     * @type {number}
-     * @memberof OrderHistoryPosResponseDtoSummary
-     */
-    'totalSales': number;
-    /**
-     * Rejected sales
-     * @type {number}
-     * @memberof OrderHistoryPosResponseDtoSummary
-     */
-    'rejectedSales': number;
-}
-/**
- * 
- * @export
  * @interface OrderHistoryPosResponseDtoV2
  */
 export interface OrderHistoryPosResponseDtoV2 {
@@ -8686,16 +7965,47 @@ export interface OrderHistoryPosResponseDtoV2 {
     'orders': Array<PosOrderDto>;
     /**
      * 
-     * @type {OrderHistoryPosResponseDtoSummary}
+     * @type {OrderHistoryPosResponseDtoV2Summary}
      * @memberof OrderHistoryPosResponseDtoV2
      */
-    'summary': OrderHistoryPosResponseDtoSummary;
+    'summary': OrderHistoryPosResponseDtoV2Summary;
     /**
      * 
      * @type {OrderHistoryResponseDtoPagination}
      * @memberof OrderHistoryPosResponseDtoV2
      */
     'pagination': OrderHistoryResponseDtoPagination;
+}
+/**
+ * Order summary
+ * @export
+ * @interface OrderHistoryPosResponseDtoV2Summary
+ */
+export interface OrderHistoryPosResponseDtoV2Summary {
+    /**
+     * Total orders
+     * @type {number}
+     * @memberof OrderHistoryPosResponseDtoV2Summary
+     */
+    'totalOrders': number;
+    /**
+     * Rejected orders
+     * @type {number}
+     * @memberof OrderHistoryPosResponseDtoV2Summary
+     */
+    'rejectedOrders': number;
+    /**
+     * Total sales
+     * @type {number}
+     * @memberof OrderHistoryPosResponseDtoV2Summary
+     */
+    'totalSales': number;
+    /**
+     * Rejected sales
+     * @type {number}
+     * @memberof OrderHistoryPosResponseDtoV2Summary
+     */
+    'rejectedSales': number;
 }
 /**
  * 
@@ -10677,91 +9987,6 @@ export interface PaymentMethodDetailsDtoWechatPayDetails {
 /**
  * 
  * @export
- * @interface PaymentMethodTypeDto
- */
-export interface PaymentMethodTypeDto {
-    /**
-     * Payment method ID
-     * @type {string}
-     * @memberof PaymentMethodTypeDto
-     */
-    'id': string;
-    /**
-     * Payment method ID
-     * @type {string}
-     * @memberof PaymentMethodTypeDto
-     */
-    'referenceId'?: string | null;
-    /**
-     * Payment method type
-     * @type {string}
-     * @memberof PaymentMethodTypeDto
-     */
-    'type': TypeEnum;
-    /**
-     * Payment amount
-     * @type {number}
-     * @memberof PaymentMethodTypeDto
-     */
-    'amount': number;
-    /**
-     * Change returned to customer
-     * @type {number}
-     * @memberof PaymentMethodTypeDto
-     */
-    'change'?: number;
-    /**
-     * 
-     * @type {PaymentProvider}
-     * @memberof PaymentMethodTypeDto
-     */
-    'provider'?: PaymentProvider | null;
-    /**
-     * 
-     * @type {PaymentMethodTypeDtoData}
-     * @memberof PaymentMethodTypeDto
-     */
-    'data'?: PaymentMethodTypeDtoData | null;
-}
-
-export const TypeEnum = {
-    Cash: 'Cash',
-    Card: 'Card',
-    Voucher: 'Voucher',
-    EPassi: 'EPassi',
-    Edenred: 'Edenred',
-    Munchi: 'Munchi',
-    Flatpay: 'Flatpay',
-    GiftUp: 'GiftUp',
-    MobilePay: 'MobilePay',
-    CardManual: 'CardManual',
-    EdenredManual: 'EdenredManual',
-    EmployeeDiscount: 'EmployeeDiscount',
-    LunchVoucher: 'LunchVoucher',
-    EdenredVoucher: 'EdenredVoucher',
-    SmartumVoucher: 'SmartumVoucher',
-    Invoice: 'Invoice',
-    Smartum: 'Smartum',
-    GiftCard: 'GiftCard',
-    Debit: 'Debit',
-    Credit: 'Credit',
-    GiftCardManual: 'GiftCardManual',
-    WoltBenefit: 'WoltBenefit',
-    Fundis: 'Fundis'
-} as const;
-
-export type TypeEnum = typeof TypeEnum[keyof typeof TypeEnum];
-
-/**
- * @type PaymentMethodTypeDtoData
- * Payment-specific data. This could be a Stripe PaymentIntent, Viva session data, or null for cash payments.
- * @export
- */
-export type PaymentMethodTypeDtoData = Null | object;
-
-/**
- * 
- * @export
  * @interface PaymentMethodsResponseDto
  */
 export interface PaymentMethodsResponseDto {
@@ -11868,10 +11093,10 @@ export interface PosItemDto {
     'display_photo'?: boolean;
     /**
      * 
-     * @type {PosItemDtoReportingCategory}
+     * @type {PosOrderItemDtoReportingCategory}
      * @memberof PosItemDto
      */
-    'reporting_category'?: PosItemDtoReportingCategory | null;
+    'reporting_category'?: PosOrderItemDtoReportingCategory | null;
     /**
      * Indicates if the product is inventoried in POS
      * @type {boolean}
@@ -11916,10 +11141,10 @@ export interface PosItemDto {
     'comment': string;
     /**
      * 
-     * @type {DiscountOptionsDto}
+     * @type {PosItemDtoDiscount}
      * @memberof PosItemDto
      */
-    'discount': DiscountOptionsDto | null;
+    'discount'?: PosItemDtoDiscount | null;
     /**
      * Whether the item has been printed
      * @type {boolean}
@@ -11936,48 +11161,26 @@ export interface PosItemDto {
 
 
 /**
- * Reporting category details
+ * Discount applied to the item
  * @export
- * @interface PosItemDtoReportingCategory
+ * @interface PosItemDtoDiscount
  */
-export interface PosItemDtoReportingCategory {
+export interface PosItemDtoDiscount {
     /**
-     * Reporting Category ID
+     * 
+     * @type {PosDiscountType}
+     * @memberof PosItemDtoDiscount
+     */
+    'type': PosDiscountType;
+    /**
+     * Discount value (percentage or amount)
      * @type {number}
-     * @memberof PosItemDtoReportingCategory
+     * @memberof PosItemDtoDiscount
      */
-    'id': number;
-    /**
-     * Business ID
-     * @type {string}
-     * @memberof PosItemDtoReportingCategory
-     */
-    'business_id': string;
-    /**
-     * Reporting Category Name
-     * @type {string}
-     * @memberof PosItemDtoReportingCategory
-     */
-    'reporting_category_name': string;
-    /**
-     * Index/Order
-     * @type {number}
-     * @memberof PosItemDtoReportingCategory
-     */
-    'index': number;
-    /**
-     * Created at timestamp
-     * @type {string}
-     * @memberof PosItemDtoReportingCategory
-     */
-    'created_at': string;
-    /**
-     * Updated at timestamp
-     * @type {string}
-     * @memberof PosItemDtoReportingCategory
-     */
-    'updated_at': string;
+    'value': number;
 }
+
+
 /**
  * 
  * @export
@@ -12375,10 +11578,10 @@ export interface PosOrderItemDto {
     'display_photo'?: boolean;
     /**
      * 
-     * @type {PosItemDtoReportingCategory}
+     * @type {PosOrderItemDtoReportingCategory}
      * @memberof PosOrderItemDto
      */
-    'reporting_category'?: PosItemDtoReportingCategory | null;
+    'reporting_category'?: PosOrderItemDtoReportingCategory | null;
     /**
      * Category ID of the item
      * @type {number}
@@ -12388,6 +11591,49 @@ export interface PosOrderItemDto {
 }
 
 
+/**
+ * Reporting category details
+ * @export
+ * @interface PosOrderItemDtoReportingCategory
+ */
+export interface PosOrderItemDtoReportingCategory {
+    /**
+     * Reporting Category ID
+     * @type {number}
+     * @memberof PosOrderItemDtoReportingCategory
+     */
+    'id': number;
+    /**
+     * Business ID
+     * @type {string}
+     * @memberof PosOrderItemDtoReportingCategory
+     */
+    'business_id': string;
+    /**
+     * Reporting Category Name
+     * @type {string}
+     * @memberof PosOrderItemDtoReportingCategory
+     */
+    'reporting_category_name': string;
+    /**
+     * Index/Order
+     * @type {number}
+     * @memberof PosOrderItemDtoReportingCategory
+     */
+    'index': number;
+    /**
+     * Created at timestamp
+     * @type {string}
+     * @memberof PosOrderItemDtoReportingCategory
+     */
+    'created_at': string;
+    /**
+     * Updated at timestamp
+     * @type {string}
+     * @memberof PosOrderItemDtoReportingCategory
+     */
+    'updated_at': string;
+}
 /**
  * 
  * @export
@@ -15120,20 +14366,6 @@ export interface SendReportEmailDto {
 /**
  * 
  * @export
- * @enum {string}
- */
-
-export const ServiceType = {
-    Table: 'table',
-    Counter: 'counter'
-} as const;
-
-export type ServiceType = typeof ServiceType[keyof typeof ServiceType];
-
-
-/**
- * 
- * @export
  * @interface ShareOrderingBusinessIdPayload
  */
 export interface ShareOrderingBusinessIdPayload {
@@ -15224,47 +14456,6 @@ export interface SingleProviderStatusResponseDtoActiveChannel {
      */
     'open': boolean;
 }
-
-
-/**
- * 
- * @export
- * @interface SplitPartDto
- */
-export interface SplitPartDto {
-    /**
-     * Split part ID
-     * @type {string}
-     * @memberof SplitPartDto
-     */
-    'id': string;
-    /**
-     * Split amount
-     * @type {number}
-     * @memberof SplitPartDto
-     */
-    'amount': number;
-    /**
-     * 
-     * @type {SplitPartStatus}
-     * @memberof SplitPartDto
-     */
-    'status': SplitPartStatus;
-}
-
-
-/**
- * 
- * @export
- * @enum {string}
- */
-
-export const SplitPartStatus = {
-    Paid: 'paid',
-    Unpaid: 'unpaid'
-} as const;
-
-export type SplitPartStatus = typeof SplitPartStatus[keyof typeof SplitPartStatus];
 
 
 /**
@@ -16017,104 +15208,6 @@ export interface TaxBreakdownDtoV3 {
      * @memberof TaxBreakdownDtoV3
      */
     'totalTaxAmount': number;
-}
-/**
- * 
- * @export
- * @interface TaxDetailsDto
- */
-export interface TaxDetailsDto {
-    /**
-     * Array of alcohol items
-     * @type {Array<PosItemDto>}
-     * @memberof TaxDetailsDto
-     */
-    'alcoholItems': Array<PosItemDto>;
-    /**
-     * Total amount for alcohol items without tax
-     * @type {number}
-     * @memberof TaxDetailsDto
-     */
-    'alcoholTotalWithoutTax': number;
-    /**
-     * Total amount for non-alcohol items
-     * @type {number}
-     * @memberof TaxDetailsDto
-     */
-    'totalWithouAlcohol': number;
-    /**
-     * Tax amount for alcohol items
-     * @type {number}
-     * @memberof TaxDetailsDto
-     */
-    'alcoholTaxAmount': number;
-    /**
-     * Total tax amount
-     * @type {number}
-     * @memberof TaxDetailsDto
-     */
-    'taxAmount': number;
-    /**
-     * Total amount for alcohol items including tax
-     * @type {number}
-     * @memberof TaxDetailsDto
-     */
-    'alcoholTotal': number;
-    /**
-     * Total amount without tax
-     * @type {number}
-     * @memberof TaxDetailsDto
-     */
-    'totalWithoutTax': number;
-    /**
-     * 
-     * @type {TaxDetailsDtoSelectedTax}
-     * @memberof TaxDetailsDto
-     */
-    'selectedTax': TaxDetailsDtoSelectedTax;
-    /**
-     * 
-     * @type {TaxDetailsDtoSelectedTax}
-     * @memberof TaxDetailsDto
-     */
-    'alcoholTax'?: TaxDetailsDtoSelectedTax;
-}
-/**
- * Tax information for this item
- * @export
- * @interface TaxDetailsDtoSelectedTax
- */
-export interface TaxDetailsDtoSelectedTax {
-    /**
-     * 
-     * @type {number}
-     * @memberof TaxDetailsDtoSelectedTax
-     */
-    'id': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof TaxDetailsDtoSelectedTax
-     */
-    'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof TaxDetailsDtoSelectedTax
-     */
-    'description': string;
-    /**
-     * 
-     * @type {number}
-     * @memberof TaxDetailsDtoSelectedTax
-     */
-    'rate': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof TaxDetailsDtoSelectedTax
-     */
-    'type': number;
 }
 /**
  * 
@@ -18647,35 +17740,6 @@ export const AblyApiAxiosParamCreator = function (configuration?: Configuration)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        refreshTax: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/api/v1/ably/refresh-tax`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
         requestSettings: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/v1/ably/request-settings`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -18724,15 +17788,6 @@ export const AblyApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async refreshTax(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.refreshTax(options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
         async requestSettings(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.requestSettings(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -18754,14 +17809,6 @@ export const AblyApiFactory = function (configuration?: Configuration, basePath?
          */
         refreshConfig(options?: any): AxiosPromise<void> {
             return localVarFp.refreshConfig(options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        refreshTax(options?: any): AxiosPromise<void> {
-            return localVarFp.refreshTax(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -18794,14 +17841,6 @@ export interface AblyApiInterface {
      * @throws {RequiredError}
      * @memberof AblyApiInterface
      */
-    refreshTax(options?: AxiosRequestConfig): AxiosPromise<void>;
-
-    /**
-     * 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AblyApiInterface
-     */
     requestSettings(options?: AxiosRequestConfig): AxiosPromise<void>;
 
 }
@@ -18821,16 +17860,6 @@ export class AblyApi extends BaseAPI implements AblyApiInterface {
      */
     public refreshConfig(options?: AxiosRequestConfig) {
         return AblyApiFp(this.configuration).refreshConfig(options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof AblyApi
-     */
-    public refreshTax(options?: AxiosRequestConfig) {
-        return AblyApiFp(this.configuration).refreshTax(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -22182,108 +21211,6 @@ export const HistoryApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary Get order history for POS
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {number} [page] Page number
-         * @param {number} [rowPerPage] Number of rows per page
-         * @param {Array<ProviderEnum>} [provider] Provider
-         * @param {Array<PaymentTypeEnum>} [paymentType] Payment type
-         * @param {Array<OrderStatusEnum>} [orderStatus] Order status
-         * @param {Array<PaymentStatus>} [paymentStatus] Payment status
-         * @param {Array<OrderType>} [orderType] Order type
-         * @param {Array<PaymentMethod>} [paymentTypePos] Payment type POS
-         * @param {string} [invoiceCompanyId] Filter by invoice company ID
-         * @param {string} [timezone] Timezone (default is \&quot;UTC\&quot;)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getOrderHistoryPOS: async (businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, page?: number, rowPerPage?: number, provider?: Array<ProviderEnum>, paymentType?: Array<PaymentTypeEnum>, orderStatus?: Array<OrderStatusEnum>, paymentStatus?: Array<PaymentStatus>, orderType?: Array<OrderType>, paymentTypePos?: Array<PaymentMethod>, invoiceCompanyId?: string, timezone?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'businessIds' is not null or undefined
-            assertParamExists('getOrderHistoryPOS', 'businessIds', businessIds)
-            const localVarPath = `/api/v1/history/orders/pos`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (timeSpan !== undefined) {
-                localVarQueryParameter['timeSpan'] = timeSpan;
-            }
-
-            if (start !== undefined) {
-                localVarQueryParameter['start'] = start;
-            }
-
-            if (end !== undefined) {
-                localVarQueryParameter['end'] = end;
-            }
-
-            if (businessIds) {
-                localVarQueryParameter['businessIds'] = businessIds;
-            }
-
-            if (page !== undefined) {
-                localVarQueryParameter['page'] = page;
-            }
-
-            if (rowPerPage !== undefined) {
-                localVarQueryParameter['rowPerPage'] = rowPerPage;
-            }
-
-            if (provider) {
-                localVarQueryParameter['provider'] = provider;
-            }
-
-            if (paymentType) {
-                localVarQueryParameter['paymentType'] = paymentType;
-            }
-
-            if (orderStatus) {
-                localVarQueryParameter['orderStatus'] = orderStatus;
-            }
-
-            if (paymentStatus) {
-                localVarQueryParameter['paymentStatus'] = paymentStatus;
-            }
-
-            if (orderType) {
-                localVarQueryParameter['orderType'] = orderType;
-            }
-
-            if (paymentTypePos) {
-                localVarQueryParameter['paymentTypePos'] = paymentTypePos;
-            }
-
-            if (invoiceCompanyId !== undefined) {
-                localVarQueryParameter['invoiceCompanyId'] = invoiceCompanyId;
-            }
-
-            if (timezone !== undefined) {
-                localVarQueryParameter['timezone'] = timezone;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @summary Get order history for POS V2
          * @param {Array<number>} businessIds Business ID selected
          * @param {TimeSpan} [timeSpan] Time span
@@ -22872,30 +21799,6 @@ export const HistoryApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Get order history for POS
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {number} [page] Page number
-         * @param {number} [rowPerPage] Number of rows per page
-         * @param {Array<ProviderEnum>} [provider] Provider
-         * @param {Array<PaymentTypeEnum>} [paymentType] Payment type
-         * @param {Array<OrderStatusEnum>} [orderStatus] Order status
-         * @param {Array<PaymentStatus>} [paymentStatus] Payment status
-         * @param {Array<OrderType>} [orderType] Order type
-         * @param {Array<PaymentMethod>} [paymentTypePos] Payment type POS
-         * @param {string} [invoiceCompanyId] Filter by invoice company ID
-         * @param {string} [timezone] Timezone (default is \&quot;UTC\&quot;)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getOrderHistoryPOS(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, page?: number, rowPerPage?: number, provider?: Array<ProviderEnum>, paymentType?: Array<PaymentTypeEnum>, orderStatus?: Array<OrderStatusEnum>, paymentStatus?: Array<PaymentStatus>, orderType?: Array<OrderType>, paymentTypePos?: Array<PaymentMethod>, invoiceCompanyId?: string, timezone?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrderHistoryPosResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getOrderHistoryPOS(businessIds, timeSpan, start, end, page, rowPerPage, provider, paymentType, orderStatus, paymentStatus, orderType, paymentTypePos, invoiceCompanyId, timezone, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
          * @summary Get order history for POS V2
          * @param {Array<number>} businessIds Business ID selected
          * @param {TimeSpan} [timeSpan] Time span
@@ -23072,29 +21975,6 @@ export const HistoryApiFactory = function (configuration?: Configuration, basePa
         },
         /**
          * 
-         * @summary Get order history for POS
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {number} [page] Page number
-         * @param {number} [rowPerPage] Number of rows per page
-         * @param {Array<ProviderEnum>} [provider] Provider
-         * @param {Array<PaymentTypeEnum>} [paymentType] Payment type
-         * @param {Array<OrderStatusEnum>} [orderStatus] Order status
-         * @param {Array<PaymentStatus>} [paymentStatus] Payment status
-         * @param {Array<OrderType>} [orderType] Order type
-         * @param {Array<PaymentMethod>} [paymentTypePos] Payment type POS
-         * @param {string} [invoiceCompanyId] Filter by invoice company ID
-         * @param {string} [timezone] Timezone (default is \&quot;UTC\&quot;)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getOrderHistoryPOS(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, page?: number, rowPerPage?: number, provider?: Array<ProviderEnum>, paymentType?: Array<PaymentTypeEnum>, orderStatus?: Array<OrderStatusEnum>, paymentStatus?: Array<PaymentStatus>, orderType?: Array<OrderType>, paymentTypePos?: Array<PaymentMethod>, invoiceCompanyId?: string, timezone?: string, options?: any): AxiosPromise<OrderHistoryPosResponseDto> {
-            return localVarFp.getOrderHistoryPOS(businessIds, timeSpan, start, end, page, rowPerPage, provider, paymentType, orderStatus, paymentStatus, orderType, paymentTypePos, invoiceCompanyId, timezone, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @summary Get order history for POS V2
          * @param {Array<number>} businessIds Business ID selected
          * @param {TimeSpan} [timeSpan] Time span
@@ -23262,29 +22142,6 @@ export interface HistoryApiInterface {
      * @memberof HistoryApiInterface
      */
     getOrderHistoryOnline(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, page?: number, rowPerPage?: number, provider?: Array<ProviderEnum>, paymentType?: Array<PaymentTypeEnum>, orderStatus?: Array<OrderStatusEnum>, paymentStatus?: Array<PaymentStatus>, orderType?: Array<OrderType>, paymentTypePos?: Array<PaymentMethod>, invoiceCompanyId?: string, timezone?: string, options?: AxiosRequestConfig): AxiosPromise<OrderHistoryResponseDto>;
-
-    /**
-     * 
-     * @summary Get order history for POS
-     * @param {Array<number>} businessIds Business ID selected
-     * @param {TimeSpan} [timeSpan] Time span
-     * @param {string} [start] Start date
-     * @param {string} [end] End date
-     * @param {number} [page] Page number
-     * @param {number} [rowPerPage] Number of rows per page
-     * @param {Array<ProviderEnum>} [provider] Provider
-     * @param {Array<PaymentTypeEnum>} [paymentType] Payment type
-     * @param {Array<OrderStatusEnum>} [orderStatus] Order status
-     * @param {Array<PaymentStatus>} [paymentStatus] Payment status
-     * @param {Array<OrderType>} [orderType] Order type
-     * @param {Array<PaymentMethod>} [paymentTypePos] Payment type POS
-     * @param {string} [invoiceCompanyId] Filter by invoice company ID
-     * @param {string} [timezone] Timezone (default is \&quot;UTC\&quot;)
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof HistoryApiInterface
-     */
-    getOrderHistoryPOS(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, page?: number, rowPerPage?: number, provider?: Array<ProviderEnum>, paymentType?: Array<PaymentTypeEnum>, orderStatus?: Array<OrderStatusEnum>, paymentStatus?: Array<PaymentStatus>, orderType?: Array<OrderType>, paymentTypePos?: Array<PaymentMethod>, invoiceCompanyId?: string, timezone?: string, options?: AxiosRequestConfig): AxiosPromise<OrderHistoryPosResponseDto>;
 
     /**
      * 
@@ -23458,31 +22315,6 @@ export class HistoryApi extends BaseAPI implements HistoryApiInterface {
      */
     public getOrderHistoryOnline(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, page?: number, rowPerPage?: number, provider?: Array<ProviderEnum>, paymentType?: Array<PaymentTypeEnum>, orderStatus?: Array<OrderStatusEnum>, paymentStatus?: Array<PaymentStatus>, orderType?: Array<OrderType>, paymentTypePos?: Array<PaymentMethod>, invoiceCompanyId?: string, timezone?: string, options?: AxiosRequestConfig) {
         return HistoryApiFp(this.configuration).getOrderHistoryOnline(businessIds, timeSpan, start, end, page, rowPerPage, provider, paymentType, orderStatus, paymentStatus, orderType, paymentTypePos, invoiceCompanyId, timezone, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get order history for POS
-     * @param {Array<number>} businessIds Business ID selected
-     * @param {TimeSpan} [timeSpan] Time span
-     * @param {string} [start] Start date
-     * @param {string} [end] End date
-     * @param {number} [page] Page number
-     * @param {number} [rowPerPage] Number of rows per page
-     * @param {Array<ProviderEnum>} [provider] Provider
-     * @param {Array<PaymentTypeEnum>} [paymentType] Payment type
-     * @param {Array<OrderStatusEnum>} [orderStatus] Order status
-     * @param {Array<PaymentStatus>} [paymentStatus] Payment status
-     * @param {Array<OrderType>} [orderType] Order type
-     * @param {Array<PaymentMethod>} [paymentTypePos] Payment type POS
-     * @param {string} [invoiceCompanyId] Filter by invoice company ID
-     * @param {string} [timezone] Timezone (default is \&quot;UTC\&quot;)
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof HistoryApi
-     */
-    public getOrderHistoryPOS(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, page?: number, rowPerPage?: number, provider?: Array<ProviderEnum>, paymentType?: Array<PaymentTypeEnum>, orderStatus?: Array<OrderStatusEnum>, paymentStatus?: Array<PaymentStatus>, orderType?: Array<OrderType>, paymentTypePos?: Array<PaymentMethod>, invoiceCompanyId?: string, timezone?: string, options?: AxiosRequestConfig) {
-        return HistoryApiFp(this.configuration).getOrderHistoryPOS(businessIds, timeSpan, start, end, page, rowPerPage, provider, paymentType, orderStatus, paymentStatus, orderType, paymentTypePos, invoiceCompanyId, timezone, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -26295,42 +25127,6 @@ export const OrdersApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deletePosParkedOrder: async (deletePosOrderDto: DeletePosOrderDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'deletePosOrderDto' is not null or undefined
-            assertParamExists('deletePosParkedOrder', 'deletePosOrderDto', deletePosOrderDto)
-            const localVarPath = `/api/v1/orders/pos/park`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(deletePosOrderDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Remove a parked pos order
-         * @param {DeletePosOrderDto} deletePosOrderDto Id of the pos
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
         deletePosParkedOrderV2: async (deletePosOrderDto: DeletePosOrderDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'deletePosOrderDto' is not null or undefined
             assertParamExists('deletePosParkedOrderV2', 'deletePosOrderDto', deletePosOrderDto)
@@ -26599,43 +25395,6 @@ export const OrdersApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getParkedPosOrder: async (businessId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'businessId' is not null or undefined
-            assertParamExists('getParkedPosOrder', 'businessId', businessId)
-            const localVarPath = `/api/v1/orders/pos/park`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (businessId !== undefined) {
-                localVarQueryParameter['businessId'] = businessId;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get all Pos park order
-         * @param {string} businessId Id of the pos
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
         getParkedPosOrderV2: async (businessId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'businessId' is not null or undefined
             assertParamExists('getParkedPosOrderV2', 'businessId', businessId)
@@ -26696,42 +25455,6 @@ export const OrdersApiAxiosParamCreator = function (configuration?: Configuratio
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(readyOrderDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Place an POS order
-         * @param {PosOrderPayloadDto} posOrderPayloadDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        placePosOrder: async (posOrderPayloadDto: PosOrderPayloadDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'posOrderPayloadDto' is not null or undefined
-            assertParamExists('placePosOrder', 'posOrderPayloadDto', posOrderPayloadDto)
-            const localVarPath = `/api/v1/orders/pos/place`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(posOrderPayloadDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -26925,42 +25648,6 @@ export const OrdersApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        sendPosOrderTicket: async (sendPosOrderTicketDto: SendPosOrderTicketDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'sendPosOrderTicketDto' is not null or undefined
-            assertParamExists('sendPosOrderTicket', 'sendPosOrderTicketDto', sendPosOrderTicketDto)
-            const localVarPath = `/api/v1/orders/pos/ticket`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(sendPosOrderTicketDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Send a POS order ticket
-         * @param {SendPosOrderTicketDto} sendPosOrderTicketDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
         sendPosOrderTicketV2: async (sendPosOrderTicketDto: SendPosOrderTicketDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'sendPosOrderTicketDto' is not null or undefined
             assertParamExists('sendPosOrderTicketV2', 'sendPosOrderTicketDto', sendPosOrderTicketDto)
@@ -26984,42 +25671,6 @@ export const OrdersApiAxiosParamCreator = function (configuration?: Configuratio
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(sendPosOrderTicketDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Update a POS order status
-         * @param {PosUpdateOrderDto} posUpdateOrderDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updatePosOrder: async (posUpdateOrderDto: PosUpdateOrderDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'posUpdateOrderDto' is not null or undefined
-            assertParamExists('updatePosOrder', 'posUpdateOrderDto', posUpdateOrderDto)
-            const localVarPath = `/api/v1/orders/pos/update`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(posUpdateOrderDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -27092,17 +25743,6 @@ export const OrdersApiFp = function(configuration?: Configuration) {
          */
         async confirmPreOrder(confirmPreorderDto: ConfirmPreorderDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrderStatusResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.confirmPreOrder(confirmPreorderDto, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Remove a parked pos order
-         * @param {DeletePosOrderDto} deletePosOrderDto Id of the pos
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async deletePosParkedOrder(deletePosOrderDto: DeletePosOrderDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.deletePosParkedOrder(deletePosOrderDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -27188,17 +25828,6 @@ export const OrdersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getParkedPosOrder(businessId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<FirebasePosOrderResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getParkedPosOrder(businessId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Get all Pos park order
-         * @param {string} businessId Id of the pos
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
         async getParkedPosOrderV2(businessId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<PosOrderDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getParkedPosOrderV2(businessId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -27212,17 +25841,6 @@ export const OrdersApiFp = function(configuration?: Configuration) {
          */
         async markOrderAsReady(readyOrderDto: ReadyOrderDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrderStatusResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.markOrderAsReady(readyOrderDto, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Place an POS order
-         * @param {PosOrderPayloadDto} posOrderPayloadDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async placePosOrder(posOrderPayloadDto: PosOrderPayloadDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FirebasePosOrderResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.placePosOrder(posOrderPayloadDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -27287,30 +25905,8 @@ export const OrdersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async sendPosOrderTicket(sendPosOrderTicketDto: SendPosOrderTicketDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FirebasePosOrderResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.sendPosOrderTicket(sendPosOrderTicketDto, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Send a POS order ticket
-         * @param {SendPosOrderTicketDto} sendPosOrderTicketDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
         async sendPosOrderTicketV2(sendPosOrderTicketDto: SendPosOrderTicketDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PosOrderDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.sendPosOrderTicketV2(sendPosOrderTicketDto, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Update a POS order status
-         * @param {PosUpdateOrderDto} posUpdateOrderDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async updatePosOrder(posUpdateOrderDto: PosUpdateOrderDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrderStatusResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.updatePosOrder(posUpdateOrderDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -27353,16 +25949,6 @@ export const OrdersApiFactory = function (configuration?: Configuration, basePat
          */
         confirmPreOrder(confirmPreorderDto: ConfirmPreorderDto, options?: any): AxiosPromise<OrderStatusResponseDto> {
             return localVarFp.confirmPreOrder(confirmPreorderDto, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Remove a parked pos order
-         * @param {DeletePosOrderDto} deletePosOrderDto Id of the pos
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        deletePosParkedOrder(deletePosOrderDto: DeletePosOrderDto, options?: any): AxiosPromise<void> {
-            return localVarFp.deletePosParkedOrder(deletePosOrderDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -27441,16 +26027,6 @@ export const OrdersApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getParkedPosOrder(businessId: string, options?: any): AxiosPromise<Array<FirebasePosOrderResponse>> {
-            return localVarFp.getParkedPosOrder(businessId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get all Pos park order
-         * @param {string} businessId Id of the pos
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
         getParkedPosOrderV2(businessId: string, options?: any): AxiosPromise<Array<PosOrderDto>> {
             return localVarFp.getParkedPosOrderV2(businessId, options).then((request) => request(axios, basePath));
         },
@@ -27463,16 +26039,6 @@ export const OrdersApiFactory = function (configuration?: Configuration, basePat
          */
         markOrderAsReady(readyOrderDto: ReadyOrderDto, options?: any): AxiosPromise<OrderStatusResponseDto> {
             return localVarFp.markOrderAsReady(readyOrderDto, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Place an POS order
-         * @param {PosOrderPayloadDto} posOrderPayloadDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        placePosOrder(posOrderPayloadDto: PosOrderPayloadDto, options?: any): AxiosPromise<FirebasePosOrderResponse> {
-            return localVarFp.placePosOrder(posOrderPayloadDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -27531,28 +26097,8 @@ export const OrdersApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        sendPosOrderTicket(sendPosOrderTicketDto: SendPosOrderTicketDto, options?: any): AxiosPromise<FirebasePosOrderResponse> {
-            return localVarFp.sendPosOrderTicket(sendPosOrderTicketDto, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Send a POS order ticket
-         * @param {SendPosOrderTicketDto} sendPosOrderTicketDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
         sendPosOrderTicketV2(sendPosOrderTicketDto: SendPosOrderTicketDto, options?: any): AxiosPromise<PosOrderDto> {
             return localVarFp.sendPosOrderTicketV2(sendPosOrderTicketDto, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Update a POS order status
-         * @param {PosUpdateOrderDto} posUpdateOrderDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        updatePosOrder(posUpdateOrderDto: PosUpdateOrderDto, options?: any): AxiosPromise<OrderStatusResponseDto> {
-            return localVarFp.updatePosOrder(posUpdateOrderDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -27592,16 +26138,6 @@ export interface OrdersApiInterface {
      * @memberof OrdersApiInterface
      */
     confirmPreOrder(confirmPreorderDto: ConfirmPreorderDto, options?: AxiosRequestConfig): AxiosPromise<OrderStatusResponseDto>;
-
-    /**
-     * 
-     * @summary Remove a parked pos order
-     * @param {DeletePosOrderDto} deletePosOrderDto Id of the pos
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApiInterface
-     */
-    deletePosParkedOrder(deletePosOrderDto: DeletePosOrderDto, options?: AxiosRequestConfig): AxiosPromise<void>;
 
     /**
      * 
@@ -27681,16 +26217,6 @@ export interface OrdersApiInterface {
      * @throws {RequiredError}
      * @memberof OrdersApiInterface
      */
-    getParkedPosOrder(businessId: string, options?: AxiosRequestConfig): AxiosPromise<Array<FirebasePosOrderResponse>>;
-
-    /**
-     * 
-     * @summary Get all Pos park order
-     * @param {string} businessId Id of the pos
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApiInterface
-     */
     getParkedPosOrderV2(businessId: string, options?: AxiosRequestConfig): AxiosPromise<Array<PosOrderDto>>;
 
     /**
@@ -27702,16 +26228,6 @@ export interface OrdersApiInterface {
      * @memberof OrdersApiInterface
      */
     markOrderAsReady(readyOrderDto: ReadyOrderDto, options?: AxiosRequestConfig): AxiosPromise<OrderStatusResponseDto>;
-
-    /**
-     * 
-     * @summary Place an POS order
-     * @param {PosOrderPayloadDto} posOrderPayloadDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApiInterface
-     */
-    placePosOrder(posOrderPayloadDto: PosOrderPayloadDto, options?: AxiosRequestConfig): AxiosPromise<FirebasePosOrderResponse>;
 
     /**
      * 
@@ -27771,27 +26287,7 @@ export interface OrdersApiInterface {
      * @throws {RequiredError}
      * @memberof OrdersApiInterface
      */
-    sendPosOrderTicket(sendPosOrderTicketDto: SendPosOrderTicketDto, options?: AxiosRequestConfig): AxiosPromise<FirebasePosOrderResponse>;
-
-    /**
-     * 
-     * @summary Send a POS order ticket
-     * @param {SendPosOrderTicketDto} sendPosOrderTicketDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApiInterface
-     */
     sendPosOrderTicketV2(sendPosOrderTicketDto: SendPosOrderTicketDto, options?: AxiosRequestConfig): AxiosPromise<PosOrderDto>;
-
-    /**
-     * 
-     * @summary Update a POS order status
-     * @param {PosUpdateOrderDto} posUpdateOrderDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApiInterface
-     */
-    updatePosOrder(posUpdateOrderDto: PosUpdateOrderDto, options?: AxiosRequestConfig): AxiosPromise<OrderStatusResponseDto>;
 
     /**
      * 
@@ -27834,18 +26330,6 @@ export class OrdersApi extends BaseAPI implements OrdersApiInterface {
      */
     public confirmPreOrder(confirmPreorderDto: ConfirmPreorderDto, options?: AxiosRequestConfig) {
         return OrdersApiFp(this.configuration).confirmPreOrder(confirmPreorderDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Remove a parked pos order
-     * @param {DeletePosOrderDto} deletePosOrderDto Id of the pos
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApi
-     */
-    public deletePosParkedOrder(deletePosOrderDto: DeletePosOrderDto, options?: AxiosRequestConfig) {
-        return OrdersApiFp(this.configuration).deletePosParkedOrder(deletePosOrderDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -27938,18 +26422,6 @@ export class OrdersApi extends BaseAPI implements OrdersApiInterface {
      * @throws {RequiredError}
      * @memberof OrdersApi
      */
-    public getParkedPosOrder(businessId: string, options?: AxiosRequestConfig) {
-        return OrdersApiFp(this.configuration).getParkedPosOrder(businessId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get all Pos park order
-     * @param {string} businessId Id of the pos
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApi
-     */
     public getParkedPosOrderV2(businessId: string, options?: AxiosRequestConfig) {
         return OrdersApiFp(this.configuration).getParkedPosOrderV2(businessId, options).then((request) => request(this.axios, this.basePath));
     }
@@ -27964,18 +26436,6 @@ export class OrdersApi extends BaseAPI implements OrdersApiInterface {
      */
     public markOrderAsReady(readyOrderDto: ReadyOrderDto, options?: AxiosRequestConfig) {
         return OrdersApiFp(this.configuration).markOrderAsReady(readyOrderDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Place an POS order
-     * @param {PosOrderPayloadDto} posOrderPayloadDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApi
-     */
-    public placePosOrder(posOrderPayloadDto: PosOrderPayloadDto, options?: AxiosRequestConfig) {
-        return OrdersApiFp(this.configuration).placePosOrder(posOrderPayloadDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -28046,32 +26506,8 @@ export class OrdersApi extends BaseAPI implements OrdersApiInterface {
      * @throws {RequiredError}
      * @memberof OrdersApi
      */
-    public sendPosOrderTicket(sendPosOrderTicketDto: SendPosOrderTicketDto, options?: AxiosRequestConfig) {
-        return OrdersApiFp(this.configuration).sendPosOrderTicket(sendPosOrderTicketDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Send a POS order ticket
-     * @param {SendPosOrderTicketDto} sendPosOrderTicketDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApi
-     */
     public sendPosOrderTicketV2(sendPosOrderTicketDto: SendPosOrderTicketDto, options?: AxiosRequestConfig) {
         return OrdersApiFp(this.configuration).sendPosOrderTicketV2(sendPosOrderTicketDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Update a POS order status
-     * @param {PosUpdateOrderDto} posUpdateOrderDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApi
-     */
-    public updatePosOrder(posUpdateOrderDto: PosUpdateOrderDto, options?: AxiosRequestConfig) {
-        return OrdersApiFp(this.configuration).updatePosOrder(posUpdateOrderDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -28859,6 +27295,42 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
+         * Refund a nets transaction
+         * @summary Refund a nets transaction
+         * @param {CreateRefundDto} createRefundDto Refund payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createNetsRefundTransaction: async (createRefundDto: CreateRefundDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createRefundDto' is not null or undefined
+            assertParamExists('createNetsRefundTransaction', 'createRefundDto', createRefundDto)
+            const localVarPath = `/api/v4/payment/nets/refund/transaction`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createRefundDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Creates a new Viva payment intent.
          * @summary Create Viva payment
          * @param {VivaCreatePaymentDto} vivaCreatePaymentDto Viva payment creation payload
@@ -29509,17 +27981,16 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Creates a new Viva payment intent.
-         * @summary Create Viva payment
-         * @param {RefundPayloadDto} refundPayloadDto Viva payment creation payload
+         * Refund a single viva transaction
+         * @summary Refund a single viva transaction
+         * @param {CreateRefundDto} createRefundDto Refund payload
          * @param {*} [options] Override http request option.
-         * @deprecated
          * @throws {RequiredError}
          */
-        refundPayment: async (refundPayloadDto: RefundPayloadDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'refundPayloadDto' is not null or undefined
-            assertParamExists('refundPayment', 'refundPayloadDto', refundPayloadDto)
-            const localVarPath = `/api/v1/payment/refund`;
+        refundSingleVivaTransaction: async (createRefundDto: CreateRefundDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createRefundDto' is not null or undefined
+            assertParamExists('refundSingleVivaTransaction', 'createRefundDto', createRefundDto)
+            const localVarPath = `/api/v4/payment/viva/refund/single`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -29538,7 +28009,7 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(refundPayloadDto, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createRefundDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -29752,6 +28223,17 @@ export const PaymentApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
+         * Refund a nets transaction
+         * @summary Refund a nets transaction
+         * @param {CreateRefundDto} createRefundDto Refund payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async createNetsRefundTransaction(createRefundDto: CreateRefundDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateNetsRefundResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.createNetsRefundTransaction(createRefundDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Creates a new Viva payment intent.
          * @summary Create Viva payment
          * @param {VivaCreatePaymentDto} vivaCreatePaymentDto Viva payment creation payload
@@ -29951,15 +28433,14 @@ export const PaymentApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Creates a new Viva payment intent.
-         * @summary Create Viva payment
-         * @param {RefundPayloadDto} refundPayloadDto Viva payment creation payload
+         * Refund a single viva transaction
+         * @summary Refund a single viva transaction
+         * @param {CreateRefundDto} createRefundDto Refund payload
          * @param {*} [options] Override http request option.
-         * @deprecated
          * @throws {RequiredError}
          */
-        async refundPayment(refundPayloadDto: RefundPayloadDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.refundPayment(refundPayloadDto, options);
+        async refundSingleVivaTransaction(createRefundDto: CreateRefundDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VivaPaymentResultDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.refundSingleVivaTransaction(createRefundDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -30084,6 +28565,16 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
          */
         createNetsPayment(createNetsTransactionDto: CreateNetsTransactionDto, options?: any): AxiosPromise<CreateNetsTransactionResponseDto> {
             return localVarFp.createNetsPayment(createNetsTransactionDto, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Refund a nets transaction
+         * @summary Refund a nets transaction
+         * @param {CreateRefundDto} createRefundDto Refund payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        createNetsRefundTransaction(createRefundDto: CreateRefundDto, options?: any): AxiosPromise<CreateNetsRefundResponseDto> {
+            return localVarFp.createNetsRefundTransaction(createRefundDto, options).then((request) => request(axios, basePath));
         },
         /**
          * Creates a new Viva payment intent.
@@ -30267,15 +28758,14 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.refundNetsTransactionV3(refundPayloadDtoV4, options).then((request) => request(axios, basePath));
         },
         /**
-         * Creates a new Viva payment intent.
-         * @summary Create Viva payment
-         * @param {RefundPayloadDto} refundPayloadDto Viva payment creation payload
+         * Refund a single viva transaction
+         * @summary Refund a single viva transaction
+         * @param {CreateRefundDto} createRefundDto Refund payload
          * @param {*} [options] Override http request option.
-         * @deprecated
          * @throws {RequiredError}
          */
-        refundPayment(refundPayloadDto: RefundPayloadDto, options?: any): AxiosPromise<void> {
-            return localVarFp.refundPayment(refundPayloadDto, options).then((request) => request(axios, basePath));
+        refundSingleVivaTransaction(createRefundDto: CreateRefundDto, options?: any): AxiosPromise<VivaPaymentResultDto> {
+            return localVarFp.refundSingleVivaTransaction(createRefundDto, options).then((request) => request(axios, basePath));
         },
         /**
          * Refund a pos order
@@ -30395,6 +28885,16 @@ export interface PaymentApiInterface {
      * @memberof PaymentApiInterface
      */
     createNetsPayment(createNetsTransactionDto: CreateNetsTransactionDto, options?: AxiosRequestConfig): AxiosPromise<CreateNetsTransactionResponseDto>;
+
+    /**
+     * Refund a nets transaction
+     * @summary Refund a nets transaction
+     * @param {CreateRefundDto} createRefundDto Refund payload
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PaymentApiInterface
+     */
+    createNetsRefundTransaction(createRefundDto: CreateRefundDto, options?: AxiosRequestConfig): AxiosPromise<CreateNetsRefundResponseDto>;
 
     /**
      * Creates a new Viva payment intent.
@@ -30578,15 +29078,14 @@ export interface PaymentApiInterface {
     refundNetsTransactionV3(refundPayloadDtoV4: RefundPayloadDtoV4, options?: AxiosRequestConfig): AxiosPromise<string>;
 
     /**
-     * Creates a new Viva payment intent.
-     * @summary Create Viva payment
-     * @param {RefundPayloadDto} refundPayloadDto Viva payment creation payload
+     * Refund a single viva transaction
+     * @summary Refund a single viva transaction
+     * @param {CreateRefundDto} createRefundDto Refund payload
      * @param {*} [options] Override http request option.
-     * @deprecated
      * @throws {RequiredError}
      * @memberof PaymentApiInterface
      */
-    refundPayment(refundPayloadDto: RefundPayloadDto, options?: AxiosRequestConfig): AxiosPromise<void>;
+    refundSingleVivaTransaction(createRefundDto: CreateRefundDto, options?: AxiosRequestConfig): AxiosPromise<VivaPaymentResultDto>;
 
     /**
      * Refund a pos order
@@ -30721,6 +29220,18 @@ export class PaymentApi extends BaseAPI implements PaymentApiInterface {
      */
     public createNetsPayment(createNetsTransactionDto: CreateNetsTransactionDto, options?: AxiosRequestConfig) {
         return PaymentApiFp(this.configuration).createNetsPayment(createNetsTransactionDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Refund a nets transaction
+     * @summary Refund a nets transaction
+     * @param {CreateRefundDto} createRefundDto Refund payload
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PaymentApi
+     */
+    public createNetsRefundTransaction(createRefundDto: CreateRefundDto, options?: AxiosRequestConfig) {
+        return PaymentApiFp(this.configuration).createNetsRefundTransaction(createRefundDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -30941,16 +29452,15 @@ export class PaymentApi extends BaseAPI implements PaymentApiInterface {
     }
 
     /**
-     * Creates a new Viva payment intent.
-     * @summary Create Viva payment
-     * @param {RefundPayloadDto} refundPayloadDto Viva payment creation payload
+     * Refund a single viva transaction
+     * @summary Refund a single viva transaction
+     * @param {CreateRefundDto} createRefundDto Refund payload
      * @param {*} [options] Override http request option.
-     * @deprecated
      * @throws {RequiredError}
      * @memberof PaymentApi
      */
-    public refundPayment(refundPayloadDto: RefundPayloadDto, options?: AxiosRequestConfig) {
-        return PaymentApiFp(this.configuration).refundPayment(refundPayloadDto, options).then((request) => request(this.axios, this.basePath));
+    public refundSingleVivaTransaction(createRefundDto: CreateRefundDto, options?: AxiosRequestConfig) {
+        return PaymentApiFp(this.configuration).refundSingleVivaTransaction(createRefundDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
