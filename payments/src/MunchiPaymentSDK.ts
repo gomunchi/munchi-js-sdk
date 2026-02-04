@@ -1,5 +1,5 @@
 import type { AxiosInstance } from "axios";
-import { PaymentProvider } from "../../core";
+import { PaymentProvider } from "@munchi/core";
 import { version } from "../package.json";
 import { PaymentErrorCode, PaymentSDKError } from "./error";
 import type { IPaymentStrategy } from "./strategies/IPaymentStrategy";

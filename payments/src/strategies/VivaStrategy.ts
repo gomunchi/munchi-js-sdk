@@ -6,7 +6,7 @@ import {
     type PaymentStatusDto,
     SimplePaymentStatus,
     type TransactionDto,
-} from "../../../core";
+} from "@munchi/core";
 
 import { PaymentErrorCode, PaymentSDKError } from "../error";
 import {

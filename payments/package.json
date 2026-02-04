@@ -30,9 +30,11 @@
     "test:coverage": "jest --coverage",
     "version:sync": "node scripts/sync-version.mjs",
     "prebuild": "pnpm version:sync",
-    "build": "tsup index.ts --format cjs,esm --dts --clean",
+    "build:runtime": "tsup",
+    "build:types": "tsc -p tsconfig.build.json",
+    "build": "pnpm run build:runtime && pnpm run build:types",
     "yalc:publish": "pnpm build && yalc publish --push",
-    "dev": "tsup index.ts --format cjs,esm --watch --dts",
+    "dev": "tsup --watch",
     "prepare": "npm run build",
     "prepublishOnly": "pnpm build"
   },
