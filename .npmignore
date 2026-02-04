@@ -1,0 +1,18 @@
+# Root package is not published; keep git installs lightweight.
+openapistorage/
+swagger/
+docs/
+scripts/
+core/
+payments/
+react/
+coverage/
+tmp/
+node_modules/
+dist/
+**/__tests__/
+**/*.test.*
+**/*.spec.*
+pnpm-lock.yaml
+openapitools.json
+biome.json

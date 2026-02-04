@@ -12,8 +12,6 @@
   "react-native": "index.ts",
   "files": [
     "dist",
-    "src",
-    "index.ts",
     "README.md"
   ],
   "exports": {
