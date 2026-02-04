@@ -1,14 +1,21 @@
+import { PaymentProvider, ProviderEnum } from "../../../core";
 import { MunchiPaymentSDK } from "../../src/MunchiPaymentSDK";
 import { PaymentInteractionState } from "../../src/types/payment";
-import { mockAxios, mockMessaging } from "../helpers/mocks";
-import { PaymentProvider, ProviderEnum } from "../../../core";
+import { createMockAxios, createMockMessaging } from "../helpers/fixtures";
 
 describe("MunchiPaymentSDK Reset Binding", () => {
+  let mockAxios: ReturnType<typeof createMockAxios>;
+  let mockMessaging: ReturnType<typeof createMockMessaging>;
+
+  beforeEach(() => {
+    mockAxios = createMockAxios();
+    mockMessaging = createMockMessaging();
+  });
   it("should maintain 'this' context when reset is destructured", () => {
-    const sdk = new MunchiPaymentSDK(mockAxios as any, mockMessaging, {
+    const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, {
       kioskId: "test-kiosk",
       storeId: "test-store",
-      channel: ProviderEnum.MunchiKiosk, 
+      channel: ProviderEnum.MunchiKiosk,
       provider: PaymentProvider.Viva,
     });
 
@@ -21,7 +28,7 @@ describe("MunchiPaymentSDK Reset Binding", () => {
     (sdk as any)._currentState = PaymentInteractionState.SUCCESS;
 
     const { reset } = sdk;
-    
+
     // This call would throw "Cannot read property '_currentState' of undefined" if not bound
     expect(() => reset()).not.toThrow();
 

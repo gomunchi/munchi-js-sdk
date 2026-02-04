@@ -1,5 +1,5 @@
+import { PaymentProvider, ProviderEnum } from "@munchi/core";
 import type { AxiosInstance } from "axios";
-import { PaymentProvider, ProviderEnum } from "../../../core";
 import type {
     IMessagingAdapter,
     PaymentTerminalConfig,

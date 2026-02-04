@@ -16,29 +16,29 @@ Install packages directly from GitHub using the repository URL and a version tag
 
 ```bash
 # Install latest stable
-npm install github:gomunchi/munchi-js-sdk#v1.1.8
+npm install github:gomunchi/munchi-js-sdk#v1.1.9
 ```
 
 Or with pnpm:
 ```bash
-pnpm add github:gomunchi/munchi-js-sdk#v1.1.8
+pnpm add github:gomunchi/munchi-js-sdk#v1.1.9
 ```
 
 ### Method 2: Install from Git URL
 
 ```bash
 # Using HTTPS
-npm install git+https://github.com/gomunchi/munchi-js-sdk.git#v1.1.8
+npm install git+https://github.com/gomunchi/munchi-js-sdk.git#v1.1.9
 
 # Using SSH (recommended for private repos)
-npm install git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#v1.1.8
+npm install git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#v1.1.9
 ```
 
 ### Method 3: Install Specific Version/Tag
 
 ```bash
 # Install specific tag
-npm install github:gomunchi/munchi-js-sdk#v1.1.8
+npm install github:gomunchi/munchi-js-sdk#v1.1.9
 
 # Install specific commit
 npm install github:gomunchi/munchi-js-sdk#abc1234
@@ -54,7 +54,7 @@ Add to your `package.json`:
 ```json
 {
   "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.8"
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9"
   }
 }
 ```
@@ -63,9 +63,9 @@ Or with explicit package names (same tag):
 ```json
 {
   "dependencies": {
-    "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.8",
-    "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.8",
-    "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.8"
+    "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.9",
+    "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.9",
+    "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.9"
   }
 }
 ```
@@ -78,7 +78,7 @@ If you need true split packages, publish to npm or install from tarballs.
 
 ### Option 1: SSH Key (Recommended)
 1. Set up SSH key with GitHub: https://docs.github.com/en/authentication/connecting-to-github-with-ssh
-2. Use SSH URLs: `git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#v1.1.8`
+2. Use SSH URLs: `git+ssh://git@github.com/gomunchi/munchi-js-sdk.git#v1.1.9`
 
 ### Option 2: Personal Access Token
 1. Create a GitHub Personal Access Token with `repo` scope
@@ -112,7 +112,7 @@ import { /* your exports */ } from '@munchi/payments';
 npm update @munchi/sdk
 
 # Or reinstall
-npm install github:gomunchi/munchi-js-sdk#v1.1.8
+npm install github:gomunchi/munchi-js-sdk#v1.1.9
 ```
 
 ## Version Management with Git Tags
@@ -121,17 +121,17 @@ To enable version-specific installations, create git tags:
 
 ```bash
 # Tag core package
-git tag core-v1.1.8
-git push origin core-v1.1.8
+git tag core-v1.1.9
+git push origin core-v1.1.9
 
 # Tag payments package
-git tag payments-v1.1.8
-git push origin payments-v1.1.8
+git tag payments-v1.1.9
+git push origin payments-v1.1.9
 ```
 
 Then install specific versions:
 ```bash
-npm install github:gomunchi/munchi-js-sdk#v1.1.8
+npm install github:gomunchi/munchi-js-sdk#v1.1.9
 ```
 
 ## CI/CD Integration
@@ -215,7 +215,7 @@ jobs:
   "name": "my-app",
   "version": "1.0.0",
   "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.8",
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9",
     "axios": "^1.6.0"
   }
 }

@@ -35,12 +35,12 @@ source ~/.zshrc  # or ~/.bashrc
 
 ### Step 2: Install Packages
 
-Add to your `package.json` (stable tag `v1.1.8`):
+Add to your `package.json` (stable tag `v1.1.9`):
 
 ```json
 {
   "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.8"
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9"
   }
 }
 ```
@@ -59,9 +59,9 @@ pnpm install
 > ```json
 > {
 >   "dependencies": {
->     "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.8",
->     "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.8",
->     "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.8"
+>     "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.9",
+>     "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.9",
+>     "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.9"
 >   }
 > }
 > ```
@@ -94,7 +94,7 @@ To install a specific version (once tags are created):
 ```json
 {
   "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.8"
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9"
   }
 }
 ```
@@ -111,7 +111,7 @@ pnpm update @munchi/sdk
 
 Or reinstall:
 ```bash
-npm install github:gomunchi/munchi-js-sdk#v1.1.8
+npm install github:gomunchi/munchi-js-sdk#v1.1.9
 ```
 
 ## CI/CD Setup
@@ -196,7 +196,7 @@ Here's a complete example `package.json`:
   "name": "my-munchi-app",
   "version": "1.0.0",
   "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.8",
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9",
     "axios": "^1.6.0"
   },
   "devDependencies": {

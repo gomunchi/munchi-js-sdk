@@ -15,25 +15,25 @@ TypeScript SDK for Munchi services, providing core utilities and payment process
 ### Quick Install (Latest Stable)
 
 We recommend using a specific version tag to ensure stability.
-The current stable version is `v1.1.8`.
+The current stable version is `v1.1.9`.
 
 ```bash
 # npm
-npm install github:gomunchi/munchi-js-sdk#v1.1.8
+npm install github:gomunchi/munchi-js-sdk#v1.1.9
 
 # pnpm
-pnpm add github:gomunchi/munchi-js-sdk#v1.1.8
+pnpm add github:gomunchi/munchi-js-sdk#v1.1.9
 ```
 
 > [!TIP]
-> Always use a version tag (e.g., `#v1.1.8`) instead of `#master` in production. This ensures your build remains the same even when newer versions are released.
+> Always use a version tag (e.g., `#v1.1.9`) instead of `#master` in production. This ensures your build remains the same even when newer versions are released.
 
 ### In your package.json
 
 ```json
 {
   "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.8"
+    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9"
   }
 }
 ```
@@ -47,9 +47,9 @@ If you want explicit package names in `package.json`, you can do this:
 ```json
 {
   "dependencies": {
-    "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.8",
-    "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.8",
-    "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.8"
+    "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.9",
+    "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.9",
+    "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.9"
   }
 }
 ```
@@ -135,19 +135,19 @@ The script will:
 ### Git Tags
 
 Each release creates three tags:
-- `v1.1.8` - Main version tag (use this for installing)
-- `core-v1.1.8` - Core package tag
-- `payments-v1.1.8` - Payments package tag
-- `react-v1.1.8` - React package tag
+- `v1.1.9` - Main version tag (use this for installing)
+- `core-v1.1.9` - Core package tag
+- `payments-v1.1.9` - Payments package tag
+- `react-v1.1.9` - React package tag
 
 ### Install Specific Version
 
 ```bash
 # npm
-npm install github:gomunchi/munchi-js-sdk#v1.1.8
+npm install github:gomunchi/munchi-js-sdk#v1.1.9
 
 # pnpm
-pnpm add github:gomunchi/munchi-js-sdk#v1.1.8
+pnpm add github:gomunchi/munchi-js-sdk#v1.1.9
 ```
 
 ## Contributing

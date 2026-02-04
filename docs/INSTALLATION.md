@@ -7,7 +7,7 @@ This package is installed directly from GitHub. When updating to a new version, 
 ### Installation
 
 ```bash
-pnpm add github:gomunchi/munchi-js-sdk#v1.1.8
+pnpm add github:gomunchi/munchi-js-sdk#v1.1.9
 ```
 
 > [!NOTE]
@@ -15,9 +15,9 @@ pnpm add github:gomunchi/munchi-js-sdk#v1.1.8
 > ```json
 > {
 >   "dependencies": {
->     "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.8",
->     "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.8",
->     "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.8"
+>     "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.9",
+>     "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.9",
+>     "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.9"
 >   }
 > }
 > ```
@@ -106,7 +106,7 @@ Then use it:
 
 ## Why This Happens
 
-pnpm uses content-addressable storage where each unique package URL is stored separately. When you install from GitHub with different tags (e.g., `v1.1.7` vs `v1.1.8`), pnpm sees these as different packages because the resolved URLs are different:
+pnpm uses content-addressable storage where each unique package URL is stored separately. When you install from GitHub with different tags (e.g., `v1.1.7` vs `v1.1.9`), pnpm sees these as different packages because the resolved URLs are different:
 
 - `https://codeload.github.com/gomunchi/munchi-js-sdk/tar.gz/[commit-hash-for-1.0.3]`
 - `https://codeload.github.com/gomunchi/munchi-js-sdk/tar.gz/[commit-hash-for-1.0.4]`
