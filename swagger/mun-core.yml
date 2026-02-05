@@ -658,67 +658,6 @@ paths:
               schema:
                 $ref: "#/components/schemas/PaymentStatusDto"
       tags: *a9
-  /api/v1/kiosk/checkin:
-    post:
-      operationId: checkIn
-      parameters: []
-      requestBody:
-        required: true
-        description: Required data for the Kiosk check-in process, including Kiosk ID,
-          Business ID, and the target Payment Terminal ID.
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CreateKioskDto"
-      responses:
-        "200":
-          description: Successful check-in. The Kiosk was either created or updated, and
-            is now confirmed to be connected to the specified terminal.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CheckInResponseDto"
-        "400":
-          description: Bad Request. Indicates a validation error in the payload data or a
-            generic database error during creation/fetching.
-        "409":
-          description: Conflict. The Kiosk ID is already registered and connected to
-            *this* terminal, or it is connected to a *different* terminal,
-            preventing a new check-in.
-      tags: *a9
-  /api/v1/kiosk/deactivate:
-    post:
-      operationId: removeKiosk
-      parameters:
-        - name: kioskId
-          required: true
-          in: query
-          description: The unique ID of the kiosk device to validate against the system.
-          schema:
-            type: string
-      responses:
-        "201":
-          description: ""
-      tags: *a9
-  /api/v1/kiosk/{kioskId}:
-    get:
-      operationId: getKiosk
-      parameters:
-        - name: kioskId
-          required: true
-          in: path
-          description: The unique ID of the kiosk device to validate against the system.
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Successful get kiosk. The Kiosk was either created or updated, and
-            is now confirmed to be connected to the specified terminal.
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/KioskResponseDto"
-      tags: *a9
   /api/v1/ably/request-settings:
     post:
       operationId: requestSettings
@@ -850,6 +789,7 @@ paths:
               - Bolt
               - MunchiKioskV2
               - Kiosk
+              - WoltStorefront
             type: string
         - name: businessIds
           required: true
@@ -1148,6 +1088,31 @@ paths:
       responses:
         "200":
           description: Business configuration with payment providers
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BusinessConfigResponseDto"
+      security: *a14
+      tags: *a15
+  /api/v1/business/{businessId}/channel-configs:
+    get:
+      operationId: getBusinessChannelConfig
+      parameters:
+        - name: businessId
+          required: true
+          in: path
+          description: Id of the business
+          schema:
+            type: string
+        - name: lang
+          required: false
+          in: query
+          description: Language code (default is "en")
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Business configuration for specific channel with payment providers
           content:
             application/json:
               schema:
@@ -1559,6 +1524,14 @@ paths:
   /api/webhook/nets:
     post:
       operationId: handleNetsEvents
+      parameters: []
+      responses:
+        "201":
+          description: ""
+      tags: *a16
+  /api/webhook/v2/nets:
+    post:
+      operationId: handleNetsEventsV2
       parameters: []
       responses:
         "201":
@@ -4465,6 +4438,7 @@ paths:
               - Bolt
               - MunchiKioskV2
               - Kiosk
+              - WoltStorefront
             type: string
         - name: businessIds
           required: true
@@ -4630,28 +4604,47 @@ paths:
         "404": *a47
       summary: Create Viva payment
       tags: *a48
-  /api/v3/payment/viva/create:
+  /api/v3/payment/nets/terminal/initiate:
     post:
-      description: Creates a new Viva transaction.
-      operationId: createVivaTransactionV3
+      description: Initiate a terminal transaction
+      operationId: initiateNetsTerminalTransaction
       parameters: []
       requestBody:
         required: true
-        description: Viva payment creation payload
+        description: Pos order refund payload
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateTransactionPayloadDto"
+              $ref: "#/components/schemas/CreateNetsTerminalPaymentDto"
       responses:
         "200":
-          description: The Viva payment intent was successfully created
+          description: The pos order was successfully refunded
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/VivaPaymentIntent"
+                $ref: "#/components/schemas/InitiateNetsTerminalPaymentResponseDto"
         "400": *a46
         "404": *a47
-      summary: Create Viva payment
+      summary: Initiate a terminal transaction
+      tags: *a48
+  /api/v3/payment/nets/cancel:
+    post:
+      description: Cancel a terminal transaction
+      operationId: cancelNetsTerminalTransaction
+      parameters: []
+      requestBody:
+        required: true
+        description: Pos order refund payload
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NetsCancelTransactionDto"
+      responses:
+        "200":
+          description: The pos order was successfully refunded
+        "400": *a46
+        "404": *a47
+      summary: Cancel a terminal transaction
       tags: *a48
   /api/v3/history/orders/pos:
     get:
@@ -6133,6 +6126,7 @@ components:
         - Bolt
         - MunchiKioskV2
         - Kiosk
+        - WoltStorefront
     RejectOrderDto:
       type: object
       properties:
@@ -7063,237 +7057,6 @@ components:
       required:
         - status
         - orderId
-    CreateKioskDto:
-      type: object
-      properties:
-        kioskId:
-          type: string
-          example: abcde
-        businessId:
-          type: number
-          example: 351
-          description: Ordering business ID
-        name:
-          type: string
-          example: Summer Sale 10%
-        prefix:
-          type: string
-          example: A
-          description: Prefix for kiosk when create order
-        paymentTerminalId:
-          type: string
-          example: abcde
-        provider:
-          description: The provider of the payment terminal (e.g., Stripe, Adyen).
-          example: stripe
-          allOf:
-            - $ref: "#/components/schemas/PaymentProvider"
-      required:
-        - kioskId
-        - businessId
-        - prefix
-        - paymentTerminalId
-        - provider
-    Status:
-      type: string
-      enum:
-        - ACTIVE
-        - INACTIVE
-    TerminalConnectionType:
-      type: string
-      enum:
-        - NETWORK
-    LinkedStationDto:
-      type: object
-      properties:
-        id:
-          type: string
-          example: cuid123456
-        name:
-          type: string
-          example: Kitchen Station 1
-        hardwareId:
-          type: string
-          example: station-tablet-001
-        status:
-          example: ACTIVE
-          allOf:
-            - $ref: "#/components/schemas/Status"
-      required:
-        - id
-        - name
-        - hardwareId
-        - status
-    PaymentTerminalDto:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The unique ID of the Payment Terminal.
-          example: terminal-xyz-7890
-        hardwareId:
-          type: string
-          description: The unique ID of the Payment Terminal.
-          example: terminal-xyz-7890
-        label:
-          type: string
-          description: The unique ID of the Payment Terminal.
-          example: terminal-xyz-7890
-          nullable: true
-        connectionType:
-          description: The connection type of the Payment Terminal.
-          example: NETWORK
-          allOf:
-            - $ref: "#/components/schemas/TerminalConnectionType"
-        orderingBusinessId:
-          type: string
-          description: The unique ID of the Payment Terminal.
-          example: terminal-xyz-7890
-        provider:
-          description: The unique ID of the Payment Terminal.
-          example: terminal-xyz-7890
-          allOf:
-            - $ref: "#/components/schemas/PaymentProvider"
-        updatedAt:
-          type: string
-          description: Timestamp when the payment terminal record was last updated.
-        stations:
-          description: List of stations connected to this terminal.
-          type: array
-          items:
-            $ref: "#/components/schemas/LinkedStationDto"
-      required:
-        - id
-        - hardwareId
-        - label
-        - connectionType
-        - orderingBusinessId
-        - provider
-        - updatedAt
-        - stations
-    KioskDetailsDto:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The unique ID of the Kiosk.
-          example: kiosk-2345
-        hardwareId:
-          type: string
-          description: The unique ID of the Kiosk hardware.
-          example: kiosk-2345
-        paymentTerminalId:
-          type: string
-          description: The unique ID of the payment terminal connected to this kiosk, or
-            null if unassigned.
-          example: terminal-xyz-7890
-          nullable: true
-        name:
-          type: string
-          description: The display name of the Kiosk.
-          example: Main Entrance Kiosk
-        status:
-          description: The status of the Kiosk.
-          example: ACTIVE
-          allOf:
-            - $ref: "#/components/schemas/Status"
-        prefix:
-          type: string
-          description: The prefix used by the kiosk when creating orders.
-          example: K
-        orderingBusinessId:
-          type: number
-          description: The business ID the kiosk is registered to.
-          example: 351
-        createdAt:
-          type: string
-          description: Timestamp when the kiosk record was created.
-          format: date-time
-        updatedAt:
-          type: string
-          description: Timestamp when the kiosk record was last updated.
-          format: date-time
-        paymentTerminal:
-          description: The payment terminal connected to this kiosk, or null if unassigned.
-          nullable: true
-          allOf:
-            - $ref: "#/components/schemas/PaymentTerminalDto"
-      required:
-        - id
-        - hardwareId
-        - paymentTerminalId
-        - name
-        - status
-        - prefix
-        - orderingBusinessId
-        - createdAt
-        - updatedAt
-        - paymentTerminal
-    TerminalDetailsDto:
-      type: object
-      properties:
-        id:
-          type: string
-          description: The unique ID of the payment terminal.
-          example: terminal-abc-1234
-        hardwareId:
-          type: string
-          description: The hardware ID provided by the payment service provider.
-          example: HW-0012345678
-        provider:
-          description: The provider of the payment terminal (e.g., Stripe, Adyen).
-          example: ADAPTER
-          allOf:
-            - $ref: "#/components/schemas/PaymentProvider"
-        label:
-          type: string
-          description: An optional human-readable label for the terminal.
-          example: Front Counter Terminal
-          nullable: true
-        orderingBusinessId:
-          type: number
-          description: The business ID the terminal is registered to.
-          example: 351
-        createdAt:
-          type: string
-          description: Timestamp when the terminal record was created.
-          example: 2024-01-15T10:20:30Z
-        updatedAt:
-          type: string
-          description: Timestamp when the terminal record was last updated.
-          example: 2024-01-15T10:20:30Z
-      required:
-        - id
-        - hardwareId
-        - provider
-        - label
-        - orderingBusinessId
-        - createdAt
-        - updatedAt
-    CheckInResponseDto:
-      type: object
-      properties:
-        kiosk:
-          description: Details of the Kiosk that was either fetched or created.
-          allOf:
-            - $ref: "#/components/schemas/KioskDetailsDto"
-        terminal:
-          description: Details of the Payment Terminal connected to the Kiosk.
-          allOf:
-            - $ref: "#/components/schemas/TerminalDetailsDto"
-      required:
-        - kiosk
-        - terminal
-    KioskResponseDto:
-      type: object
-      properties:
-        kiosk:
-          description: The kiosk details.
-          nullable: true
-          allOf:
-            - $ref: "#/components/schemas/KioskDetailsDto"
-      required:
-        - kiosk
     CurrencyCode:
       type: string
       enum:
@@ -7319,6 +7082,7 @@ components:
         - MDL
         - BAM
         - AED
+        - USD
     PosBusinessDto:
       type: object
       properties:
@@ -8296,6 +8060,7 @@ components:
             - Bolt
             - MunchiKioskV2
             - Kiosk
+            - WoltStorefront
         quantity:
           type: number
           example: 10
@@ -8869,8 +8634,9 @@ components:
           type: string
           example: Europe/Helsinki
         currency:
-          type: string
           example: EUR
+          allOf:
+            - $ref: "#/components/schemas/CurrencyCode"
         business:
           description: Business data attached
           allOf:
@@ -8932,8 +8698,9 @@ components:
           type: string
           example: Europe/Helsinki
         currency:
-          type: string
           example: EUR
+          allOf:
+            - $ref: "#/components/schemas/CurrencyCode"
         business:
           description: Business data attached
           allOf:
@@ -11059,6 +10826,11 @@ components:
         - name
         - merchantId
         - pin
+    Status:
+      type: string
+      enum:
+        - ACTIVE
+        - INACTIVE
     EmployeeResponseDto:
       type: object
       properties:
@@ -11849,6 +11621,78 @@ components:
       required:
         - businessId
         - provider
+    TerminalConnectionType:
+      type: string
+      enum:
+        - NETWORK
+    LinkedStationDto:
+      type: object
+      properties:
+        id:
+          type: string
+          example: cuid123456
+        name:
+          type: string
+          example: Kitchen Station 1
+        hardwareId:
+          type: string
+          example: station-tablet-001
+        status:
+          example: ACTIVE
+          allOf:
+            - $ref: "#/components/schemas/Status"
+      required:
+        - id
+        - name
+        - hardwareId
+        - status
+    PaymentTerminalDto:
+      type: object
+      properties:
+        id:
+          type: string
+          description: The unique ID of the Payment Terminal.
+          example: terminal-xyz-7890
+        hardwareId:
+          type: string
+          description: The unique ID of the Payment Terminal.
+          example: terminal-xyz-7890
+        label:
+          type: string
+          description: The unique ID of the Payment Terminal.
+          example: terminal-xyz-7890
+          nullable: true
+        connectionType:
+          description: The connection type of the Payment Terminal.
+          example: NETWORK
+          allOf:
+            - $ref: "#/components/schemas/TerminalConnectionType"
+        orderingBusinessId:
+          type: string
+          description: The unique ID of the Payment Terminal.
+          example: terminal-xyz-7890
+        provider:
+          description: The unique ID of the Payment Terminal.
+          example: terminal-xyz-7890
+          allOf:
+            - $ref: "#/components/schemas/PaymentProvider"
+        updatedAt:
+          type: string
+          description: Timestamp when the payment terminal record was last updated.
+        station:
+          description: List of stations connected to this terminal.
+          nullable: true
+          allOf:
+            - $ref: "#/components/schemas/LinkedStationDto"
+      required:
+        - id
+        - hardwareId
+        - label
+        - connectionType
+        - orderingBusinessId
+        - provider
+        - updatedAt
+        - station
     ConnectTerminalDto:
       type: object
       properties:
@@ -13261,30 +13105,72 @@ components:
         - orderId
         - businessId
         - terminalId
-    CreateTransactionPayloadDto:
+    NetsTerminalPaymentOptionsDto:
       type: object
       properties:
-        orderingBusinessId:
-          type: number
-          description: The ordering business ID for this transaction.
+        allowPinBypass:
+          type: boolean
+          description: If true, allows the cardholder to bypass PIN entry.
+        operatorId:
+          type: string
+          description: The operator ID for a terminal with a multimerchant configuration.
         orderId:
           type: string
-          description: The order ID for this transaction.
+          description: A unique ID for the order or receipt.
+        transactionType:
+          description: The type of financial transaction to perform.
+          allOf:
+            - $ref: "#/components/schemas/TransactionType"
+    CreateNetsTerminalPaymentDto:
+      type: object
+      properties:
+        businessId:
+          type: number
+          description: The internal business ID.
+        referenceId:
+          type: string
+          description: The unique reference for the order or cart.
+        displayId:
+          type: string
+          description: The display reference for the order or cart.
         amount:
           type: number
-          description: The amount for this transaction in cents.
-        currencyCode:
-          type: string
-          description: The currency code for this transaction.
-        identityId:
-          type: string
-          description: The identity ID for this transaction.
+          description: Amount in the smallest currency unit (e.g., cents).
+        currency:
+          allOf:
+            - $ref: "#/components/schemas/CurrencyCode"
+        options:
+          $ref: "#/components/schemas/NetsTerminalPaymentOptionsDto"
       required:
-        - orderingBusinessId
-        - orderId
+        - businessId
+        - referenceId
+        - displayId
         - amount
-        - currencyCode
-        - identityId
+        - currency
+    InitiateNetsTerminalPaymentResponseDto:
+      type: object
+      properties:
+        connectCloudRequestId:
+          type: string
+          description: The unique request ID from Nets Connect@Cloud.
+          example: req_1234567890
+      required:
+        - connectCloudRequestId
+    NetsCancelTransactionDto:
+      type: object
+      properties:
+        requestId:
+          type: string
+          description: The unique request identifier for the request.
+          example: abcd1234
+          nullable: true
+        businessId:
+          type: number
+          description: The ID of the business that owns the terminal.
+          example: 1234
+      required:
+        - requestId
+        - businessId
     IntegrationType:
       type: string
       enum:
@@ -15140,6 +15026,11 @@ components:
       enum:
         - kiosk.status.updated
         - kiosk.config.updated
+    PaymentEventType:
+      type: string
+      enum:
+        - payment:status-changed
+        - payment:refund-status-changed
     KioskStatusDto:
       type: object
       properties:
@@ -15154,10 +15045,15 @@ components:
           description: The type of kiosk event currently active.
           allOf:
             - $ref: "#/components/schemas/KioskEventType"
+        payment_event:
+          description: The type of payment event currently active.
+          allOf:
+            - $ref: "#/components/schemas/PaymentEventType"
       required:
         - open
         - event
         - kiosk_event
+        - payment_event
     BusinessBackgroundType:
       type: string
       enum:
@@ -15327,6 +15223,7 @@ components:
             - role
             - shift
             - employee
+            - config
         entityId:
           type: object
         businessId:
@@ -15383,3 +15280,4 @@ components:
         - role
         - shift
         - employee
+        - config

@@ -101,7 +101,8 @@ export const EntityTypeEnum = {
     Option: 'option',
     Role: 'role',
     Shift: 'shift',
-    Employee: 'employee'
+    Employee: 'employee',
+    Config: 'config'
 } as const;
 
 export type EntityTypeEnum = typeof EntityTypeEnum[keyof typeof EntityTypeEnum];
@@ -551,10 +552,10 @@ export interface BusinessConfigResponseDto {
     'timeZone': string;
     /**
      * 
-     * @type {string}
+     * @type {CurrencyCode}
      * @memberof BusinessConfigResponseDto
      */
-    'currency': string;
+    'currency': CurrencyCode;
     /**
      * 
      * @type {BusinessConfigResponseDtoBusiness}
@@ -2192,7 +2193,8 @@ export const ChannelEnum = {
     Foodora: 'Foodora',
     Bolt: 'Bolt',
     MunchiKioskV2: 'MunchiKioskV2',
-    Kiosk: 'Kiosk'
+    Kiosk: 'Kiosk',
+    WoltStorefront: 'WoltStorefront'
 } as const;
 
 export type ChannelEnum = typeof ChannelEnum[keyof typeof ChannelEnum];
@@ -2355,145 +2357,6 @@ export interface ChargeDtoPaymentMethodDetails {
      */
     'affirmDetails'?: PaymentMethodDetailsDtoAffirmDetails;
 }
-/**
- * 
- * @export
- * @interface CheckInResponseDto
- */
-export interface CheckInResponseDto {
-    /**
-     * 
-     * @type {CheckInResponseDtoKiosk}
-     * @memberof CheckInResponseDto
-     */
-    'kiosk': CheckInResponseDtoKiosk;
-    /**
-     * 
-     * @type {CheckInResponseDtoTerminal}
-     * @memberof CheckInResponseDto
-     */
-    'terminal': CheckInResponseDtoTerminal;
-}
-/**
- * Details of the Kiosk that was either fetched or created.
- * @export
- * @interface CheckInResponseDtoKiosk
- */
-export interface CheckInResponseDtoKiosk {
-    /**
-     * The unique ID of the Kiosk.
-     * @type {string}
-     * @memberof CheckInResponseDtoKiosk
-     */
-    'id': string;
-    /**
-     * The unique ID of the Kiosk hardware.
-     * @type {string}
-     * @memberof CheckInResponseDtoKiosk
-     */
-    'hardwareId': string;
-    /**
-     * The unique ID of the payment terminal connected to this kiosk, or null if unassigned.
-     * @type {string}
-     * @memberof CheckInResponseDtoKiosk
-     */
-    'paymentTerminalId': string | null;
-    /**
-     * The display name of the Kiosk.
-     * @type {string}
-     * @memberof CheckInResponseDtoKiosk
-     */
-    'name': string;
-    /**
-     * 
-     * @type {Status}
-     * @memberof CheckInResponseDtoKiosk
-     */
-    'status': Status;
-    /**
-     * The prefix used by the kiosk when creating orders.
-     * @type {string}
-     * @memberof CheckInResponseDtoKiosk
-     */
-    'prefix': string;
-    /**
-     * The business ID the kiosk is registered to.
-     * @type {number}
-     * @memberof CheckInResponseDtoKiosk
-     */
-    'orderingBusinessId': number;
-    /**
-     * Timestamp when the kiosk record was created.
-     * @type {string}
-     * @memberof CheckInResponseDtoKiosk
-     */
-    'createdAt': string;
-    /**
-     * Timestamp when the kiosk record was last updated.
-     * @type {string}
-     * @memberof CheckInResponseDtoKiosk
-     */
-    'updatedAt': string;
-    /**
-     * 
-     * @type {KioskDetailsDtoPaymentTerminal}
-     * @memberof CheckInResponseDtoKiosk
-     */
-    'paymentTerminal': KioskDetailsDtoPaymentTerminal | null;
-}
-
-
-/**
- * Details of the Payment Terminal connected to the Kiosk.
- * @export
- * @interface CheckInResponseDtoTerminal
- */
-export interface CheckInResponseDtoTerminal {
-    /**
-     * The unique ID of the payment terminal.
-     * @type {string}
-     * @memberof CheckInResponseDtoTerminal
-     */
-    'id': string;
-    /**
-     * The hardware ID provided by the payment service provider.
-     * @type {string}
-     * @memberof CheckInResponseDtoTerminal
-     */
-    'hardwareId': string;
-    /**
-     * 
-     * @type {PaymentProvider}
-     * @memberof CheckInResponseDtoTerminal
-     */
-    'provider': PaymentProvider;
-    /**
-     * An optional human-readable label for the terminal.
-     * @type {string}
-     * @memberof CheckInResponseDtoTerminal
-     */
-    'label': string | null;
-    /**
-     * The business ID the terminal is registered to.
-     * @type {number}
-     * @memberof CheckInResponseDtoTerminal
-     */
-    'orderingBusinessId': number;
-    /**
-     * Timestamp when the terminal record was created.
-     * @type {string}
-     * @memberof CheckInResponseDtoTerminal
-     */
-    'createdAt': string;
-    /**
-     * Timestamp when the terminal record was last updated.
-     * @type {string}
-     * @memberof CheckInResponseDtoTerminal
-     */
-    'updatedAt': string;
-}
-
-
 /**
  * 
  * @export
@@ -2992,51 +2855,6 @@ export interface CreateInvoiceCompanyDto {
 /**
  * 
  * @export
- * @interface CreateKioskDto
- */
-export interface CreateKioskDto {
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateKioskDto
-     */
-    'kioskId': string;
-    /**
-     * Ordering business ID
-     * @type {number}
-     * @memberof CreateKioskDto
-     */
-    'businessId': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateKioskDto
-     */
-    'name'?: string;
-    /**
-     * Prefix for kiosk when create order
-     * @type {string}
-     * @memberof CreateKioskDto
-     */
-    'prefix': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CreateKioskDto
-     */
-    'paymentTerminalId': string;
-    /**
-     * 
-     * @type {PaymentProvider}
-     * @memberof CreateKioskDto
-     */
-    'provider': PaymentProvider;
-}
-
-
-/**
- * 
- * @export
  * @interface CreateMerchantDto
  */
 export interface CreateMerchantDto {
@@ -3060,6 +2878,51 @@ export interface CreateNetsRefundResponseDto {
      */
     'referenceId': string;
 }
+/**
+ * 
+ * @export
+ * @interface CreateNetsTerminalPaymentDto
+ */
+export interface CreateNetsTerminalPaymentDto {
+    /**
+     * The internal business ID.
+     * @type {number}
+     * @memberof CreateNetsTerminalPaymentDto
+     */
+    'businessId': number;
+    /**
+     * The unique reference for the order or cart.
+     * @type {string}
+     * @memberof CreateNetsTerminalPaymentDto
+     */
+    'referenceId': string;
+    /**
+     * The display reference for the order or cart.
+     * @type {string}
+     * @memberof CreateNetsTerminalPaymentDto
+     */
+    'displayId': string;
+    /**
+     * Amount in the smallest currency unit (e.g., cents).
+     * @type {number}
+     * @memberof CreateNetsTerminalPaymentDto
+     */
+    'amount': number;
+    /**
+     * 
+     * @type {CurrencyCode}
+     * @memberof CreateNetsTerminalPaymentDto
+     */
+    'currency': CurrencyCode;
+    /**
+     * 
+     * @type {NetsTerminalPaymentOptionsDto}
+     * @memberof CreateNetsTerminalPaymentDto
+     */
+    'options'?: NetsTerminalPaymentOptionsDto;
+}
+
+
 /**
  * 
  * @export
@@ -3536,43 +3399,6 @@ export interface CreateTerminalPaymentDto {
 /**
  * 
  * @export
- * @interface CreateTransactionPayloadDto
- */
-export interface CreateTransactionPayloadDto {
-    /**
-     * The ordering business ID for this transaction.
-     * @type {number}
-     * @memberof CreateTransactionPayloadDto
-     */
-    'orderingBusinessId': number;
-    /**
-     * The order ID for this transaction.
-     * @type {string}
-     * @memberof CreateTransactionPayloadDto
-     */
-    'orderId': string;
-    /**
-     * The amount for this transaction in cents.
-     * @type {number}
-     * @memberof CreateTransactionPayloadDto
-     */
-    'amount': number;
-    /**
-     * The currency code for this transaction.
-     * @type {string}
-     * @memberof CreateTransactionPayloadDto
-     */
-    'currencyCode': string;
-    /**
-     * The identity ID for this transaction.
-     * @type {string}
-     * @memberof CreateTransactionPayloadDto
-     */
-    'identityId': string;
-}
-/**
- * 
- * @export
  * @interface CredentialDto
  */
 export interface CredentialDto {
@@ -3617,7 +3443,8 @@ export const CurrencyCode = {
     Mkd: 'MKD',
     Mdl: 'MDL',
     Bam: 'BAM',
-    Aed: 'AED'
+    Aed: 'AED',
+    Usd: 'USD'
 } as const;
 
 export type CurrencyCode = typeof CurrencyCode[keyof typeof CurrencyCode];
@@ -4663,7 +4490,8 @@ export const EntityType = {
     Option: 'option',
     Role: 'role',
     Shift: 'shift',
-    Employee: 'employee'
+    Employee: 'employee',
+    Config: 'config'
 } as const;
 
 export type EntityType = typeof EntityType[keyof typeof EntityType];
@@ -4970,10 +4798,10 @@ export interface ExternalBusinessConfigDto {
     'timeZone': string;
     /**
      * 
-     * @type {string}
+     * @type {CurrencyCode}
      * @memberof ExternalBusinessConfigDto
      */
-    'currency': string;
+    'currency': CurrencyCode;
     /**
      * 
      * @type {BusinessConfigResponseDtoBusiness}
@@ -5407,6 +5235,19 @@ export interface ImageBackgroundConfig {
 /**
  * 
  * @export
+ * @interface InitiateNetsTerminalPaymentResponseDto
+ */
+export interface InitiateNetsTerminalPaymentResponseDto {
+    /**
+     * The unique request ID from Nets Connect@Cloud.
+     * @type {string}
+     * @memberof InitiateNetsTerminalPaymentResponseDto
+     */
+    'connectCloudRequestId': string;
+}
+/**
+ * 
+ * @export
  * @enum {string}
  */
 
@@ -5643,132 +5484,6 @@ export interface ItemPriceDto {
 /**
  * 
  * @export
- * @interface KioskDetailsDto
- */
-export interface KioskDetailsDto {
-    /**
-     * The unique ID of the Kiosk.
-     * @type {string}
-     * @memberof KioskDetailsDto
-     */
-    'id': string;
-    /**
-     * The unique ID of the Kiosk hardware.
-     * @type {string}
-     * @memberof KioskDetailsDto
-     */
-    'hardwareId': string;
-    /**
-     * The unique ID of the payment terminal connected to this kiosk, or null if unassigned.
-     * @type {string}
-     * @memberof KioskDetailsDto
-     */
-    'paymentTerminalId': string | null;
-    /**
-     * The display name of the Kiosk.
-     * @type {string}
-     * @memberof KioskDetailsDto
-     */
-    'name': string;
-    /**
-     * 
-     * @type {Status}
-     * @memberof KioskDetailsDto
-     */
-    'status': Status;
-    /**
-     * The prefix used by the kiosk when creating orders.
-     * @type {string}
-     * @memberof KioskDetailsDto
-     */
-    'prefix': string;
-    /**
-     * The business ID the kiosk is registered to.
-     * @type {number}
-     * @memberof KioskDetailsDto
-     */
-    'orderingBusinessId': number;
-    /**
-     * Timestamp when the kiosk record was created.
-     * @type {string}
-     * @memberof KioskDetailsDto
-     */
-    'createdAt': string;
-    /**
-     * Timestamp when the kiosk record was last updated.
-     * @type {string}
-     * @memberof KioskDetailsDto
-     */
-    'updatedAt': string;
-    /**
-     * 
-     * @type {KioskDetailsDtoPaymentTerminal}
-     * @memberof KioskDetailsDto
-     */
-    'paymentTerminal': KioskDetailsDtoPaymentTerminal | null;
-}
-
-
-/**
- * The payment terminal connected to this kiosk, or null if unassigned.
- * @export
- * @interface KioskDetailsDtoPaymentTerminal
- */
-export interface KioskDetailsDtoPaymentTerminal {
-    /**
-     * The unique ID of the Payment Terminal.
-     * @type {string}
-     * @memberof KioskDetailsDtoPaymentTerminal
-     */
-    'id': string;
-    /**
-     * The unique ID of the Payment Terminal.
-     * @type {string}
-     * @memberof KioskDetailsDtoPaymentTerminal
-     */
-    'hardwareId': string;
-    /**
-     * The unique ID of the Payment Terminal.
-     * @type {string}
-     * @memberof KioskDetailsDtoPaymentTerminal
-     */
-    'label': string | null;
-    /**
-     * 
-     * @type {TerminalConnectionType}
-     * @memberof KioskDetailsDtoPaymentTerminal
-     */
-    'connectionType': TerminalConnectionType;
-    /**
-     * The unique ID of the Payment Terminal.
-     * @type {string}
-     * @memberof KioskDetailsDtoPaymentTerminal
-     */
-    'orderingBusinessId': string;
-    /**
-     * 
-     * @type {PaymentProvider}
-     * @memberof KioskDetailsDtoPaymentTerminal
-     */
-    'provider': PaymentProvider;
-    /**
-     * Timestamp when the payment terminal record was last updated.
-     * @type {string}
-     * @memberof KioskDetailsDtoPaymentTerminal
-     */
-    'updatedAt': string;
-    /**
-     * List of stations connected to this terminal.
-     * @type {Array<LinkedStationDto>}
-     * @memberof KioskDetailsDtoPaymentTerminal
-     */
-    'stations': Array<LinkedStationDto>;
-}
-
-
-/**
- * 
- * @export
  * @enum {string}
  */
 
@@ -5797,88 +5512,6 @@ export type KioskLayout = typeof KioskLayout[keyof typeof KioskLayout];
 /**
  * 
  * @export
- * @interface KioskResponseDto
- */
-export interface KioskResponseDto {
-    /**
-     * 
-     * @type {KioskResponseDtoKiosk}
-     * @memberof KioskResponseDto
-     */
-    'kiosk': KioskResponseDtoKiosk | null;
-}
-/**
- * The kiosk details.
- * @export
- * @interface KioskResponseDtoKiosk
- */
-export interface KioskResponseDtoKiosk {
-    /**
-     * The unique ID of the Kiosk.
-     * @type {string}
-     * @memberof KioskResponseDtoKiosk
-     */
-    'id': string;
-    /**
-     * The unique ID of the Kiosk hardware.
-     * @type {string}
-     * @memberof KioskResponseDtoKiosk
-     */
-    'hardwareId': string;
-    /**
-     * The unique ID of the payment terminal connected to this kiosk, or null if unassigned.
-     * @type {string}
-     * @memberof KioskResponseDtoKiosk
-     */
-    'paymentTerminalId': string | null;
-    /**
-     * The display name of the Kiosk.
-     * @type {string}
-     * @memberof KioskResponseDtoKiosk
-     */
-    'name': string;
-    /**
-     * 
-     * @type {Status}
-     * @memberof KioskResponseDtoKiosk
-     */
-    'status': Status;
-    /**
-     * The prefix used by the kiosk when creating orders.
-     * @type {string}
-     * @memberof KioskResponseDtoKiosk
-     */
-    'prefix': string;
-    /**
-     * The business ID the kiosk is registered to.
-     * @type {number}
-     * @memberof KioskResponseDtoKiosk
-     */
-    'orderingBusinessId': number;
-    /**
-     * Timestamp when the kiosk record was created.
-     * @type {string}
-     * @memberof KioskResponseDtoKiosk
-     */
-    'createdAt': string;
-    /**
-     * Timestamp when the kiosk record was last updated.
-     * @type {string}
-     * @memberof KioskResponseDtoKiosk
-     */
-    'updatedAt': string;
-    /**
-     * 
-     * @type {KioskDetailsDtoPaymentTerminal}
-     * @memberof KioskResponseDtoKiosk
-     */
-    'paymentTerminal': KioskDetailsDtoPaymentTerminal | null;
-}
-
-
-/**
- * 
- * @export
  * @interface KioskStatusDto
  */
 export interface KioskStatusDto {
@@ -5900,6 +5533,12 @@ export interface KioskStatusDto {
      * @memberof KioskStatusDto
      */
     'kiosk_event': KioskEventType;
+    /**
+     * 
+     * @type {PaymentEventType}
+     * @memberof KioskStatusDto
+     */
+    'payment_event': PaymentEventType;
 }
 
 
@@ -7163,6 +6802,25 @@ export interface NetsCancelPayloadDto {
 /**
  * 
  * @export
+ * @interface NetsCancelTransactionDto
+ */
+export interface NetsCancelTransactionDto {
+    /**
+     * The unique request identifier for the request.
+     * @type {string}
+     * @memberof NetsCancelTransactionDto
+     */
+    'requestId': string | null;
+    /**
+     * The ID of the business that owns the terminal.
+     * @type {number}
+     * @memberof NetsCancelTransactionDto
+     */
+    'businessId': number;
+}
+/**
+ * 
+ * @export
  * @interface NetsPaymentMessageDto
  */
 export interface NetsPaymentMessageDto {
@@ -7295,6 +6953,39 @@ export interface NetsRemoveFailedTransactionPayloadDto {
      */
     'orderingBusinessId': number;
 }
+/**
+ * 
+ * @export
+ * @interface NetsTerminalPaymentOptionsDto
+ */
+export interface NetsTerminalPaymentOptionsDto {
+    /**
+     * If true, allows the cardholder to bypass PIN entry.
+     * @type {boolean}
+     * @memberof NetsTerminalPaymentOptionsDto
+     */
+    'allowPinBypass'?: boolean;
+    /**
+     * The operator ID for a terminal with a multimerchant configuration.
+     * @type {string}
+     * @memberof NetsTerminalPaymentOptionsDto
+     */
+    'operatorId'?: string;
+    /**
+     * A unique ID for the order or receipt.
+     * @type {string}
+     * @memberof NetsTerminalPaymentOptionsDto
+     */
+    'orderId'?: string;
+    /**
+     * 
+     * @type {TransactionType}
+     * @memberof NetsTerminalPaymentOptionsDto
+     */
+    'transactionType'?: TransactionType;
+}
+
+
 /**
  * 
  * @export
@@ -9530,6 +9221,20 @@ export interface PaymentErrorDto {
  * @enum {string}
  */
 
+export const PaymentEventType = {
+    StatusChanged: 'payment:status-changed',
+    RefundStatusChanged: 'payment:refund-status-changed'
+} as const;
+
+export type PaymentEventType = typeof PaymentEventType[keyof typeof PaymentEventType];
+
+
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
 export const PaymentFailureCode = {
     PaymentAborted: 'payment.aborted',
     PaymentCancelledByUser: 'payment.cancelled_by_user',
@@ -10472,11 +10177,44 @@ export interface PaymentTerminalDto {
      */
     'updatedAt': string;
     /**
-     * List of stations connected to this terminal.
-     * @type {Array<LinkedStationDto>}
+     * 
+     * @type {PaymentTerminalDtoStation}
      * @memberof PaymentTerminalDto
      */
-    'stations': Array<LinkedStationDto>;
+    'station': PaymentTerminalDtoStation | null;
+}
+
+
+/**
+ * List of stations connected to this terminal.
+ * @export
+ * @interface PaymentTerminalDtoStation
+ */
+export interface PaymentTerminalDtoStation {
+    /**
+     * 
+     * @type {string}
+     * @memberof PaymentTerminalDtoStation
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PaymentTerminalDtoStation
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PaymentTerminalDtoStation
+     */
+    'hardwareId': string;
+    /**
+     * 
+     * @type {Status}
+     * @memberof PaymentTerminalDtoStation
+     */
+    'status': Status;
 }
 
 
@@ -12978,7 +12716,8 @@ export const ProviderEnum = {
     Foodora: 'Foodora',
     Bolt: 'Bolt',
     MunchiKioskV2: 'MunchiKioskV2',
-    Kiosk: 'Kiosk'
+    Kiosk: 'Kiosk',
+    WoltStorefront: 'WoltStorefront'
 } as const;
 
 export type ProviderEnum = typeof ProviderEnum[keyof typeof ProviderEnum];
@@ -14717,11 +14456,11 @@ export interface StationDetailsDtoPaymentTerminal {
      */
     'updatedAt': string;
     /**
-     * List of stations connected to this terminal.
-     * @type {Array<LinkedStationDto>}
+     * 
+     * @type {PaymentTerminalDtoStation}
      * @memberof StationDetailsDtoPaymentTerminal
      */
-    'stations': Array<LinkedStationDto>;
+    'station': PaymentTerminalDtoStation | null;
 }
 
 
@@ -15239,57 +14978,6 @@ export const TerminalConnectionType = {
 } as const;
 
 export type TerminalConnectionType = typeof TerminalConnectionType[keyof typeof TerminalConnectionType];
-
-
-/**
- * 
- * @export
- * @interface TerminalDetailsDto
- */
-export interface TerminalDetailsDto {
-    /**
-     * The unique ID of the payment terminal.
-     * @type {string}
-     * @memberof TerminalDetailsDto
-     */
-    'id': string;
-    /**
-     * The hardware ID provided by the payment service provider.
-     * @type {string}
-     * @memberof TerminalDetailsDto
-     */
-    'hardwareId': string;
-    /**
-     * 
-     * @type {PaymentProvider}
-     * @memberof TerminalDetailsDto
-     */
-    'provider': PaymentProvider;
-    /**
-     * An optional human-readable label for the terminal.
-     * @type {string}
-     * @memberof TerminalDetailsDto
-     */
-    'label': string | null;
-    /**
-     * The business ID the terminal is registered to.
-     * @type {number}
-     * @memberof TerminalDetailsDto
-     */
-    'orderingBusinessId': number;
-    /**
-     * Timestamp when the terminal record was created.
-     * @type {string}
-     * @memberof TerminalDetailsDto
-     */
-    'createdAt': string;
-    /**
-     * Timestamp when the terminal record was last updated.
-     * @type {string}
-     * @memberof TerminalDetailsDto
-     */
-    'updatedAt': string;
-}
 
 
 /**
@@ -18650,6 +18338,48 @@ export const BusinessApiAxiosParamCreator = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        getBusinessChannelConfig: async (businessId: string, lang?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'businessId' is not null or undefined
+            assertParamExists('getBusinessChannelConfig', 'businessId', businessId)
+            const localVarPath = `/api/v1/business/{businessId}/channel-configs`
+                .replace(`{${"businessId"}}`, encodeURIComponent(String(businessId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (lang !== undefined) {
+                localVarQueryParameter['lang'] = lang;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} businessId Id of the business
+         * @param {string} [lang] Language code (default is \&quot;en\&quot;)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         getBusinessConfig: async (businessId: string, lang?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'businessId' is not null or undefined
             assertParamExists('getBusinessConfig', 'businessId', businessId)
@@ -19366,6 +19096,17 @@ export const BusinessApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        async getBusinessChannelConfig(businessId: string, lang?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BusinessConfigResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getBusinessChannelConfig(businessId, lang, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {string} businessId Id of the business
+         * @param {string} [lang] Language code (default is \&quot;en\&quot;)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         async getBusinessConfig(businessId: string, lang?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BusinessConfigResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getBusinessConfig(businessId, lang, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -19596,6 +19337,16 @@ export const BusinessApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        getBusinessChannelConfig(businessId: string, lang?: string, options?: any): AxiosPromise<BusinessConfigResponseDto> {
+            return localVarFp.getBusinessChannelConfig(businessId, lang, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {string} businessId Id of the business
+         * @param {string} [lang] Language code (default is \&quot;en\&quot;)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         getBusinessConfig(businessId: string, lang?: string, options?: any): AxiosPromise<BusinessConfigResponseDto> {
             return localVarFp.getBusinessConfig(businessId, lang, options).then((request) => request(axios, basePath));
         },
@@ -19801,6 +19552,16 @@ export interface BusinessApiInterface {
      * @memberof BusinessApiInterface
      */
     getBusinessCategoriesByMenuIdV2(businessId: string, businessCategoryBodyDto: BusinessCategoryBodyDto, options?: AxiosRequestConfig): AxiosPromise<Array<ExtendedCategoryDto>>;
+
+    /**
+     * 
+     * @param {string} businessId Id of the business
+     * @param {string} [lang] Language code (default is \&quot;en\&quot;)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BusinessApiInterface
+     */
+    getBusinessChannelConfig(businessId: string, lang?: string, options?: AxiosRequestConfig): AxiosPromise<BusinessConfigResponseDto>;
 
     /**
      * 
@@ -20021,6 +19782,18 @@ export class BusinessApi extends BaseAPI implements BusinessApiInterface {
      */
     public getBusinessCategoriesByMenuIdV2(businessId: string, businessCategoryBodyDto: BusinessCategoryBodyDto, options?: AxiosRequestConfig) {
         return BusinessApiFp(this.configuration).getBusinessCategoriesByMenuIdV2(businessId, businessCategoryBodyDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {string} businessId Id of the business
+     * @param {string} [lang] Language code (default is \&quot;en\&quot;)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BusinessApi
+     */
+    public getBusinessChannelConfig(businessId: string, lang?: string, options?: AxiosRequestConfig) {
+        return BusinessApiFp(this.configuration).getBusinessChannelConfig(businessId, lang, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -23031,74 +22804,6 @@ export const KiosksApiAxiosParamCreator = function (configuration?: Configuratio
     return {
         /**
          * 
-         * @param {CreateKioskDto} createKioskDto Required data for the Kiosk check-in process, including Kiosk ID, Business ID, and the target Payment Terminal ID.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        checkIn: async (createKioskDto: CreateKioskDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'createKioskDto' is not null or undefined
-            assertParamExists('checkIn', 'createKioskDto', createKioskDto)
-            const localVarPath = `/api/v1/kiosk/checkin`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createKioskDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getKiosk: async (kioskId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'kioskId' is not null or undefined
-            assertParamExists('getKiosk', 'kioskId', kioskId)
-            const localVarPath = `/api/v1/kiosk/{kioskId}`
-                .replace(`{${"kioskId"}}`, encodeURIComponent(String(kioskId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @param {string} orderId The unique ID of the order to validate against the system.
          * @param {string} businessId The unique ID of the business to validate against the system.
          * @param {*} [options] Override http request option.
@@ -23122,42 +22827,6 @@ export const KiosksApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        removeKiosk: async (kioskId: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'kioskId' is not null or undefined
-            assertParamExists('removeKiosk', 'kioskId', kioskId)
-            const localVarPath = `/api/v1/kiosk/deactivate`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (kioskId !== undefined) {
-                localVarQueryParameter['kioskId'] = kioskId;
-            }
 
 
     
@@ -23225,26 +22894,6 @@ export const KiosksApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @param {CreateKioskDto} createKioskDto Required data for the Kiosk check-in process, including Kiosk ID, Business ID, and the target Payment Terminal ID.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async checkIn(createKioskDto: CreateKioskDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CheckInResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.checkIn(createKioskDto, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getKiosk(kioskId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<KioskResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getKiosk(kioskId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
          * @param {string} orderId The unique ID of the order to validate against the system.
          * @param {string} businessId The unique ID of the business to validate against the system.
          * @param {*} [options] Override http request option.
@@ -23252,16 +22901,6 @@ export const KiosksApiFp = function(configuration?: Configuration) {
          */
         async getOrderStatus(orderId: string, businessId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaymentStatusDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getOrderStatus(orderId, businessId, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async removeKiosk(kioskId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.removeKiosk(kioskId, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -23287,24 +22926,6 @@ export const KiosksApiFactory = function (configuration?: Configuration, basePat
     return {
         /**
          * 
-         * @param {CreateKioskDto} createKioskDto Required data for the Kiosk check-in process, including Kiosk ID, Business ID, and the target Payment Terminal ID.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        checkIn(createKioskDto: CreateKioskDto, options?: any): AxiosPromise<CheckInResponseDto> {
-            return localVarFp.checkIn(createKioskDto, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getKiosk(kioskId: string, options?: any): AxiosPromise<KioskResponseDto> {
-            return localVarFp.getKiosk(kioskId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @param {string} orderId The unique ID of the order to validate against the system.
          * @param {string} businessId The unique ID of the business to validate against the system.
          * @param {*} [options] Override http request option.
@@ -23312,15 +22933,6 @@ export const KiosksApiFactory = function (configuration?: Configuration, basePat
          */
         getOrderStatus(orderId: string, businessId: string, options?: any): AxiosPromise<PaymentStatusDto> {
             return localVarFp.getOrderStatus(orderId, businessId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        removeKiosk(kioskId: string, options?: any): AxiosPromise<void> {
-            return localVarFp.removeKiosk(kioskId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -23343,24 +22955,6 @@ export const KiosksApiFactory = function (configuration?: Configuration, basePat
 export interface KiosksApiInterface {
     /**
      * 
-     * @param {CreateKioskDto} createKioskDto Required data for the Kiosk check-in process, including Kiosk ID, Business ID, and the target Payment Terminal ID.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof KiosksApiInterface
-     */
-    checkIn(createKioskDto: CreateKioskDto, options?: AxiosRequestConfig): AxiosPromise<CheckInResponseDto>;
-
-    /**
-     * 
-     * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof KiosksApiInterface
-     */
-    getKiosk(kioskId: string, options?: AxiosRequestConfig): AxiosPromise<KioskResponseDto>;
-
-    /**
-     * 
      * @param {string} orderId The unique ID of the order to validate against the system.
      * @param {string} businessId The unique ID of the business to validate against the system.
      * @param {*} [options] Override http request option.
@@ -23368,15 +22962,6 @@ export interface KiosksApiInterface {
      * @memberof KiosksApiInterface
      */
     getOrderStatus(orderId: string, businessId: string, options?: AxiosRequestConfig): AxiosPromise<PaymentStatusDto>;
-
-    /**
-     * 
-     * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof KiosksApiInterface
-     */
-    removeKiosk(kioskId: string, options?: AxiosRequestConfig): AxiosPromise<void>;
 
     /**
      * 
@@ -23399,28 +22984,6 @@ export interface KiosksApiInterface {
 export class KiosksApi extends BaseAPI implements KiosksApiInterface {
     /**
      * 
-     * @param {CreateKioskDto} createKioskDto Required data for the Kiosk check-in process, including Kiosk ID, Business ID, and the target Payment Terminal ID.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof KiosksApi
-     */
-    public checkIn(createKioskDto: CreateKioskDto, options?: AxiosRequestConfig) {
-        return KiosksApiFp(this.configuration).checkIn(createKioskDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof KiosksApi
-     */
-    public getKiosk(kioskId: string, options?: AxiosRequestConfig) {
-        return KiosksApiFp(this.configuration).getKiosk(kioskId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @param {string} orderId The unique ID of the order to validate against the system.
      * @param {string} businessId The unique ID of the business to validate against the system.
      * @param {*} [options] Override http request option.
@@ -23429,17 +22992,6 @@ export class KiosksApi extends BaseAPI implements KiosksApiInterface {
      */
     public getOrderStatus(orderId: string, businessId: string, options?: AxiosRequestConfig) {
         return KiosksApiFp(this.configuration).getOrderStatus(orderId, businessId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} kioskId The unique ID of the kiosk device to validate against the system.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof KiosksApi
-     */
-    public removeKiosk(kioskId: string, options?: AxiosRequestConfig) {
-        return KiosksApiFp(this.configuration).removeKiosk(kioskId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -25282,11 +24834,11 @@ export const OrdersApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft'} status Order status filter
          * @param {string} businessIds Comma-separated list of business IDs
          * @param {string} [posBusinessId] Id of the pos
-         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk'} [extraProvider] Extra attributes to get POS orders
+         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getOrdersV2: async (status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getOrdersV2: async (status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'status' is not null or undefined
             assertParamExists('getOrdersV2', 'status', status)
             // verify required parameter 'businessIds' is not null or undefined
@@ -25335,11 +24887,11 @@ export const OrdersApiAxiosParamCreator = function (configuration?: Configuratio
          * @param {number} [limit] Number of items per page (max 100)
          * @param {number} [page] Page number (starts from 1)
          * @param {string} [posBusinessId] Id of the pos
-         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk'} [extraProvider] Extra attributes to get POS orders
+         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getOrdersV3: async (status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getOrdersV3: async (status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'status' is not null or undefined
             assertParamExists('getOrdersV3', 'status', status)
             // verify required parameter 'businessIds' is not null or undefined
@@ -25797,11 +25349,11 @@ export const OrdersApiFp = function(configuration?: Configuration) {
          * @param {'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft'} status Order status filter
          * @param {string} businessIds Comma-separated list of business IDs
          * @param {string} [posBusinessId] Id of the pos
-         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk'} [extraProvider] Extra attributes to get POS orders
+         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<OrderResponseDto>>> {
+        async getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<OrderResponseDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getOrdersV2(status, businessIds, posBusinessId, extraProvider, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -25813,11 +25365,11 @@ export const OrdersApiFp = function(configuration?: Configuration) {
          * @param {number} [limit] Number of items per page (max 100)
          * @param {number} [page] Page number (starts from 1)
          * @param {string} [posBusinessId] Id of the pos
-         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk'} [extraProvider] Extra attributes to get POS orders
+         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOrdersV3(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedOrderResponseDto>> {
+        async getOrdersV3(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedOrderResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getOrdersV3(status, businessIds, limit, page, posBusinessId, extraProvider, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -25998,11 +25550,11 @@ export const OrdersApiFactory = function (configuration?: Configuration, basePat
          * @param {'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft'} status Order status filter
          * @param {string} businessIds Comma-separated list of business IDs
          * @param {string} [posBusinessId] Id of the pos
-         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk'} [extraProvider] Extra attributes to get POS orders
+         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk', options?: any): AxiosPromise<Array<OrderResponseDto>> {
+        getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: any): AxiosPromise<Array<OrderResponseDto>> {
             return localVarFp.getOrdersV2(status, businessIds, posBusinessId, extraProvider, options).then((request) => request(axios, basePath));
         },
         /**
@@ -26013,11 +25565,11 @@ export const OrdersApiFactory = function (configuration?: Configuration, basePat
          * @param {number} [limit] Number of items per page (max 100)
          * @param {number} [page] Page number (starts from 1)
          * @param {string} [posBusinessId] Id of the pos
-         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk'} [extraProvider] Extra attributes to get POS orders
+         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getOrdersV3(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk', options?: any): AxiosPromise<PaginatedOrderResponseDto> {
+        getOrdersV3(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: any): AxiosPromise<PaginatedOrderResponseDto> {
             return localVarFp.getOrdersV3(status, businessIds, limit, page, posBusinessId, extraProvider, options).then((request) => request(axios, basePath));
         },
         /**
@@ -26187,12 +25739,12 @@ export interface OrdersApiInterface {
      * @param {'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft'} status Order status filter
      * @param {string} businessIds Comma-separated list of business IDs
      * @param {string} [posBusinessId] Id of the pos
-     * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk'} [extraProvider] Extra attributes to get POS orders
+     * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof OrdersApiInterface
      */
-    getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk', options?: AxiosRequestConfig): AxiosPromise<Array<OrderResponseDto>>;
+    getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig): AxiosPromise<Array<OrderResponseDto>>;
 
     /**
      * Returns paginated orders filtered by status and sorted by status-specific logic. Database and POS orders are combined and sorted before pagination is applied.
@@ -26202,12 +25754,12 @@ export interface OrdersApiInterface {
      * @param {number} [limit] Number of items per page (max 100)
      * @param {number} [page] Page number (starts from 1)
      * @param {string} [posBusinessId] Id of the pos
-     * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk'} [extraProvider] Extra attributes to get POS orders
+     * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof OrdersApiInterface
      */
-    getOrdersV3(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk', options?: AxiosRequestConfig): AxiosPromise<PaginatedOrderResponseDto>;
+    getOrdersV3(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig): AxiosPromise<PaginatedOrderResponseDto>;
 
     /**
      * 
@@ -26388,12 +25940,12 @@ export class OrdersApi extends BaseAPI implements OrdersApiInterface {
      * @param {'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft'} status Order status filter
      * @param {string} businessIds Comma-separated list of business IDs
      * @param {string} [posBusinessId] Id of the pos
-     * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk'} [extraProvider] Extra attributes to get POS orders
+     * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof OrdersApi
      */
-    public getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk', options?: AxiosRequestConfig) {
+    public getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig) {
         return OrdersApiFp(this.configuration).getOrdersV2(status, businessIds, posBusinessId, extraProvider, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -26405,12 +25957,12 @@ export class OrdersApi extends BaseAPI implements OrdersApiInterface {
      * @param {number} [limit] Number of items per page (max 100)
      * @param {number} [page] Page number (starts from 1)
      * @param {string} [posBusinessId] Id of the pos
-     * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk'} [extraProvider] Extra attributes to get POS orders
+     * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof OrdersApi
      */
-    public getOrdersV3(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk', options?: AxiosRequestConfig) {
+    public getOrdersV3(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig) {
         return OrdersApiFp(this.configuration).getOrdersV3(status, businessIds, limit, page, posBusinessId, extraProvider, options).then((request) => request(this.axios, this.basePath));
     }
 
@@ -27007,6 +26559,42 @@ export class PasscodeApi extends BaseAPI implements PasscodeApiInterface {
 export const PaymentApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
+         * Cancel a terminal transaction
+         * @summary Cancel a terminal transaction
+         * @param {NetsCancelTransactionDto} netsCancelTransactionDto Pos order refund payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        cancelNetsTerminalTransaction: async (netsCancelTransactionDto: NetsCancelTransactionDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'netsCancelTransactionDto' is not null or undefined
+            assertParamExists('cancelNetsTerminalTransaction', 'netsCancelTransactionDto', netsCancelTransactionDto)
+            const localVarPath = `/api/v3/payment/nets/cancel`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(netsCancelTransactionDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Initiates a request to cancel a Nets payment on a specified terminal.
          * @summary Request Nets payment cancellation
          * @param {NetsCancelPayloadDto} netsCancelPayloadDto Payload containing the terminal ID for payment cancellation.
@@ -27440,42 +27028,6 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
             };
         },
         /**
-         * Creates a new Viva transaction.
-         * @summary Create Viva payment
-         * @param {CreateTransactionPayloadDto} createTransactionPayloadDto Viva payment creation payload
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createVivaTransactionV3: async (createTransactionPayloadDto: CreateTransactionPayloadDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'createTransactionPayloadDto' is not null or undefined
-            assertParamExists('createVivaTransactionV3', 'createTransactionPayloadDto', createTransactionPayloadDto)
-            const localVarPath = `/api/v3/payment/viva/create`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createTransactionPayloadDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
          * Disconnect Nets terminal
          * @summary Disconnect nets device
          * @param {ConnectTerminalPayloadDto} connectTerminalPayloadDto Payload to specify connect criteria for Nets device.
@@ -27686,6 +27238,42 @@ export const PaymentApiAxiosParamCreator = function (configuration?: Configurati
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Initiate a terminal transaction
+         * @summary Initiate a terminal transaction
+         * @param {CreateNetsTerminalPaymentDto} createNetsTerminalPaymentDto Pos order refund payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        initiateNetsTerminalTransaction: async (createNetsTerminalPaymentDto: CreateNetsTerminalPaymentDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'createNetsTerminalPaymentDto' is not null or undefined
+            assertParamExists('initiateNetsTerminalTransaction', 'createNetsTerminalPaymentDto', createNetsTerminalPaymentDto)
+            const localVarPath = `/api/v3/payment/nets/terminal/initiate`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(createNetsTerminalPaymentDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -28135,6 +27723,17 @@ export const PaymentApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = PaymentApiAxiosParamCreator(configuration)
     return {
         /**
+         * Cancel a terminal transaction
+         * @summary Cancel a terminal transaction
+         * @param {NetsCancelTransactionDto} netsCancelTransactionDto Pos order refund payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async cancelNetsTerminalTransaction(netsCancelTransactionDto: NetsCancelTransactionDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.cancelNetsTerminalTransaction(netsCancelTransactionDto, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
          * Initiates a request to cancel a Nets payment on a specified terminal.
          * @summary Request Nets payment cancellation
          * @param {NetsCancelPayloadDto} netsCancelPayloadDto Payload containing the terminal ID for payment cancellation.
@@ -28268,17 +27867,6 @@ export const PaymentApiFp = function(configuration?: Configuration) {
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
-         * Creates a new Viva transaction.
-         * @summary Create Viva payment
-         * @param {CreateTransactionPayloadDto} createTransactionPayloadDto Viva payment creation payload
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async createVivaTransactionV3(createTransactionPayloadDto: CreateTransactionPayloadDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VivaPaymentIntent>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createVivaTransactionV3(createTransactionPayloadDto, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
          * Disconnect Nets terminal
          * @summary Disconnect nets device
          * @param {ConnectTerminalPayloadDto} connectTerminalPayloadDto Payload to specify connect criteria for Nets device.
@@ -28342,6 +27930,17 @@ export const PaymentApiFp = function(configuration?: Configuration) {
          */
         async getToken(businessId: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StripeConnectionTokenDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getToken(businessId, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * Initiate a terminal transaction
+         * @summary Initiate a terminal transaction
+         * @param {CreateNetsTerminalPaymentDto} createNetsTerminalPaymentDto Pos order refund payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async initiateNetsTerminalTransaction(createNetsTerminalPaymentDto: CreateNetsTerminalPaymentDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<InitiateNetsTerminalPaymentResponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.initiateNetsTerminalTransaction(createNetsTerminalPaymentDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -28487,6 +28086,16 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
     const localVarFp = PaymentApiFp(configuration)
     return {
         /**
+         * Cancel a terminal transaction
+         * @summary Cancel a terminal transaction
+         * @param {NetsCancelTransactionDto} netsCancelTransactionDto Pos order refund payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        cancelNetsTerminalTransaction(netsCancelTransactionDto: NetsCancelTransactionDto, options?: any): AxiosPromise<void> {
+            return localVarFp.cancelNetsTerminalTransaction(netsCancelTransactionDto, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Initiates a request to cancel a Nets payment on a specified terminal.
          * @summary Request Nets payment cancellation
          * @param {NetsCancelPayloadDto} netsCancelPayloadDto Payload containing the terminal ID for payment cancellation.
@@ -28608,16 +28217,6 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.createVivaPaymentV3(vivaCreatePaymentDto, options).then((request) => request(axios, basePath));
         },
         /**
-         * Creates a new Viva transaction.
-         * @summary Create Viva payment
-         * @param {CreateTransactionPayloadDto} createTransactionPayloadDto Viva payment creation payload
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createVivaTransactionV3(createTransactionPayloadDto: CreateTransactionPayloadDto, options?: any): AxiosPromise<VivaPaymentIntent> {
-            return localVarFp.createVivaTransactionV3(createTransactionPayloadDto, options).then((request) => request(axios, basePath));
-        },
-        /**
          * Disconnect Nets terminal
          * @summary Disconnect nets device
          * @param {ConnectTerminalPayloadDto} connectTerminalPayloadDto Payload to specify connect criteria for Nets device.
@@ -28676,6 +28275,16 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
          */
         getToken(businessId: string, options?: any): AxiosPromise<StripeConnectionTokenDto> {
             return localVarFp.getToken(businessId, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Initiate a terminal transaction
+         * @summary Initiate a terminal transaction
+         * @param {CreateNetsTerminalPaymentDto} createNetsTerminalPaymentDto Pos order refund payload
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        initiateNetsTerminalTransaction(createNetsTerminalPaymentDto: CreateNetsTerminalPaymentDto, options?: any): AxiosPromise<InitiateNetsTerminalPaymentResponseDto> {
+            return localVarFp.initiateNetsTerminalTransaction(createNetsTerminalPaymentDto, options).then((request) => request(axios, basePath));
         },
         /**
          * Initiate a terminal transaction
@@ -28807,6 +28416,16 @@ export const PaymentApiFactory = function (configuration?: Configuration, basePa
  */
 export interface PaymentApiInterface {
     /**
+     * Cancel a terminal transaction
+     * @summary Cancel a terminal transaction
+     * @param {NetsCancelTransactionDto} netsCancelTransactionDto Pos order refund payload
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PaymentApiInterface
+     */
+    cancelNetsTerminalTransaction(netsCancelTransactionDto: NetsCancelTransactionDto, options?: AxiosRequestConfig): AxiosPromise<void>;
+
+    /**
      * Initiates a request to cancel a Nets payment on a specified terminal.
      * @summary Request Nets payment cancellation
      * @param {NetsCancelPayloadDto} netsCancelPayloadDto Payload containing the terminal ID for payment cancellation.
@@ -28928,16 +28547,6 @@ export interface PaymentApiInterface {
     createVivaPaymentV3(vivaCreatePaymentDto: VivaCreatePaymentDto, options?: AxiosRequestConfig): AxiosPromise<VivaPaymentIntent>;
 
     /**
-     * Creates a new Viva transaction.
-     * @summary Create Viva payment
-     * @param {CreateTransactionPayloadDto} createTransactionPayloadDto Viva payment creation payload
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PaymentApiInterface
-     */
-    createVivaTransactionV3(createTransactionPayloadDto: CreateTransactionPayloadDto, options?: AxiosRequestConfig): AxiosPromise<VivaPaymentIntent>;
-
-    /**
      * Disconnect Nets terminal
      * @summary Disconnect nets device
      * @param {ConnectTerminalPayloadDto} connectTerminalPayloadDto Payload to specify connect criteria for Nets device.
@@ -28996,6 +28605,16 @@ export interface PaymentApiInterface {
      * @memberof PaymentApiInterface
      */
     getToken(businessId: string, options?: AxiosRequestConfig): AxiosPromise<StripeConnectionTokenDto>;
+
+    /**
+     * Initiate a terminal transaction
+     * @summary Initiate a terminal transaction
+     * @param {CreateNetsTerminalPaymentDto} createNetsTerminalPaymentDto Pos order refund payload
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PaymentApiInterface
+     */
+    initiateNetsTerminalTransaction(createNetsTerminalPaymentDto: CreateNetsTerminalPaymentDto, options?: AxiosRequestConfig): AxiosPromise<InitiateNetsTerminalPaymentResponseDto>;
 
     /**
      * Initiate a terminal transaction
@@ -29126,6 +28745,18 @@ export interface PaymentApiInterface {
  * @extends {BaseAPI}
  */
 export class PaymentApi extends BaseAPI implements PaymentApiInterface {
+    /**
+     * Cancel a terminal transaction
+     * @summary Cancel a terminal transaction
+     * @param {NetsCancelTransactionDto} netsCancelTransactionDto Pos order refund payload
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PaymentApi
+     */
+    public cancelNetsTerminalTransaction(netsCancelTransactionDto: NetsCancelTransactionDto, options?: AxiosRequestConfig) {
+        return PaymentApiFp(this.configuration).cancelNetsTerminalTransaction(netsCancelTransactionDto, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * Initiates a request to cancel a Nets payment on a specified terminal.
      * @summary Request Nets payment cancellation
@@ -29272,18 +28903,6 @@ export class PaymentApi extends BaseAPI implements PaymentApiInterface {
     }
 
     /**
-     * Creates a new Viva transaction.
-     * @summary Create Viva payment
-     * @param {CreateTransactionPayloadDto} createTransactionPayloadDto Viva payment creation payload
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof PaymentApi
-     */
-    public createVivaTransactionV3(createTransactionPayloadDto: CreateTransactionPayloadDto, options?: AxiosRequestConfig) {
-        return PaymentApiFp(this.configuration).createVivaTransactionV3(createTransactionPayloadDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
      * Disconnect Nets terminal
      * @summary Disconnect nets device
      * @param {ConnectTerminalPayloadDto} connectTerminalPayloadDto Payload to specify connect criteria for Nets device.
@@ -29353,6 +28972,18 @@ export class PaymentApi extends BaseAPI implements PaymentApiInterface {
      */
     public getToken(businessId: string, options?: AxiosRequestConfig) {
         return PaymentApiFp(this.configuration).getToken(businessId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Initiate a terminal transaction
+     * @summary Initiate a terminal transaction
+     * @param {CreateNetsTerminalPaymentDto} createNetsTerminalPaymentDto Pos order refund payload
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof PaymentApi
+     */
+    public initiateNetsTerminalTransaction(createNetsTerminalPaymentDto: CreateNetsTerminalPaymentDto, options?: AxiosRequestConfig) {
+        return PaymentApiFp(this.configuration).initiateNetsTerminalTransaction(createNetsTerminalPaymentDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -33718,6 +33349,35 @@ export const WebhookApiAxiosParamCreator = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        handleNetsEventsV2: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/api/webhook/v2/nets`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         handleNetsRefundEvents: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/api/webhook/nets/refund`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -34083,6 +33743,15 @@ export const WebhookApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        async handleNetsEventsV2(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.handleNetsEventsV2(options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         async handleNetsRefundEvents(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.handleNetsRefundEvents(options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
@@ -34230,6 +33899,14 @@ export const WebhookApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        handleNetsEventsV2(options?: any): AxiosPromise<void> {
+            return localVarFp.handleNetsEventsV2(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         handleNetsRefundEvents(options?: any): AxiosPromise<void> {
             return localVarFp.handleNetsRefundEvents(options).then((request) => request(axios, basePath));
         },
@@ -34360,6 +34037,14 @@ export interface WebhookApiInterface {
      * @memberof WebhookApiInterface
      */
     handleNetsEvents(options?: AxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebhookApiInterface
+     */
+    handleNetsEventsV2(options?: AxiosRequestConfig): AxiosPromise<void>;
 
     /**
      * 
@@ -34505,6 +34190,16 @@ export class WebhookApi extends BaseAPI implements WebhookApiInterface {
      */
     public handleNetsEvents(options?: AxiosRequestConfig) {
         return WebhookApiFp(this.configuration).handleNetsEvents(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof WebhookApi
+     */
+    public handleNetsEventsV2(options?: AxiosRequestConfig) {
+        return WebhookApiFp(this.configuration).handleNetsEventsV2(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

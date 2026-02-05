@@ -1,9 +1,9 @@
-import { PaymentProvider } from "@munchi/core";
+import { PaymentFailureCode, PaymentProvider } from "@munchi/core";
 import type { AxiosInstance } from "axios";
 import { version } from "../package.json";
 import { PaymentErrorCode, PaymentSDKError } from "./error";
 import type { IPaymentStrategy } from "./strategies/IPaymentStrategy";
-import { MockStrategy } from "./strategies/MockStrategy";
+import { NetsStrategy } from "./strategies/NetsStrategy";
 import { VivaStrategy } from "./strategies/VivaStrategy";
 import {
   type IMessagingAdapter,
@@ -75,10 +75,30 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     return {
       success: false,
       status: SdkPaymentStatus.ERROR,
-      errorCode: code,
+      errorCode: this.normalizeErrorCode(code),
       errorMessage: message,
       orderId: orderRef,
     };
+  }
+
+  private normalizeErrorCode(code?: string): string {
+    if (!code) return PaymentFailureCode.SystemUnknown;
+    if (code.includes(".")) return code;
+
+    const map: Record<string, string> = {
+      [PaymentErrorCode.CANCELLED]: PaymentFailureCode.PaymentCancelledByUser,
+      [PaymentErrorCode.DECLINED]: PaymentFailureCode.PaymentDeclined,
+      [PaymentErrorCode.TERMINAL_BUSY]: PaymentFailureCode.TerminalBusy,
+      [PaymentErrorCode.TERMINAL_OFFLINE]: PaymentFailureCode.TerminalOffline,
+      [PaymentErrorCode.TIMEOUT]: PaymentFailureCode.TerminalTimeout,
+      [PaymentErrorCode.NETWORK_ERROR]: PaymentFailureCode.SystemProviderError,
+      [PaymentErrorCode.STRATEGY_ERROR]: PaymentFailureCode.SystemProviderError,
+      [PaymentErrorCode.MISSING_CONFIG]: PaymentFailureCode.SystemUnknown,
+      [PaymentErrorCode.INVALID_AMOUNT]: PaymentFailureCode.SystemUnknown,
+      [PaymentErrorCode.UNKNOWN]: PaymentFailureCode.SystemUnknown,
+    };
+
+    return map[code] ?? PaymentFailureCode.SystemUnknown;
   }
 
   public subscribe = (listener: StateListener): (() => void) => {
@@ -147,8 +167,8 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
 
     const isSuccess = state === PaymentInteractionState.SUCCESS;
     const delay = isSuccess
-      ? this.autoResetOptions.successDelayMs ?? 5000
-      : this.autoResetOptions.failureDelayMs ?? 5000;
+      ? (this.autoResetOptions.successDelayMs ?? 5000)
+      : (this.autoResetOptions.failureDelayMs ?? 5000);
 
     this.logger?.info(`Scheduling auto-reset to IDLE in ${delay}ms`);
 
@@ -163,13 +183,12 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
   private resolveStrategy(config: PaymentTerminalConfig): IPaymentStrategy {
     switch (config.provider) {
       case PaymentProvider.Nets:
-        return new MockStrategy();
+        return new NetsStrategy(this.axios, this.messaging, config);
+
       default:
         return new VivaStrategy(this.axios, this.messaging, config);
     }
   }
-
-
 
   public initiateTransaction = async (
     params: SdkPaymentRequest,
@@ -192,6 +211,8 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
 
     const startTime = Date.now();
     this._cancellationIntent = false;
+    // Prevent stale session IDs from previous transactions affecting new flows.
+    this._currentSessionId = undefined;
 
     this.transitionTo(PaymentInteractionState.IDLE);
 
@@ -204,7 +225,10 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     }
 
     try {
-      const internalStateCallback = (state: PaymentInteractionState, detail?: { sessionId?: string }) => {
+      const internalStateCallback = (
+        state: PaymentInteractionState,
+        detail?: { sessionId?: string },
+      ) => {
         if (detail?.sessionId) {
           this._currentSessionId = detail.sessionId;
         }
@@ -259,25 +283,30 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
 
       return await this.handleTransactionError(params, error, callbacks);
     }
-  }
+  };
 
   private async handleTransactionError(
     params: SdkPaymentRequest,
     originalError: unknown,
     callbacks: TransactionOptions = {},
   ): Promise<PaymentResult> {
-    this.transitionTo(PaymentInteractionState.VERIFYING);
-    this.safeFireCallback(() =>
-      callbacks.onVerifying?.({
-        orderRef: params.orderRef,
-        refPaymentId: this._currentSessionId
-      }),
-    );
+    if (!this._cancellationIntent) {
+      this.transitionTo(PaymentInteractionState.VERIFYING);
+      this.safeFireCallback(() =>
+        callbacks.onVerifying?.({
+          orderRef: params.orderRef,
+          refPaymentId: this._currentSessionId,
+        }),
+      );
+    }
 
     if (this._cancellationIntent) {
       try {
         if (this._currentSessionId) {
-          const finalStatus = await this.strategy.verifyFinalStatus(params, this._currentSessionId);
+          const finalStatus = await this.strategy.verifyFinalStatus(
+            params,
+            this._currentSessionId,
+          );
           if (finalStatus.success) {
             this.transitionTo(PaymentInteractionState.SUCCESS);
             this.safeFireCallback(() => callbacks.onSuccess?.(finalStatus));
@@ -297,15 +326,17 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
       this.safeFireCallback(() =>
         callbacks.onCancelled?.({
           orderRef: params.orderRef,
-          refPaymentId: this._currentSessionId
+          refPaymentId: this._currentSessionId,
         }),
       );
       return {
         success: false,
         status: SdkPaymentStatus.CANCELLED,
-        errorCode: PaymentErrorCode.CANCELLED,
+        errorCode: this.normalizeErrorCode(PaymentErrorCode.CANCELLED),
         orderId: params.orderRef,
-        ...(this._currentSessionId ? { transactionId: this._currentSessionId } : {}),
+        ...(this._currentSessionId
+          ? { transactionId: this._currentSessionId }
+          : {}),
       };
     }
 
@@ -315,28 +346,43 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
 
     if (this._currentSessionId) {
       try {
-        const finalStatus = await this.strategy.verifyFinalStatus(params, this._currentSessionId);
+        const finalStatus = await this.strategy.verifyFinalStatus(
+          params,
+          this._currentSessionId,
+        );
         errorResult = finalStatus;
       } catch (verifyErr) {
-        this.logger?.warn("Failed to get detailed error from verifyFinalStatus", { verifyErr });
-        errorResult = this.buildErrorResultFromException(params.orderRef, originalError);
+        this.logger?.warn(
+          "Failed to get detailed error from verifyFinalStatus",
+          { verifyErr },
+        );
+        errorResult = this.buildErrorResultFromException(
+          params.orderRef,
+          originalError,
+        );
       }
     } else {
-      errorResult = this.buildErrorResultFromException(params.orderRef, originalError);
+      errorResult = this.buildErrorResultFromException(
+        params.orderRef,
+        originalError,
+      );
     }
 
     this.safeFireCallback(() => callbacks.onError?.(errorResult));
     return errorResult;
   }
 
-  private buildErrorResultFromException(orderRef: string, error: unknown): PaymentResult {
+  private buildErrorResultFromException(
+    orderRef: string,
+    error: unknown,
+  ): PaymentResult {
     return error instanceof PaymentSDKError
       ? this.generateErrorResult(orderRef, error.code, error.message)
       : this.generateErrorResult(
-        orderRef,
-        PaymentErrorCode.UNKNOWN,
-        error instanceof Error ? error.message : "Unknown fatal error",
-      );
+          orderRef,
+          PaymentErrorCode.UNKNOWN,
+          error instanceof Error ? error.message : "Unknown fatal error",
+        );
   }
 
   private fireStateCallback(
@@ -346,7 +392,7 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
   ) {
     const ctx = {
       orderRef,
-      refPaymentId: this._currentSessionId
+      refPaymentId: this._currentSessionId,
     };
     switch (state) {
       case PaymentInteractionState.CONNECTING:
@@ -373,9 +419,12 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     this.logger?.info("Attempting cancellation");
 
     if (MunchiPaymentSDK.TERMINAL_STATES.includes(this._currentState)) {
-      this.logger?.warn("Cannot cancel: Transaction already in terminal state", {
-        state: this._currentState,
-      });
+      this.logger?.warn(
+        "Cannot cancel: Transaction already in terminal state",
+        {
+          state: this._currentState,
+        },
+      );
       return false;
     }
 
@@ -384,7 +433,9 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     this.transitionTo(PaymentInteractionState.VERIFYING);
 
     try {
-      const result = await this.strategy.cancelTransaction((state) => this.transitionTo(state));
+      const result = await this.strategy.cancelTransaction((state) =>
+        this.transitionTo(state),
+      );
 
       // If cancellation failed (e.g. no active session) AND we are just verifying,
       // we should probably revert to IDLE or FAILED to avoid getting stuck.
@@ -394,8 +445,8 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
       return result;
     } catch (error) {
       this.logger?.error("Cancellation command failed", error);
-      // Do NOT set internal error here. 
-      // If cancellation failed, the main initiateTransaction loop will likely catch the error 
+      // Do NOT set internal error here.
+      // If cancellation failed, the main initiateTransaction loop will likely catch the error
       // (or the abort signal) and handle the flow via handleTransactionError.
       // Setting terminal state here causes a race condition.
       return false;
@@ -414,6 +465,8 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
   ): Promise<PaymentResult> => {
     const callbacks = options ?? {};
     this.logger?.info("Initiating refund", { orderRef: params.orderRef });
+    // Clear any stale session before starting a new refund flow.
+    this._currentSessionId = undefined;
 
     // Ensure we are in a valid state to start a refund
     const isRestingState = MunchiPaymentSDK.RESTING_STATES.includes(
@@ -431,7 +484,10 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     this.transitionTo(PaymentInteractionState.IDLE);
 
     try {
-      const internalStateCallback = (state: PaymentInteractionState, detail?: { sessionId?: string }) => {
+      const internalStateCallback = (
+        state: PaymentInteractionState,
+        detail?: { sessionId?: string },
+      ) => {
         if (detail?.sessionId) {
           this._currentSessionId = detail.sessionId;
         }
@@ -441,7 +497,10 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
         }
       };
 
-      const result = await this.strategy.refundTransaction(params, internalStateCallback);
+      const result = await this.strategy.refundTransaction(
+        params,
+        internalStateCallback,
+      );
 
       if (result.success) {
         this.transitionTo(PaymentInteractionState.SUCCESS);
@@ -451,7 +510,10 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
         this.safeFireCallback(() => callbacks.onError?.(result));
       }
 
-      this.logger?.info("Refund completed", { success: result.success, orderRef: params.orderRef });
+      this.logger?.info("Refund completed", {
+        success: result.success,
+        orderRef: params.orderRef,
+      });
       return result;
     } catch (error) {
       this.logger?.error("Refund failed", error);
@@ -461,11 +523,10 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
       const errorResult = this.generateErrorResult(
         params.orderRef,
         PaymentErrorCode.UNKNOWN,
-        error instanceof Error ? error.message : "Refund failed"
+        error instanceof Error ? error.message : "Refund failed",
       );
       this.safeFireCallback(() => callbacks.onError?.(errorResult));
       return errorResult;
     }
   };
-
 }
