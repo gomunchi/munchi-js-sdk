@@ -39,7 +39,7 @@ Create `.npmrc` in your project root:
 ### 3. Install Munchi SDK
 
 ```bash
-npm install @munchi/core @munchi/payments
+npm install @munchi_oy/core @munchi_oy/payments
 ```
 
 ### 4. Create Your Application
@@ -55,8 +55,8 @@ npm install @munchi/core @munchi/payments
     "dev": "node --watch index.js"
   },
   "dependencies": {
-    "@munchi/core": "^1.0.0",
-    "@munchi/payments": "^1.0.0",
+    "@munchi_oy/core": "^1.0.0",
+    "@munchi_oy/payments": "^1.0.0",
     "axios": "^1.6.0"
   }
 }
@@ -64,20 +64,20 @@ npm install @munchi/core @munchi/payments
 
 **index.js:**
 ```javascript
-import { MUNCHI_CORE_VERSION } from '@munchi/core';
+import { MUNCHI_CORE_VERSION } from '@munchi_oy/core';
 
 console.log('🚀 Munchi SDK Example App');
-console.log('Using @munchi/core version:', MUNCHI_CORE_VERSION);
+console.log('Using @munchi_oy/core version:', MUNCHI_CORE_VERSION);
 
 // Your application logic here
 ```
 
 **TypeScript Example (index.ts):**
 ```typescript
-import { MUNCHI_CORE_VERSION } from '@munchi/core';
+import { MUNCHI_CORE_VERSION } from '@munchi_oy/core';
 
 console.log('🚀 Munchi SDK Example App');
-console.log('Using @munchi/core version:', MUNCHI_CORE_VERSION);
+console.log('Using @munchi_oy/core version:', MUNCHI_CORE_VERSION);
 
 // Your application logic here with full type safety
 ```
@@ -131,8 +131,8 @@ npx tsc --init
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@munchi/core": "^1.0.0",
-    "@munchi/payments": "^1.0.0",
+    "@munchi_oy/core": "^1.0.0",
+    "@munchi_oy/payments": "^1.0.0",
     "axios": "^1.6.0"
   },
   "devDependencies": {
@@ -145,7 +145,7 @@ npx tsc --init
 
 ### src/index.ts
 ```typescript
-import { MUNCHI_CORE_VERSION } from '@munchi/core';
+import { MUNCHI_CORE_VERSION } from '@munchi_oy/core';
 
 interface AppConfig {
   version: string;
@@ -345,15 +345,15 @@ const token = 'ghp_xxx'; // Never do this!
 ```json
 {
   "dependencies": {
-    "@munchi/core": "1.0.0",  // Exact version
-    "@munchi/payments": "^1.0.0"  // Compatible version
+    "@munchi_oy/core": "1.0.0",  // Exact version
+    "@munchi_oy/payments": "^1.0.0"  // Compatible version
   }
 }
 ```
 
 ### 3. Error Handling
 ```typescript
-import { MUNCHI_CORE_VERSION } from '@munchi/core';
+import { MUNCHI_CORE_VERSION } from '@munchi_oy/core';
 
 try {
   console.log('SDK Version:', MUNCHI_CORE_VERSION);
@@ -392,7 +392,7 @@ npm install
 # Token needs: read:packages
 
 # Verify repository access
-npm view @munchi/core
+npm view @munchi_oy/core
 ```
 
 ## Next Steps

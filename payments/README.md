@@ -1,15 +1,15 @@
-# @munchi/payments
+# @munchi_oy/payments
 
 Payment processing utilities for the Munchi SDK.
 
 ## Installation
 
 ```bash
-npm install @munchi/payments
+npm install @munchi_oy/payments
 # or
-pnpm add @munchi/payments
+pnpm add @munchi_oy/payments
 # or
-yarn add @munchi/payments
+yarn add @munchi_oy/payments
 ```
 
 ## Peer Dependencies
@@ -20,7 +20,7 @@ This package requires:
 ## Usage
 
 ```typescript
-import { /* your exports */ } from '@munchi/payments';
+import { /* your exports */ } from '@munchi_oy/payments';
 ```
 
 ## License

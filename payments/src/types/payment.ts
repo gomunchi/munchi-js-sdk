@@ -3,7 +3,7 @@ import type {
     PaymentProvider,
     ProviderEnum,
     TransactionDto,
-} from "@munchi/core";
+} from "@munchi_oy/core";
 
 export type TransactionDetails = Omit<
   TransactionDto,

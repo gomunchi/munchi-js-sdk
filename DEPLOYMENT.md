@@ -1,6 +1,6 @@
 # Deployment Guide for @munchi Packages
 
-This guide explains how to publish the `@munchi/core` and `@munchi/payments` packages to npm with private scope.
+This guide explains how to publish the `@munchi_oy/core` and `@munchi_oy/payments` packages to npm with private scope.
 
 ## Prerequisites
 
@@ -79,13 +79,13 @@ pnpm -r build
 
 ### 2. Publish Individual Packages
 
-#### Publish @munchi/core
+#### Publish @munchi_oy/core
 ```bash
 cd core
 npm publish
 ```
 
-#### Publish @munchi/payments
+#### Publish @munchi_oy/payments
 ```bash
 cd payments
 npm publish
@@ -135,16 +135,16 @@ npm login
 
 Then install:
 ```bash
-npm install @munchi/core
-npm install @munchi/payments
+npm install @munchi_oy/core
+npm install @munchi_oy/payments
 ```
 
 ### In package.json
 ```json
 {
   "dependencies": {
-    "@munchi/core": "^1.0.0",
-    "@munchi/payments": "^1.0.0"
+    "@munchi_oy/core": "^1.0.0",
+    "@munchi_oy/payments": "^1.0.0"
   }
 }
 ```
@@ -197,7 +197,7 @@ jobs:
 - Create the organization first at https://www.npmjs.com/org/create
 
 ### Workspace Dependencies
-The `@munchi/payments` package depends on `@munchi/core` with `"workspace:*"`.
+The `@munchi_oy/payments` package depends on `@munchi_oy/core` with `"workspace:*"`.
 When publishing, this will be automatically converted to the actual version number.
 
 ## Security Best Practices
@@ -216,17 +216,17 @@ When publishing, this will be automatically converted to the actual version numb
 npm pack --dry-run
 
 # View package info
-npm view @munchi/core
+npm view @munchi_oy/core
 
 # Check if you're logged in
 npm whoami
 
 # List published versions
-npm view @munchi/core versions
+npm view @munchi_oy/core versions
 
 # Unpublish a version (within 72 hours)
-npm unpublish @munchi/core@1.0.0
+npm unpublish @munchi_oy/core@1.0.0
 
 # Deprecate a version
-npm deprecate @munchi/core@1.0.0 "Use version 1.0.1 instead"
+npm deprecate @munchi_oy/core@1.0.0 "Use version 1.0.1 instead"
 ```

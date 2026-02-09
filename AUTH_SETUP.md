@@ -58,13 +58,13 @@ Once authentication is configured, install packages normally:
 
 ```bash
 # Using npm
-npm install @munchi/core @munchi/payments
+npm install @munchi_oy/core @munchi_oy/payments
 
 # Using pnpm
-pnpm add @munchi/core @munchi/payments
+pnpm add @munchi_oy/core @munchi_oy/payments
 
 # Using yarn
-yarn add @munchi/core @munchi/payments
+yarn add @munchi_oy/core @munchi_oy/payments
 ```
 
 ## CI/CD Setup
@@ -117,10 +117,10 @@ Test that authentication is working:
 
 ```bash
 # Check if you can access the registry
-npm view @munchi/core
+npm view @munchi_oy/core
 
 # Or try installing
-npm install @munchi/core
+npm install @munchi_oy/core
 ```
 
 ## Troubleshooting

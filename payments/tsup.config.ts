@@ -9,7 +9,7 @@ export default defineConfig({
   sourcemap: false,
   external: [
     // Don't bundle dependencies - let the consuming project install them
-    "@munchi/core",
+    "@munchi_oy/core",
     "axios",
   ],
 });

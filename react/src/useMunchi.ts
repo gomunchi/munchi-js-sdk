@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { SdkContext, type SdkContextType } from "./SdkContainer";
-import type { IMunchiPaymentSDK, PaymentInteractionState } from "@munchi/payments";
+import type { IMunchiPaymentSDK, PaymentInteractionState } from "@munchi_oy/payments";
 
 /**
  * Hook to access all Munchi SDK instances.

@@ -9,7 +9,7 @@ import {
   SimplePaymentStatus,
   type TransactionDto,
   TransactionType,
-} from "@munchi/core";
+} from "@munchi_oy/core";
 import type { AxiosInstance } from "axios";
 
 import { PaymentErrorCode, PaymentSDKError } from "../error";

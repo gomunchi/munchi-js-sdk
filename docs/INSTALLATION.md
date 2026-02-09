@@ -15,9 +15,9 @@ pnpm add github:gomunchi/munchi-js-sdk#v1.1.9
 > ```json
 > {
 >   "dependencies": {
->     "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.9",
->     "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.9",
->     "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.9"
+>     "@munchi_oy/core": "github:gomunchi/munchi-js-sdk#v1.1.9",
+>     "@munchi_oy/payments": "github:gomunchi/munchi-js-sdk#v1.1.9",
+>     "@munchi_oy/react": "github:gomunchi/munchi-js-sdk#v1.1.9"
 >   }
 > }
 > ```
@@ -69,7 +69,7 @@ Create a file `scripts/update-munchi-sdk.sh` in your project:
 echo "🔄 Updating Munchi SDK..."
 
 # Remove old versions from package.json and node_modules
-pnpm remove @munchi/core @munchi/payments 2>/dev/null || true
+pnpm remove @munchi_oy/core @munchi_oy/payments 2>/dev/null || true
 
 # Install new versions
 VERSION=${1:-latest}

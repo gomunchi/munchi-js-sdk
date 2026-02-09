@@ -6,7 +6,7 @@ Your `munchi-js-sdk` is now configured for GitHub-based installation. Organizati
 
 ### 1. Package Configuration ✅
 
-Both `@munchi/core` and `@munchi/payments` packages now have:
+Both `@munchi_oy/core` and `@munchi_oy/payments` packages now have:
 
 - **`prepare` script** - Automatically builds packages when installed from GitHub
 - **`publishConfig`** - Ready for npm if needed in the future
@@ -90,8 +90,8 @@ Add to `package.json`:
 ```json
 {
   "dependencies": {
-    "@munchi/core": "github:gomunchi/munchi-js-sdk#core",
-    "@munchi/payments": "github:gomunchi/munchi-js-sdk#payments"
+    "@munchi_oy/core": "github:gomunchi/munchi-js-sdk#core",
+    "@munchi_oy/payments": "github:gomunchi/munchi-js-sdk#payments"
   }
 }
 ```
@@ -104,8 +104,8 @@ npm install
 ### 3. Use in Code
 
 ```typescript
-import { MUNCHI_CORE_VERSION } from '@munchi/core';
-import { /* exports */ } from '@munchi/payments';
+import { MUNCHI_CORE_VERSION } from '@munchi_oy/core';
+import { /* exports */ } from '@munchi_oy/payments';
 ```
 
 ## Creating Releases

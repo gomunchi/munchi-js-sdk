@@ -7,5 +7,5 @@ export default defineConfig({
   splitting: false,
   minify: true,
   sourcemap: false,
-  external: ["react", "react-native", "@munchi/core", "@munchi/payments"],
+  external: ["react", "react-native", "@munchi_oy/core", "@munchi_oy/payments"],
 });

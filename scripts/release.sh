@@ -135,9 +135,9 @@ echo ""
 
 # Create tags
 echo "🏷️  Creating git tags..."
-git tag "core-v$VERSION" -m "Release @munchi/core v$VERSION"
-git tag "payments-v$VERSION" -m "Release @munchi/payments v$VERSION"
-git tag "react-v$VERSION" -m "Release @munchi/react v$VERSION"
+git tag "core-v$VERSION" -m "Release @munchi_oy/core v$VERSION"
+git tag "payments-v$VERSION" -m "Release @munchi_oy/payments v$VERSION"
+git tag "react-v$VERSION" -m "Release @munchi_oy/react v$VERSION"
 git tag "v$VERSION" -m "Release v$VERSION"
 
 echo "✅ Tags created:"
