@@ -1,6 +1,6 @@
 {
-  "name": "@munchi/core",
-  "version": "1.2.4",
+  "name": "@munchi_oy/core",
+  "version": "1.2.6",
   "description": "Munchi Core SDK - Core utilities and types",
   "license": "UNLICENSED",
   "publishConfig": {
@@ -14,8 +14,7 @@
     "dist",
     "src",
     "index.ts",
-    "README.md",
-    "generated"
+    "README.md"
   ],
   "exports": {
     ".": {

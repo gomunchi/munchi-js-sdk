@@ -1,6 +1,6 @@
 {
-  "name": "@munchi/react",
-  "version": "1.2.4",
+  "name": "@munchi_oy/react",
+  "version": "1.2.6",
   "description": "Munchi React SDK - React Context and Hooks for Munchi SDKs",
   "license": "UNLICENSED",
   "publishConfig": {
@@ -37,8 +37,8 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "@munchi/core": ">=1.0.0",
-    "@munchi/payments": ">=1.0.0",
+    "@munchi_oy/core": ">=1.0.0",
+    "@munchi_oy/payments": ">=1.0.0",
     "react": ">=18.2.0",
     "react-native": ">=0.76.0"
   },
@@ -48,8 +48,8 @@
     }
   },
   "devDependencies": {
-    "@munchi/core": "workspace:*",
-    "@munchi/payments": "workspace:*",
+    "@munchi_oy/core": "workspace:*",
+    "@munchi_oy/payments": "workspace:*",
     "@types/react": "^18.3.0",
     "react": "^18.3.0",
     "react-native": "0.76.9",
