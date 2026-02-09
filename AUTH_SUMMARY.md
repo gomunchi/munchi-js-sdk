@@ -72,13 +72,13 @@ Interactive bash script that:
 
 3. **Install Packages**
    ```bash
-   npm install @munchi/core @munchi/payments
+   npm install @munchi_oy/core @munchi_oy/payments
    ```
 
 ### Authentication Flow
 
 ```
-npm install @munchi/core
+npm install @munchi_oy/core
     ↓
 Checks .npmrc for @munchi scope
     ↓
@@ -99,7 +99,7 @@ Downloads and installs package
 
 | Method | Auth Required | Speed | Best For |
 |--------|---------------|-------|----------|
-| GitHub Package Registry (`npm install @munchi/core`) | Yes (NODE_AUTH_TOKEN) | Fast | Production, CI/CD |
+| GitHub Package Registry (`npm install @munchi_oy/core`) | Yes (NODE_AUTH_TOKEN) | Fast | Production, CI/CD |
 | Direct GitHub (`npm install github:gomunchi/munchi-js-sdk#core`) | No (if repo access) | Slower | Development |
 | Git URL with SSH | No (if SSH key) | Slower | Development |
 
@@ -137,7 +137,7 @@ echo $NODE_AUTH_TOKEN
 
 ### Test authentication
 ```bash
-npm view @munchi/core
+npm view @munchi_oy/core
 ```
 
 ### Verify .npmrc configuration
@@ -156,12 +156,12 @@ cat .npmrc
 
 3. **Install Packages:**
    ```bash
-   npm install @munchi/core @munchi/payments
+   npm install @munchi_oy/core @munchi_oy/payments
    ```
 
 4. **Start Using:**
    ```typescript
-   import { MUNCHI_CORE_VERSION } from '@munchi/core';
+   import { MUNCHI_CORE_VERSION } from '@munchi_oy/core';
    ```
 
 ## Maintenance

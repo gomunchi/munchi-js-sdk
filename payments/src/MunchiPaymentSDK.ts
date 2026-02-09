@@ -1,4 +1,4 @@
-import { PaymentFailureCode, PaymentProvider } from "@munchi/core";
+import { PaymentFailureCode, PaymentProvider } from "@munchi_oy/core";
 import type { AxiosInstance } from "axios";
 import { version } from "../package.json";
 import { PaymentErrorCode, PaymentSDKError } from "./error";

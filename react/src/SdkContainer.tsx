@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from "react";
 import { createContext, useMemo } from "react";
-import type { IMunchiPaymentSDK } from "@munchi/payments";
+import type { IMunchiPaymentSDK } from "@munchi_oy/payments";
 
 export interface SdkContextType {
   sdk: IMunchiPaymentSDK;

@@ -4,9 +4,9 @@ TypeScript SDK for Munchi services, providing core utilities and payment process
 
 ## Packages
 
-- **[@munchi/core](./core)** - Core utilities and types
-- **[@munchi/payments](./payments)** - Payment processing utilities
-- **[@munchi/react](./react)** - React hooks and context for Payments
+- **[@munchi_oy/core](./core)** - Core utilities and types
+- **[@munchi_oy/payments](./payments)** - Payment processing utilities
+- **[@munchi_oy/react](./react)** - React hooks and context for Payments
 
 ## Installation
 
@@ -33,7 +33,7 @@ pnpm add github:gomunchi/munchi-js-sdk#v1.1.9
 ```json
 {
   "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9"
+    "@munchi_oy/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9"
   }
 }
 ```
@@ -47,9 +47,9 @@ If you want explicit package names in `package.json`, you can do this:
 ```json
 {
   "dependencies": {
-    "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.9",
-    "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.9",
-    "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.9"
+    "@munchi_oy/core": "github:gomunchi/munchi-js-sdk#v1.1.9",
+    "@munchi_oy/payments": "github:gomunchi/munchi-js-sdk#v1.1.9",
+    "@munchi_oy/react": "github:gomunchi/munchi-js-sdk#v1.1.9"
   }
 }
 ```
@@ -61,13 +61,13 @@ If you want explicit package names in `package.json`, you can do this:
 ## Quick Start
 
 ```typescript
-// Import from @munchi/core
-import { MUNCHI_CORE_VERSION } from '@munchi/core';
+// Import from @munchi_oy/core
+import { MUNCHI_CORE_VERSION } from '@munchi_oy/core';
 
 console.log('Core version:', MUNCHI_CORE_VERSION);
 
-// Import from @munchi/payments
-import { /* your exports */ } from '@munchi/payments';
+// Import from @munchi_oy/payments
+import { /* your exports */ } from '@munchi_oy/payments';
 ```
 
 ## Development

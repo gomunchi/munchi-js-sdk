@@ -66,7 +66,7 @@ npm pack --dry-run
 npm whoami
 
 # View published package
-npm view @munchi/core
+npm view @munchi_oy/core
 
 # Test installation locally
 npm link

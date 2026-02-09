@@ -1,4 +1,4 @@
-import { PaymentApi, PaymentProvider, SimplePaymentStatus } from "@munchi/core";
+import { PaymentApi, PaymentProvider, SimplePaymentStatus } from "@munchi_oy/core";
 import type { AxiosInstance } from "axios";
 import { PaymentErrorCode, PaymentSDKError } from "../../../src/error";
 import { NetsStrategy } from "../../../src/strategies/NetsStrategy";
@@ -14,8 +14,8 @@ import {
 } from "../../helpers/fixtures";
 
 // Mock the PaymentApi class
-jest.mock("@munchi/core", () => {
-  const actual = jest.requireActual("@munchi/core");
+jest.mock("@munchi_oy/core", () => {
+  const actual = jest.requireActual("@munchi_oy/core");
   return {
     ...actual,
     PaymentApi: jest.fn().mockImplementation(() => ({

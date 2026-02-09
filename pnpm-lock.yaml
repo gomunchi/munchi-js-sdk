@@ -58,7 +58,7 @@ importers:
         specifier: '>=1.0.0'
         version: 1.13.2
     devDependencies:
-      '@munchi/core':
+      '@munchi_oy/core':
         specifier: workspace:*
         version: link:../core
       '@types/jest':
@@ -73,10 +73,10 @@ importers:
 
   react:
     devDependencies:
-      '@munchi/core':
+      '@munchi_oy/core':
         specifier: workspace:*
         version: link:../core
-      '@munchi/payments':
+      '@munchi_oy/payments':
         specifier: workspace:*
         version: link:../payments
       '@types/react':

@@ -1,21 +1,21 @@
-# @munchi/core
+# @munchi_oy/core
 
 Core utilities and types for the Munchi SDK.
 
 ## Installation
 
 ```bash
-npm install @munchi/core
+npm install @munchi_oy/core
 # or
-pnpm add @munchi/core
+pnpm add @munchi_oy/core
 # or
-yarn add @munchi/core
+yarn add @munchi_oy/core
 ```
 
 ## Usage
 
 ```typescript
-import { MUNCHI_CORE_VERSION } from '@munchi/core';
+import { /* your exports */ } from '@munchi_oy/core';
 
 console.log(MUNCHI_CORE_VERSION);
 ```

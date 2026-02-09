@@ -45,9 +45,9 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "paths": {
-      "@munchi/core": ["./core/index.ts"],
-      "@munchi/payments": ["./payments/index.ts"],
-      "@munchi/react": ["./react/index.ts"]
+      "@munchi_oy/core": ["./core/index.ts"],
+      "@munchi_oy/payments": ["./payments/index.ts"],
+      "@munchi_oy/react": ["./react/index.ts"]
     }
   }
 }

@@ -1,6 +1,6 @@
 {
-  "name": "@munchi/sdk",
-  "version": "1.2.4",
+  "name": "@munchi_oy/sdk",
+  "version": "1.2.6",
   "description": "",
   "main": "index.ts",
   "module": "index.ts",
@@ -10,13 +10,14 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:core": "jest --selectProject @munchi/core",
-    "test:payments": "jest --selectProjects @munchi/payments",
+    "test:core": "jest --selectProject @munchi_oy/core",
+    "test:payments": "jest --selectProjects @munchi_oy/payments",
     "generate": "openapi-generator-cli generate",
     "version:sync": "pnpm -r version:sync",
     "build": "pnpm -r build",
     "yalc:publish": "yalc publish --push --private",
-    "yalc:publish:all": "pnpm -r yalc:publish && npm run yalc:publish"
+    "yalc:publish:all": "pnpm -r yalc:publish && npm run yalc:publish",
+    "publish:npm": "bash scripts/publish-npm.sh"
   },
   "peerDependencies": {
     "axios": "^1.13.2"

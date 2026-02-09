@@ -14,7 +14,7 @@ if [ -n "$NODE_AUTH_TOKEN" ]; then
     echo "✅ NODE_AUTH_TOKEN is already set in your environment"
     echo ""
     echo "Testing authentication..."
-    if npm view @munchi/core > /dev/null 2>&1; then
+    if npm view @munchi_oy/core > /dev/null 2>&1; then
         echo "✅ Authentication is working!"
         exit 0
     else
@@ -103,7 +103,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "Or open a new terminal window."
     echo ""
     echo "You can now install packages with:"
-    echo "  npm install @munchi/core @munchi/payments"
+    echo "  npm install @munchi_oy/core @munchi_oy/payments"
 else
     echo ""
     echo "Setup cancelled. To set up manually, add this to your $PROFILE_FILE:"

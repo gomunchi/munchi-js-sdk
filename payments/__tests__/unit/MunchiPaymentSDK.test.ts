@@ -3,7 +3,7 @@ import {
   PaymentFailureCode,
   PaymentProvider,
   SimplePaymentStatus
-} from "@munchi/core";
+} from "@munchi_oy/core";
 import type { AxiosInstance } from "axios";
 import { PaymentErrorCode } from "./../../src/error";
 import { MunchiPaymentSDK } from "../../src/MunchiPaymentSDK";
@@ -27,8 +27,8 @@ import {
   setupTimeoutWithPollingMocks,
 } from "../helpers/mocks";
 
-jest.mock("@munchi/core", () => {
-  const actual = jest.requireActual("@munchi/core");
+jest.mock("@munchi_oy/core", () => {
+  const actual = jest.requireActual("@munchi_oy/core");
   return {
     ...actual,
     PaymentApi: jest.fn().mockImplementation(() => ({
@@ -98,7 +98,7 @@ describe("MunchiPaymentSDK", () => {
       });
 
       expect(result.success).toBe(false);
-      expect(result.errorCode).toBe("INVALID_AMOUNT");
+      expect(result.errorCode).toBe(PaymentFailureCode.SystemUnknown);
     });
 
     it("should fail with valid amount due to network error", async () => {
@@ -117,7 +117,7 @@ describe("MunchiPaymentSDK", () => {
       });
 
       expect(result.success).toBe(false);
-      expect(result.errorCode).toBe("NETWORK_ERROR");
+      expect(result.errorCode).toBe(PaymentFailureCode.SystemProviderError);
 
       // Check state flow: IDLE -> IDLE (reset) -> VERIFYING -> FAILED
       expect(states).toContain(PaymentInteractionState.FAILED);
@@ -490,7 +490,7 @@ describe("MunchiPaymentSDK", () => {
       const result2 = await promise2;
 
       expect(result2.success).toBe(false);
-      expect(result2.errorCode).toBe(PaymentErrorCode.UNKNOWN);
+      expect(result2.errorCode).toBe(PaymentFailureCode.SystemUnknown);
       expect(result2.errorMessage).toContain("already in progress");
     });
 

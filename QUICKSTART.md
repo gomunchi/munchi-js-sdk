@@ -40,7 +40,7 @@ Add to your `package.json` (stable tag `v1.1.9`):
 ```json
 {
   "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9"
+    "@munchi_oy/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9"
   }
 }
 ```
@@ -59,9 +59,9 @@ pnpm install
 > ```json
 > {
 >   "dependencies": {
->     "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.9",
->     "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.9",
->     "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.9"
+>     "@munchi_oy/core": "github:gomunchi/munchi-js-sdk#v1.1.9",
+>     "@munchi_oy/payments": "github:gomunchi/munchi-js-sdk#v1.1.9",
+>     "@munchi_oy/react": "github:gomunchi/munchi-js-sdk#v1.1.9"
 >   }
 > }
 > ```
@@ -71,13 +71,13 @@ pnpm install
 ### Import and Use
 
 ```typescript
-// Import from @munchi/core
-import { MUNCHI_CORE_VERSION } from '@munchi/core';
+// Import from @munchi_oy/core
+import { MUNCHI_CORE_VERSION } from '@munchi_oy/core';
 
 console.log('Core version:', MUNCHI_CORE_VERSION);
 
-// Import from @munchi/payments
-import { /* your exports */ } from '@munchi/payments';
+// Import from @munchi_oy/payments
+import { /* your exports */ } from '@munchi_oy/payments';
 ```
 
 ### TypeScript Support
@@ -94,7 +94,7 @@ To install a specific version (once tags are created):
 ```json
 {
   "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9"
+    "@munchi_oy/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9"
   }
 }
 ```
@@ -104,9 +104,9 @@ To install a specific version (once tags are created):
 To update to the latest version:
 
 ```bash
-npm update @munchi/sdk
+npm update @munchi_oy/sdk
 # or
-pnpm update @munchi/sdk
+pnpm update @munchi_oy/sdk
 ```
 
 Or reinstall:
@@ -167,17 +167,17 @@ git ls-remote git@github.com:gomunchi/munchi-js-sdk.git
 
 ## Available Packages
 
-### @munchi/core
+### @munchi_oy/core
 Core utilities and types for Munchi services.
 
 **Size:** ~800 KB  
 **Dependencies:** dayjs
 
-### @munchi/payments
+### @munchi_oy/payments
 Payment processing utilities.
 
 **Size:** ~11 KB  
-**Dependencies:** @munchi/core, dayjs  
+**Dependencies:** @munchi_oy/core, dayjs  
 **Peer Dependencies:** axios >= 1.0.0
 
 ## Need Help?
@@ -196,7 +196,7 @@ Here's a complete example `package.json`:
   "name": "my-munchi-app",
   "version": "1.0.0",
   "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9",
+    "@munchi_oy/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9",
     "axios": "^1.6.0"
   },
   "devDependencies": {

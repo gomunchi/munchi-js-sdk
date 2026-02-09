@@ -54,7 +54,7 @@ Add to your `package.json`:
 ```json
 {
   "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9"
+    "@munchi_oy/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9"
   }
 }
 ```
@@ -63,9 +63,9 @@ Or with explicit package names (same tag):
 ```json
 {
   "dependencies": {
-    "@munchi/core": "github:gomunchi/munchi-js-sdk#v1.1.9",
-    "@munchi/payments": "github:gomunchi/munchi-js-sdk#v1.1.9",
-    "@munchi/react": "github:gomunchi/munchi-js-sdk#v1.1.9"
+    "@munchi_oy/core": "github:gomunchi/munchi-js-sdk#v1.1.9",
+    "@munchi_oy/payments": "github:gomunchi/munchi-js-sdk#v1.1.9",
+    "@munchi_oy/react": "github:gomunchi/munchi-js-sdk#v1.1.9"
   }
 }
 ```
@@ -98,18 +98,18 @@ Create `.npmrc` in your project:
 After installation, import as usual:
 
 ```typescript
-// Import from @munchi/core
-import { MUNCHI_CORE_VERSION } from '@munchi/core';
+// Import from @munchi_oy/core
+import { MUNCHI_CORE_VERSION } from '@munchi_oy/core';
 
-// Import from @munchi/payments
-import { /* your exports */ } from '@munchi/payments';
+// Import from @munchi_oy/payments
+import { /* your exports */ } from '@munchi_oy/payments';
 ```
 
 ## Updating Packages
 
 ```bash
 # Update to latest commit on branch
-npm update @munchi/sdk
+npm update @munchi_oy/sdk
 
 # Or reinstall
 npm install github:gomunchi/munchi-js-sdk#v1.1.9
@@ -215,7 +215,7 @@ jobs:
   "name": "my-app",
   "version": "1.0.0",
   "dependencies": {
-    "@munchi/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9",
+    "@munchi_oy/sdk": "github:gomunchi/munchi-js-sdk#v1.1.9",
     "axios": "^1.6.0"
   }
 }
