@@ -1,6 +1,6 @@
 {
   "name": "@munchi_oy/core",
-  "version": "1.2.8",
+  "version": "1.2.9",
   "description": "Munchi Core SDK - Core utilities and types",
   "license": "UNLICENSED",
   "publishConfig": {
