@@ -1,6 +1,6 @@
 {
   "name": "@munchi_oy/payments",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "Munchi Payments SDK - Payment processing utilities",
   "license": "UNLICENSED",
   "publishConfig": {
