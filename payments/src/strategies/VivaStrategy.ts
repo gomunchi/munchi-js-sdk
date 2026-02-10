@@ -114,11 +114,11 @@ export class VivaStrategy implements IPaymentStrategy {
         channelName,
         eventName,
         (data: PaymentStatusDto) => {
-          if (!isResolved) {
-            cleanup();
-            signal.removeEventListener("abort", onAbort);
-            resolve(this.handleSuccess(data));
-          }
+          if (isResolved) return;
+          if (data.status === SimplePaymentStatus.Pending) return;
+          cleanup();
+          signal.removeEventListener("abort", onAbort);
+          resolve(this.handleSuccess(data));
         },
       );
 
