@@ -5,7 +5,6 @@ import {
   SimplePaymentStatus
 } from "@munchi_oy/core";
 import type { AxiosInstance } from "axios";
-import { PaymentErrorCode } from "./../../src/error";
 import { MunchiPaymentSDK } from "../../src/MunchiPaymentSDK";
 import { VivaStrategy } from "../../src/strategies/VivaStrategy";
 import {

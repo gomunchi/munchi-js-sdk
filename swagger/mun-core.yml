@@ -15252,6 +15252,7 @@ components:
             - BUSINESS_CONFIG_UPDATED
             - data_sync_required
             - pos_session_updated
+            - BUSINESS_DATA_UPDATED
         entityType:
           type: string
           enum:
@@ -15309,6 +15310,7 @@ components:
         - BUSINESS_CONFIG_UPDATED
         - data_sync_required
         - pos_session_updated
+        - BUSINESS_DATA_UPDATED
     EntityType:
       type: string
       enum:

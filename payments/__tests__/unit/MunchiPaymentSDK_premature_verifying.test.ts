@@ -90,8 +90,10 @@ describe("MunchiPaymentSDK Premature VERIFYING Reproduction", () => {
       await jest.advanceTimersByTimeAsync(130000);
       await Promise.resolve();
 
-      // Now it should have hit VERIFYING at least once because polling exhausted
-      expect(states).toContain(PaymentInteractionState.VERIFYING);
+      // Now it should have hit FAILED because polling exhausted (timeout)
+      // and we specifically prevent VERIFYING on timeout now.
+      expect(states).not.toContain(PaymentInteractionState.VERIFYING);
+      expect(sdk.currentState).toBe(PaymentInteractionState.FAILED);
     } finally {
       jest.useRealTimers();
     }

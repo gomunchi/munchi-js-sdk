@@ -89,7 +89,8 @@ export const ActionEnum = {
     ProductCreated: 'PRODUCT_CREATED',
     BusinessConfigUpdated: 'BUSINESS_CONFIG_UPDATED',
     DataSyncRequired: 'data_sync_required',
-    PosSessionUpdated: 'pos_session_updated'
+    PosSessionUpdated: 'pos_session_updated',
+    BusinessDataUpdated: 'BUSINESS_DATA_UPDATED'
 } as const;
 
 export type ActionEnum = typeof ActionEnum[keyof typeof ActionEnum];
@@ -899,7 +900,8 @@ export const BusinessEventAction = {
     ProductCreated: 'PRODUCT_CREATED',
     BusinessConfigUpdated: 'BUSINESS_CONFIG_UPDATED',
     DataSyncRequired: 'data_sync_required',
-    PosSessionUpdated: 'pos_session_updated'
+    PosSessionUpdated: 'pos_session_updated',
+    BusinessDataUpdated: 'BUSINESS_DATA_UPDATED'
 } as const;
 
 export type BusinessEventAction = typeof BusinessEventAction[keyof typeof BusinessEventAction];

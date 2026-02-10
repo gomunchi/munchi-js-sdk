@@ -2,6 +2,7 @@ import {
   type CreateRefundDto,
   type CreateTerminalPaymentDto,
   PaymentApi,
+  PaymentFailureCode,
   PaymentProviderEnum,
   type PaymentStatusDto,
   SimplePaymentStatus,
@@ -207,8 +208,12 @@ export class VivaStrategy implements IPaymentStrategy {
       success: isSuccess,
       status: isSuccess ? SdkPaymentStatus.SUCCESS : SdkPaymentStatus.FAILED,
       orderId: data.orderId,
-      errorCode: data.error?.code ?? "",
-      errorMessage: data.error?.message ?? "",
+      errorCode:
+        data.error?.code ||
+        (isSuccess ? "" : PaymentFailureCode.SystemUnknown),
+      errorMessage:
+        data.error?.message ||
+        (isSuccess ? "" : "Transaction failed without error details"),
     };
 
     if (data.transactionId) {
@@ -266,13 +271,18 @@ export class VivaStrategy implements IPaymentStrategy {
       );
 
       const isSuccess = data.status === SimplePaymentStatus.Success;
+      const isPending = data.status === SimplePaymentStatus.Pending;
 
       const result: PaymentResult = {
         success: isSuccess,
         status: isSuccess ? SdkPaymentStatus.SUCCESS : SdkPaymentStatus.FAILED,
         orderId: data.orderId,
-        errorCode: data.error?.code ?? "",
-        errorMessage: data.error?.message ?? "",
+        errorCode:
+          data.error?.code ||
+          (isSuccess ? "" : isPending ? PaymentFailureCode.TerminalTimeout : PaymentFailureCode.SystemUnknown),
+        errorMessage:
+          data.error?.message ||
+          (isSuccess ? "" : isPending ? "Payment was not completed within the allowed time" : "Transaction failed without error details"),
       };
 
       if (data.transactionId) {

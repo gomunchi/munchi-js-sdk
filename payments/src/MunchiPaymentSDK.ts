@@ -290,7 +290,11 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     originalError: unknown,
     callbacks: TransactionOptions = {},
   ): Promise<PaymentResult> {
-    if (!this._cancellationIntent) {
+    const isTimeout =
+      originalError instanceof PaymentSDKError &&
+      originalError.code === PaymentErrorCode.TIMEOUT;
+
+    if (!this._cancellationIntent && !isTimeout) {
       this.transitionTo(PaymentInteractionState.VERIFYING);
       this.safeFireCallback(() =>
         callbacks.onVerifying?.({

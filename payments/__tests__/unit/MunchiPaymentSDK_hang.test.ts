@@ -1,16 +1,16 @@
 import {
   PaymentApi,
   PaymentFailureCode,
-  SimplePaymentStatus,
   PaymentProviderEnum,
+  SimplePaymentStatus,
 } from "@munchi_oy/core";
 import type { AxiosInstance } from "axios";
 import { MunchiPaymentSDK } from "../../src/MunchiPaymentSDK";
 import {
-  PaymentInteractionState,
-  SdkPaymentStatus,
   type IMessagingAdapter,
+  PaymentInteractionState,
   type PaymentTerminalConfig,
+  SdkPaymentStatus,
 } from "../../src/types/payment";
 import {
   createMockAxios,
@@ -148,7 +148,7 @@ describe("MunchiPaymentSDK Hanging Scenarios", () => {
       await jest.advanceTimersByTimeAsync(9000);
       await Promise.resolve();
 
-      expect(sdk.currentState).toBe(PaymentInteractionState.VERIFYING);
+      expect(sdk.currentState).toBe(PaymentInteractionState.REQUIRES_INPUT);
       expect(settled).toBe(false);
     } finally {
       jest.useRealTimers();
@@ -298,8 +298,8 @@ describe("MunchiPaymentSDK Hanging Scenarios", () => {
       await Promise.resolve();
       await Promise.resolve();
 
-      expect(sdk.currentState).toBe(PaymentInteractionState.VERIFYING);
-      expect(states).toContain(PaymentInteractionState.VERIFYING);
+      expect(sdk.currentState).toBe(PaymentInteractionState.REQUIRES_INPUT);
+      expect(states).toContain(PaymentInteractionState.REQUIRES_INPUT);
 
       // Phase 3: verifyWithRetry retries 3x with 10s timeout each = 30s max
       await jest.advanceTimersByTimeAsync(30000);
