@@ -1,6 +1,5 @@
 import {
   type CreateNetsTerminalPaymentDto,
-  type NetsCancelPayloadDto,
   type NetsCancelTransactionDto,
   PaymentApi,
   PaymentEventType,
@@ -194,13 +193,25 @@ export class NetsStrategy implements IPaymentStrategy {
           referenceId: requestId,
         });
 
+        if (signal.aborted) throw new Error("Aborted");
         if (data.status !== SimplePaymentStatus.Pending) return data;
       } catch (error) {
-        throw new Error(
-          `Payment verification failed: ${error instanceof Error ? error.message : String(error)}`,
-        );
+        if (error instanceof Error && error.message === "Aborted") throw error;
+        // We ignore network errors during polling and keep trying until the deadline or abort signal.
+        // This prevents the SDK from prematurely transitioning to the VERIFYING state.
       }
-      await new Promise((resolve) => setTimeout(resolve, INTERVAL_MS));
+
+      await new Promise((resolve) => {
+        const onAbort = () => {
+          clearTimeout(timeout);
+          resolve(undefined);
+        };
+        signal.addEventListener("abort", onAbort, { once: true });
+        const timeout = setTimeout(() => {
+          signal.removeEventListener("abort", onAbort);
+          resolve(undefined);
+        }, INTERVAL_MS);
+      });
     }
     throw new Error("Payment verification timed out.");
   }

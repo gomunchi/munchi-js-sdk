@@ -5198,6 +5198,36 @@ paths:
       summary: Get order history for POS V4
       tags:
         - History
+  /api/v4/business/{businessId}/menu/{menuType}:
+    get:
+      operationId: getBusinessMenuByType V4
+      parameters:
+        - name: businessId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: menuType
+          required: true
+          in: path
+          description: Type of menu (e.g., pos)
+          schema:
+            enum:
+              - pos
+              - kiosk
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MenuReponseDto"
+      security:
+        - JWT-auth: []
+      summary: Get business menu by type V4
+      tags:
+        - Business
   /api/v5/history/orders/pos:
     get:
       operationId: getOrderHistoryPOS V5
@@ -6879,6 +6909,8 @@ components:
         - payment.card_invalid
         - payment.pin_error
         - payment.declined
+        - payment.timeout
+        - payment.unknown
         - terminal.offline
         - terminal.timeout
         - terminal.busy
@@ -7921,6 +7953,46 @@ components:
           description: Is valid business id or not for the current user session
       required:
         - isValid
+    TimeDto:
+      type: object
+      properties:
+        hour:
+          type: number
+          description: Hour component of the time (0-23)
+        minute:
+          type: number
+          description: Minute component of the time (0-59)
+      required:
+        - hour
+        - minute
+    LapseDto:
+      type: object
+      properties:
+        open:
+          description: Opening time for the lapse
+          allOf:
+            - $ref: "#/components/schemas/TimeDto"
+        close:
+          description: Closing time for the lapse
+          allOf:
+            - $ref: "#/components/schemas/TimeDto"
+      required:
+        - open
+        - close
+    ScheduleDto:
+      type: object
+      properties:
+        lapses:
+          description: Array of time lapses for a specific day of the week
+          type: array
+          items:
+            $ref: "#/components/schemas/LapseDto"
+        enabled:
+          type: boolean
+          description: Indicates if this schedule entry is active
+      required:
+        - lapses
+        - enabled
     MenuDto:
       type: object
       properties:
@@ -7938,6 +8010,14 @@ components:
           type: array
           items:
             type: string
+        schedule:
+          description: Weekly schedule for the menu (7 days)
+          type: array
+          items:
+            $ref: "#/components/schemas/ScheduleDto"
+        use_business_schedule:
+          type: boolean
+          description: Whether this menu uses the business-level schedule
       required:
         - id
         - name
@@ -12382,46 +12462,6 @@ components:
         - processedAt
         - orderingBusinessId
         - posOrderId
-    TimeDto:
-      type: object
-      properties:
-        hour:
-          type: number
-          description: Hour component of the time (0-23)
-        minute:
-          type: number
-          description: Minute component of the time (0-59)
-      required:
-        - hour
-        - minute
-    LapseDto:
-      type: object
-      properties:
-        open:
-          description: Opening time for the lapse
-          allOf:
-            - $ref: "#/components/schemas/TimeDto"
-        close:
-          description: Closing time for the lapse
-          allOf:
-            - $ref: "#/components/schemas/TimeDto"
-      required:
-        - open
-        - close
-    ScheduleDto:
-      type: object
-      properties:
-        lapses:
-          description: Array of time lapses for a specific day of the week
-          type: array
-          items:
-            $ref: "#/components/schemas/LapseDto"
-        enabled:
-          type: boolean
-          description: Indicates if this schedule entry is active
-      required:
-        - lapses
-        - enabled
     KioskLayout:
       type: string
       enum:

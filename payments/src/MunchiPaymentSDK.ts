@@ -54,7 +54,7 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     this.axios = axios;
     this.messaging = messaging;
     this.logger = options.logger;
-    this.timeoutMs = options.timeoutMs || 60000;
+    this.timeoutMs = options.timeoutMs || 30000;
     this.autoResetOptions = options.autoResetOnPaymentComplete;
     this.strategy = strategy ?? this.resolveStrategy(config);
   }
@@ -303,7 +303,7 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     if (this._cancellationIntent) {
       try {
         if (this._currentSessionId) {
-          const finalStatus = await this.strategy.verifyFinalStatus(
+          const finalStatus = await this.verifyWithRetry(
             params,
             this._currentSessionId,
           );
@@ -340,16 +340,21 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
       };
     }
 
-    this.transitionTo(PaymentInteractionState.FAILED);
-
     let errorResult: PaymentResult;
 
     if (this._currentSessionId) {
       try {
-        const finalStatus = await this.strategy.verifyFinalStatus(
+        const finalStatus = await this.verifyWithRetry(
           params,
           this._currentSessionId,
         );
+
+        if (finalStatus.success) {
+          this.transitionTo(PaymentInteractionState.SUCCESS);
+          this.safeFireCallback(() => callbacks.onSuccess?.(finalStatus));
+          return finalStatus;
+        }
+
         errorResult = finalStatus;
       } catch (verifyErr) {
         this.logger?.warn(
@@ -358,7 +363,7 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
         );
         errorResult = this.buildErrorResultFromException(
           params.orderRef,
-          originalError,
+          verifyErr,
         );
       }
     } else {
@@ -368,8 +373,51 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
       );
     }
 
+    this.transitionTo(PaymentInteractionState.FAILED);
     this.safeFireCallback(() => callbacks.onError?.(errorResult));
     return errorResult;
+  }
+
+  private static readonly VERIFY_TIMEOUT_MS = 10000;
+  private static readonly VERIFY_MAX_RETRIES = 3;
+
+  private async verifyWithRetry(
+    params: SdkPaymentRequest,
+    sessionId: string,
+  ): Promise<PaymentResult> {
+    let lastError: unknown;
+    let allTimeouts = true;
+
+    for (let attempt = 1; attempt <= MunchiPaymentSDK.VERIFY_MAX_RETRIES; attempt++) {
+      try {
+        const result = await Promise.race([
+          this.strategy.verifyFinalStatus(params, sessionId),
+          new Promise<never>((_, reject) =>
+            setTimeout(
+              () => reject(new Error("Verify timed out")),
+              MunchiPaymentSDK.VERIFY_TIMEOUT_MS,
+            ),
+          ),
+        ]);
+        return result;
+      } catch (err) {
+        lastError = err;
+        const isTimeout = err instanceof Error && err.message === "Verify timed out";
+        if (!isTimeout) allTimeouts = false;
+
+        this.logger?.warn(
+          `verifyFinalStatus attempt ${attempt}/${MunchiPaymentSDK.VERIFY_MAX_RETRIES} failed`,
+          { err },
+        );
+      }
+    }
+
+    const message = lastError instanceof Error ? lastError.message : "Verify retries exhausted";
+    const code = allTimeouts
+      ? PaymentFailureCode.PaymentTimeout
+      : PaymentFailureCode.PaymentUnknown;
+
+    throw new PaymentSDKError(code as unknown as PaymentErrorCode, message);
   }
 
   private buildErrorResultFromException(

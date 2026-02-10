@@ -6348,6 +6348,18 @@ export interface MenuDto {
      * @memberof MenuDto
      */
     'cid': Array<string>;
+    /**
+     * Weekly schedule for the menu (7 days)
+     * @type {Array<ScheduleDto>}
+     * @memberof MenuDto
+     */
+    'schedule'?: Array<ScheduleDto>;
+    /**
+     * Whether this menu uses the business-level schedule
+     * @type {boolean}
+     * @memberof MenuDto
+     */
+    'use_business_schedule'?: boolean;
 }
 /**
  * 
@@ -9243,6 +9255,8 @@ export const PaymentFailureCode = {
     PaymentCardInvalid: 'payment.card_invalid',
     PaymentPinError: 'payment.pin_error',
     PaymentDeclined: 'payment.declined',
+    PaymentTimeout: 'payment.timeout',
+    PaymentUnknown: 'payment.unknown',
     TerminalOffline: 'terminal.offline',
     TerminalTimeout: 'terminal.timeout',
     TerminalBusy: 'terminal.busy',
@@ -18669,6 +18683,48 @@ export const BusinessApiAxiosParamCreator = function (configuration?: Configurat
         },
         /**
          * 
+         * @summary Get business menu by type V4
+         * @param {string} businessId 
+         * @param {'pos' | 'kiosk'} menuType Type of menu (e.g., pos)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getBusinessMenuByTypeV4: async (businessId: string, menuType: 'pos' | 'kiosk', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'businessId' is not null or undefined
+            assertParamExists('getBusinessMenuByTypeV4', 'businessId', businessId)
+            // verify required parameter 'menuType' is not null or undefined
+            assertParamExists('getBusinessMenuByTypeV4', 'menuType', menuType)
+            const localVarPath = `/api/v4/business/{businessId}/menu/{menuType}`
+                .replace(`{${"businessId"}}`, encodeURIComponent(String(businessId)))
+                .replace(`{${"menuType"}}`, encodeURIComponent(String(menuType)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication JWT-auth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {string} businessId Id of the business
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -19182,6 +19238,18 @@ export const BusinessApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Get business menu by type V4
+         * @param {string} businessId 
+         * @param {'pos' | 'kiosk'} menuType Type of menu (e.g., pos)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async getBusinessMenuByTypeV4(businessId: string, menuType: 'pos' | 'kiosk', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MenuReponseDto>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getBusinessMenuByTypeV4(businessId, menuType, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
+        /**
+         * 
          * @param {string} businessId Id of the business
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -19415,6 +19483,17 @@ export const BusinessApiFactory = function (configuration?: Configuration, baseP
         },
         /**
          * 
+         * @summary Get business menu by type V4
+         * @param {string} businessId 
+         * @param {'pos' | 'kiosk'} menuType Type of menu (e.g., pos)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        getBusinessMenuByTypeV4(businessId: string, menuType: 'pos' | 'kiosk', options?: any): AxiosPromise<MenuReponseDto> {
+            return localVarFp.getBusinessMenuByTypeV4(businessId, menuType, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {string} businessId Id of the business
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -19635,6 +19714,17 @@ export interface BusinessApiInterface {
      * @memberof BusinessApiInterface
      */
     getBusinessMenuByTypeV3(businessId: string, menuType: 'pos' | 'kiosk', options?: AxiosRequestConfig): AxiosPromise<MenuReponseDto>;
+
+    /**
+     * 
+     * @summary Get business menu by type V4
+     * @param {string} businessId 
+     * @param {'pos' | 'kiosk'} menuType Type of menu (e.g., pos)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BusinessApiInterface
+     */
+    getBusinessMenuByTypeV4(businessId: string, menuType: 'pos' | 'kiosk', options?: AxiosRequestConfig): AxiosPromise<MenuReponseDto>;
 
     /**
      * 
@@ -19881,6 +19971,19 @@ export class BusinessApi extends BaseAPI implements BusinessApiInterface {
      */
     public getBusinessMenuByTypeV3(businessId: string, menuType: 'pos' | 'kiosk', options?: AxiosRequestConfig) {
         return BusinessApiFp(this.configuration).getBusinessMenuByTypeV3(businessId, menuType, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get business menu by type V4
+     * @param {string} businessId 
+     * @param {'pos' | 'kiosk'} menuType Type of menu (e.g., pos)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof BusinessApi
+     */
+    public getBusinessMenuByTypeV4(businessId: string, menuType: 'pos' | 'kiosk', options?: AxiosRequestConfig) {
+        return BusinessApiFp(this.configuration).getBusinessMenuByTypeV4(businessId, menuType, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
