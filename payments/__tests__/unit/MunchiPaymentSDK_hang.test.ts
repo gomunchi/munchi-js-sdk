@@ -2,6 +2,7 @@ import {
   PaymentApi,
   PaymentFailureCode,
   SimplePaymentStatus,
+  PaymentProviderEnum,
 } from "@munchi_oy/core";
 import type { AxiosInstance } from "axios";
 import { MunchiPaymentSDK } from "../../src/MunchiPaymentSDK";
@@ -367,6 +368,79 @@ describe("MunchiPaymentSDK Hanging Scenarios", () => {
       expect(result.success).toBe(false);
       expect(result.errorCode).toBe(PaymentFailureCode.PaymentUnknown);
       expect(result.errorMessage).toBe("Failed to verify final transaction status");
+    } finally {
+      jest.useRealTimers();
+    }
+  });
+
+  it("should stop polling after SDK timeout and failure", async () => {
+    jest.useFakeTimers();
+    try {
+      const orderRef = "order-stop-polling";
+      const sessionId = "session-stop-polling";
+
+      // Mock getPaymentStatus to always return Pending (simulate infinite polling)
+      const mockGetPaymentStatus = jest.fn().mockResolvedValue({
+        data: {
+          status: SimplePaymentStatus.Pending,
+          paymentMethod: PaymentProviderEnum.Viva,
+          transactionId: sessionId,
+        },
+      });
+
+      (PaymentApi as jest.Mock).mockImplementation(() => ({
+        initiateTerminalTransaction: jest
+          .fn()
+          .mockResolvedValue({ data: { sessionId, orderId: orderRef } }),
+        cancelTransaction: jest.fn(),
+        cancelVivaTransactionV2: jest.fn().mockResolvedValue(true),
+        getPaymentStatus: mockGetPaymentStatus,
+      }));
+
+      mockMessaging.subscribe.mockReturnValue(jest.fn());
+
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig, {
+        timeoutMs: 30000,
+      });
+
+      const txPromise = sdk.initiateTransaction({
+        orderRef,
+        amountCents: 1200,
+        currency: "EUR",
+        displayId: "display-stop-polling",
+      });
+
+      await waitForState(sdk, PaymentInteractionState.REQUIRES_INPUT);
+
+      // 1. Advance 10s -> Start polling
+      await jest.advanceTimersByTimeAsync(10000);
+      expect(mockGetPaymentStatus).toHaveBeenCalled();
+
+      // 2. Advance 30s -> SDK timeout -> VerifyWithRetry starts
+      await jest.advanceTimersByTimeAsync(30000);
+      await Promise.resolve();
+
+      // 3. Advance 30s -> Verify retries exhaust -> FAILED
+      await jest.advanceTimersByTimeAsync(30000);
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(sdk.currentState).toBe(PaymentInteractionState.FAILED);
+
+      // Reset mock to check if it's still being called
+      mockGetPaymentStatus.mockClear();
+
+      // 4. Advance another 60s (VivaStrategy polling loop would normally continue for 120s total)
+      // If abort() works, this should NOT trigger any new calls
+      await jest.advanceTimersByTimeAsync(60000);
+
+      expect(mockGetPaymentStatus).not.toHaveBeenCalled();
+
+      try {
+        await txPromise;
+      } catch (_e) {
+        // Ignore expected failure
+      }
     } finally {
       jest.useRealTimers();
     }

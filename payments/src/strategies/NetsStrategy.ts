@@ -344,4 +344,8 @@ export class NetsStrategy implements IPaymentStrategy {
 
     return result;
   }
+
+  abort(): void {
+    this.abortController?.abort();
+  }
 }

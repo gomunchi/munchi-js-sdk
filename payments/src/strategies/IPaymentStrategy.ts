@@ -19,4 +19,5 @@ export interface IPaymentStrategy {
     onStateChange: (state: PaymentInteractionState, detail?: { sessionId?: string }) => void,
   ): Promise<PaymentResult>;
   verifyFinalStatus(request: PaymentRequest, sessionId: string): Promise<PaymentResult>;
+  abort(): void;
 }

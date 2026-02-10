@@ -331,4 +331,8 @@ export class VivaStrategy implements IPaymentStrategy {
       );
     }
   }
+
+  abort(): void {
+    this.abortController?.abort();
+  }
 }

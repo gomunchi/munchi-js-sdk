@@ -342,6 +342,10 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
 
     let errorResult: PaymentResult;
 
+    // If we're here, something went wrong (timeout, user cancel, error).
+    // Ensure we stop any ongoing strategy work (polling, etc.) to prevent leaks.
+    this.strategy.abort();
+
     if (this._currentSessionId) {
       try {
         const finalStatus = await this.verifyWithRetry(

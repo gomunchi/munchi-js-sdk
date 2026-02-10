@@ -52,4 +52,8 @@ export class MockStrategy implements IPaymentStrategy {
       orderId: request.orderRef,
     };
   }
+
+  abort(): void {
+    // No-op for mock
+  }
 }
