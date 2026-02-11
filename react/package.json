@@ -1,6 +1,6 @@
 {
   "name": "@munchi_oy/react",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Munchi React SDK - React Context and Hooks for Munchi SDKs",
   "license": "UNLICENSED",
   "publishConfig": {
