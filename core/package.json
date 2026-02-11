@@ -14,7 +14,8 @@
     "dist",
     "src",
     "index.ts",
-    "README.md"
+    "README.md",
+    "generated"
   ],
   "exports": {
     ".": {
