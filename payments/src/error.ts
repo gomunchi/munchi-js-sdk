@@ -9,6 +9,7 @@ export enum PaymentErrorCode {
   CANCELLED = "CANCELLED",
   STRATEGY_ERROR = "STRATEGY_ERROR",
   UNKNOWN = "UNKNOWN",
+  HEALTH_CHECK_FAILED = "HEALTH_CHECK_FAILED",
 }
 
 export class PaymentSDKError extends Error {

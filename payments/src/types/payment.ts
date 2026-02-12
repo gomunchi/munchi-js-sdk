@@ -10,6 +10,18 @@ export type TransactionDetails = Omit<
   "id" | "createdAt" | "provider"
 >;
 
+export interface PaymentTransactionRecord {
+  orderRef: string;
+  amountCents: number;
+  currency: string;
+  status: PaymentInteractionState;
+  createdAt: number;
+  updatedAt: number;
+  sessionId?: string;
+  provider?: string;
+  metadata?: Record<string, unknown>;
+}
+
 export enum SdkPaymentStatus {
   PENDING = "PENDING",
   SUCCESS = "SUCCESS",
@@ -119,5 +131,6 @@ export interface IMunchiPaymentSDK {
   ): Promise<PaymentResult>;
   cancel(): Promise<boolean>;
   refund(params: RefundRequest, options?: TransactionOptions): Promise<PaymentResult>;
+  recoverTransaction(transaction: PaymentTransactionRecord): Promise<PaymentResult>;
   reset(): void;
 }

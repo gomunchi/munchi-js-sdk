@@ -15,8 +15,14 @@ import {
   type PaymentRequest as SdkPaymentRequest,
   SdkPaymentStatus,
   type TransactionOptions,
+  type PaymentTransactionRecord,
 } from "./types/payment";
-import type { ILogger, SDKOptions } from "./types/sdk";
+import type {
+  IHealthCheckAdapter,
+  ILogger,
+  IPersistenceAdapter,
+  SDKOptions,
+} from "./types/sdk";
 
 type StateListener = (state: PaymentInteractionState) => void;
 
@@ -30,8 +36,11 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
   private _listeners: StateListener[] = [];
   private _cancellationIntent = false;
   private _currentSessionId: string | undefined;
+  private _currentOrderRef: string | undefined;
   private _autoResetTimer: ReturnType<typeof setTimeout> | undefined;
   private autoResetOptions: SDKOptions["autoResetOnPaymentComplete"];
+  private persistence: IPersistenceAdapter | undefined;
+  private healthCheck: IHealthCheckAdapter | undefined;
 
   private static readonly TERMINAL_STATES = [
     PaymentInteractionState.SUCCESS,
@@ -56,6 +65,8 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     this.logger = options.logger;
     this.timeoutMs = options.timeoutMs || 30000;
     this.autoResetOptions = options.autoResetOnPaymentComplete;
+    this.persistence = options.persistence;
+    this.healthCheck = options.healthCheck;
     this.strategy = strategy ?? this.resolveStrategy(config);
   }
 
@@ -95,6 +106,8 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
       [PaymentErrorCode.STRATEGY_ERROR]: PaymentFailureCode.SystemProviderError,
       [PaymentErrorCode.MISSING_CONFIG]: PaymentFailureCode.SystemUnknown,
       [PaymentErrorCode.INVALID_AMOUNT]: PaymentFailureCode.SystemUnknown,
+      [PaymentErrorCode.HEALTH_CHECK_FAILED]:
+        PaymentFailureCode.SystemProviderError,
       [PaymentErrorCode.UNKNOWN]: PaymentFailureCode.SystemUnknown,
     };
 
@@ -115,6 +128,10 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
 
     if (newState === PaymentInteractionState.IDLE) {
       this.cancelAutoReset();
+      // If returning to IDLE from a non-terminal state (e.g. via reset), we might want to update persistence?
+      // Usually IDLE means "ready for new".
+      // But if we are finishing a flow, we updated to SUCCESS/FAILED before.
+      // So this is likely just cleanup.
       this._currentState = newState;
       this._listeners.forEach((l) => l(newState));
       return;
@@ -137,6 +154,18 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     }
 
     this._currentState = newState;
+
+    if (this.persistence && this._currentOrderRef) {
+      this.persistence
+        .updateTransactionStatus(this._currentOrderRef, newState)
+        .catch((err) => {
+          this.logger?.warn("Failed to update persistence status", {
+            error: err,
+            orderRef: this._currentOrderRef,
+            newState,
+          });
+        });
+    }
 
     if (MunchiPaymentSDK.TERMINAL_STATES.includes(newState)) {
       this.scheduleAutoReset(newState);
@@ -213,8 +242,53 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
     this._cancellationIntent = false;
     // Prevent stale session IDs from previous transactions affecting new flows.
     this._currentSessionId = undefined;
+    this._currentOrderRef = orderRef;
+
+    // 0. HEALTH CHECK
+    if (this.healthCheck) {
+      try {
+        const health = await this.healthCheck.checkHealth();
+        if (!health.isHealthy) {
+          this.logger?.warn("Health check failed, aborting transaction", {
+            details: health.details,
+          });
+          return this.generateErrorResult(
+            orderRef,
+            PaymentErrorCode.HEALTH_CHECK_FAILED,
+            "System is offline or unhealthy",
+          );
+        }
+      } catch (err) {
+        this.logger?.error("Health check threw error", err);
+        return this.generateErrorResult(
+          orderRef,
+          PaymentErrorCode.HEALTH_CHECK_FAILED,
+          "Health check error",
+        );
+      }
+    }
 
     this.transitionTo(PaymentInteractionState.IDLE);
+
+    // 1. PERSISTENCE START
+    if (this.persistence) {
+      try {
+        await this.persistence.saveTransaction({
+          orderRef: params.orderRef,
+          amountCents: params.amountCents,
+          currency: params.currency,
+          status: PaymentInteractionState.IDLE,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+          provider: this.strategy instanceof NetsStrategy ? "NETS" : "VIVA", // Simplified detection
+          metadata: params.options as Record<string, unknown>,
+        });
+      } catch (err) {
+        this.logger?.warn("Failed to persist transaction start", { err });
+        // We continue even if persistence fails? Or should we block?
+        // Assuming we continue for now, but log warning.
+      }
+    }
 
     if (params.amountCents <= 0) {
       return this.generateErrorResult(
@@ -231,6 +305,18 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
       ) => {
         if (detail?.sessionId) {
           this._currentSessionId = detail.sessionId;
+          // Update persistence with sessionId if available?
+          // We can't easily trigger a separate update here without a state change event that carries it,
+          // or we blindly update.
+          if (this.persistence && this._currentOrderRef) {
+            this.persistence
+              .updateTransactionStatus(
+                this._currentOrderRef,
+                state,
+                { sessionId: detail.sessionId }
+              )
+              .catch(() => { /* ignore */ });
+          }
         }
         if (state !== PaymentInteractionState.FAILED) {
           this.transitionTo(state);
@@ -583,6 +669,101 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
       );
       this.safeFireCallback(() => callbacks.onError?.(errorResult));
       return errorResult;
+    }
+  };
+
+  public recoverTransaction = async (
+    transaction: PaymentTransactionRecord,
+  ): Promise<PaymentResult> => {
+    // 1. Validate input
+    if (!transaction.orderRef) {
+      return this.generateErrorResult(
+        "unknown",
+        PaymentErrorCode.UNKNOWN,
+        "Invalid transaction record: missing orderRef",
+      );
+    }
+
+    this.logger?.info("Attempting to recover transaction", {
+      orderRef: transaction.orderRef,
+      sessionId: transaction.sessionId,
+    });
+
+    // 2. Identify strategy (simplified logic for now)
+    // In a real app, provider might be stored in the record or passed in.
+    // For now we assume the current configured strategy matches the record's provider needs.
+    // Ideally, we'd reconstruct the correct strategy based on `transaction.provider`.
+
+    // 3. If no session ID, we can't verify with the provider.
+    // Assuming it never started processing or failed early.
+    if (!transaction.sessionId) {
+      const result: PaymentResult = {
+        success: false,
+        status: SdkPaymentStatus.FAILED,
+        errorCode: PaymentFailureCode.SystemUnknown,
+        errorMessage: "Cannot recover transaction without session ID",
+        orderId: transaction.orderRef,
+      };
+
+      // Update persistence to ensure it's marked FAILED
+      if (this.persistence) {
+        try {
+          await this.persistence.updateTransactionStatus(
+            transaction.orderRef,
+            PaymentInteractionState.FAILED,
+            { recoveryError: "Missing Session ID" },
+          );
+        } catch (e) {
+          this.logger?.warn("Failed to update persistence during recovery", {
+            error: e,
+          });
+        }
+      }
+      return result;
+    }
+
+    // 4. Verify with Provider
+    try {
+      // Construct a minimal request object for verification.
+      const request: SdkPaymentRequest = {
+        orderRef: transaction.orderRef,
+        amountCents: transaction.amountCents,
+        currency: transaction.currency as any, // Cast if needed
+        displayId: transaction.orderRef, // Fallback
+      };
+
+      // We use the underlying strategy to verify.
+      // NOTE: This assumes the current strategy instance is improving the correct provider.
+      // If the SDK switched providers, this might be wrong.
+      const finalStatus = await this.strategy.verifyFinalStatus(
+        request,
+        transaction.sessionId,
+      );
+
+      // 5. Update Persistence
+      if (this.persistence) {
+        const newState = finalStatus.success
+          ? PaymentInteractionState.SUCCESS
+          : PaymentInteractionState.FAILED;
+
+        await this.persistence.updateTransactionStatus(
+          transaction.orderRef,
+          newState,
+          {
+            recoveredAt: Date.now(),
+            providerResult: finalStatus,
+          },
+        );
+      }
+
+      return finalStatus;
+    } catch (error) {
+      this.logger?.error("Recovery failed", { error });
+      return this.generateErrorResult(
+        transaction.orderRef,
+        PaymentErrorCode.UNKNOWN,
+        error instanceof Error ? error.message : "Recovery failed",
+      );
     }
   };
 }
