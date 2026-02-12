@@ -15236,22 +15236,9 @@ components:
         action:
           type: string
           enum:
-            - PRODUCT_UPDATED
-            - PRODUCT_DELETED
-            - MENU_UPDATED
-            - CATEGORY_UPDATED
-            - EXTRA_UPDATED
-            - EXTRA_DELETED
-            - OPTION_UPDATED
-            - OPTION_DELETED
-            - SUBOPTION_UPDATED
-            - SUBOPTION_DELETED
-            - SITE_UPDATED
-            - CATEGORY_DELETED
-            - PRODUCT_CREATED
             - BUSINESS_CONFIG_UPDATED
-            - data_sync_required
-            - pos_session_updated
+            - DATA_SYNC_REQUIRED
+            - POS_SESSION_UPDATED
             - BUSINESS_DATA_UPDATED
         entityType:
           type: string
@@ -15265,6 +15252,7 @@ components:
             - shift
             - employee
             - config
+            - business
         entityId:
           type: object
         businessId:
@@ -15274,8 +15262,6 @@ components:
             - $ref: "#/components/schemas/ProviderEnum"
         timestamp:
           type: string
-        productUpdates:
-          type: object
       required:
         - action
         - entityType
@@ -15294,22 +15280,9 @@ components:
     BusinessEventAction:
       type: string
       enum:
-        - PRODUCT_UPDATED
-        - PRODUCT_DELETED
-        - MENU_UPDATED
-        - CATEGORY_UPDATED
-        - EXTRA_UPDATED
-        - EXTRA_DELETED
-        - OPTION_UPDATED
-        - OPTION_DELETED
-        - SUBOPTION_UPDATED
-        - SUBOPTION_DELETED
-        - SITE_UPDATED
-        - CATEGORY_DELETED
-        - PRODUCT_CREATED
         - BUSINESS_CONFIG_UPDATED
-        - data_sync_required
-        - pos_session_updated
+        - DATA_SYNC_REQUIRED
+        - POS_SESSION_UPDATED
         - BUSINESS_DATA_UPDATED
     EntityType:
       type: string
@@ -15323,3 +15296,4 @@ components:
         - shift
         - employee
         - config
+        - business

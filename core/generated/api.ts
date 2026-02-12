@@ -65,31 +65,12 @@ export interface AblyBusinessEventPayloadDto {
      * @memberof AblyBusinessEventPayloadDto
      */
     'timestamp': string;
-    /**
-     * 
-     * @type {object}
-     * @memberof AblyBusinessEventPayloadDto
-     */
-    'productUpdates'?: object;
 }
 
 export const ActionEnum = {
-    ProductUpdated: 'PRODUCT_UPDATED',
-    ProductDeleted: 'PRODUCT_DELETED',
-    MenuUpdated: 'MENU_UPDATED',
-    CategoryUpdated: 'CATEGORY_UPDATED',
-    ExtraUpdated: 'EXTRA_UPDATED',
-    ExtraDeleted: 'EXTRA_DELETED',
-    OptionUpdated: 'OPTION_UPDATED',
-    OptionDeleted: 'OPTION_DELETED',
-    SuboptionUpdated: 'SUBOPTION_UPDATED',
-    SuboptionDeleted: 'SUBOPTION_DELETED',
-    SiteUpdated: 'SITE_UPDATED',
-    CategoryDeleted: 'CATEGORY_DELETED',
-    ProductCreated: 'PRODUCT_CREATED',
     BusinessConfigUpdated: 'BUSINESS_CONFIG_UPDATED',
-    DataSyncRequired: 'data_sync_required',
-    PosSessionUpdated: 'pos_session_updated',
+    DataSyncRequired: 'DATA_SYNC_REQUIRED',
+    PosSessionUpdated: 'POS_SESSION_UPDATED',
     BusinessDataUpdated: 'BUSINESS_DATA_UPDATED'
 } as const;
 
@@ -103,7 +84,8 @@ export const EntityTypeEnum = {
     Role: 'role',
     Shift: 'shift',
     Employee: 'employee',
-    Config: 'config'
+    Config: 'config',
+    Business: 'business'
 } as const;
 
 export type EntityTypeEnum = typeof EntityTypeEnum[keyof typeof EntityTypeEnum];
@@ -885,22 +867,9 @@ export interface BusinessDto {
  */
 
 export const BusinessEventAction = {
-    ProductUpdated: 'PRODUCT_UPDATED',
-    ProductDeleted: 'PRODUCT_DELETED',
-    MenuUpdated: 'MENU_UPDATED',
-    CategoryUpdated: 'CATEGORY_UPDATED',
-    ExtraUpdated: 'EXTRA_UPDATED',
-    ExtraDeleted: 'EXTRA_DELETED',
-    OptionUpdated: 'OPTION_UPDATED',
-    OptionDeleted: 'OPTION_DELETED',
-    SuboptionUpdated: 'SUBOPTION_UPDATED',
-    SuboptionDeleted: 'SUBOPTION_DELETED',
-    SiteUpdated: 'SITE_UPDATED',
-    CategoryDeleted: 'CATEGORY_DELETED',
-    ProductCreated: 'PRODUCT_CREATED',
     BusinessConfigUpdated: 'BUSINESS_CONFIG_UPDATED',
-    DataSyncRequired: 'data_sync_required',
-    PosSessionUpdated: 'pos_session_updated',
+    DataSyncRequired: 'DATA_SYNC_REQUIRED',
+    PosSessionUpdated: 'POS_SESSION_UPDATED',
     BusinessDataUpdated: 'BUSINESS_DATA_UPDATED'
 } as const;
 
@@ -4493,7 +4462,8 @@ export const EntityType = {
     Role: 'role',
     Shift: 'shift',
     Employee: 'employee',
-    Config: 'config'
+    Config: 'config',
+    Business: 'business'
 } as const;
 
 export type EntityType = typeof EntityType[keyof typeof EntityType];
