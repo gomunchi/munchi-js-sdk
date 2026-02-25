@@ -275,14 +275,20 @@ export class VivaStrategy implements IPaymentStrategy {
 
       const result: PaymentResult = {
         success: isSuccess,
-        status: isSuccess ? SdkPaymentStatus.SUCCESS : SdkPaymentStatus.FAILED,
+        status: isSuccess
+          ? SdkPaymentStatus.SUCCESS
+          : isPending
+            ? SdkPaymentStatus.PENDING
+            : SdkPaymentStatus.FAILED,
         orderId: data.orderId,
         errorCode:
           data.error?.code ||
-          (isSuccess ? "" : isPending ? PaymentFailureCode.TerminalTimeout : PaymentFailureCode.SystemUnknown),
+          (isSuccess || isPending ? "" : PaymentFailureCode.SystemUnknown),
         errorMessage:
           data.error?.message ||
-          (isSuccess ? "" : isPending ? "Payment was not completed within the allowed time" : "Transaction failed without error details"),
+          (isSuccess || isPending
+            ? ""
+            : "Transaction failed without error details"),
       };
 
       if (data.transactionId) {

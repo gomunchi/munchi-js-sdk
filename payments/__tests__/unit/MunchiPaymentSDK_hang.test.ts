@@ -301,8 +301,9 @@ describe("MunchiPaymentSDK Hanging Scenarios", () => {
       expect(sdk.currentState).toBe(PaymentInteractionState.REQUIRES_INPUT);
       expect(states).toContain(PaymentInteractionState.REQUIRES_INPUT);
 
-      // Phase 3: verifyWithRetry retries 3x with 10s timeout each = 30s max
-      await jest.advanceTimersByTimeAsync(30000);
+      // Phase 3: verifyWithRetry retries 3x with 10s timeout each
+      // plus 2 retry delays of 1500ms each = 33s max
+      await jest.advanceTimersByTimeAsync(33000);
       await Promise.resolve();
       await Promise.resolve();
 
@@ -357,8 +358,8 @@ describe("MunchiPaymentSDK Hanging Scenarios", () => {
       await Promise.resolve();
 
       // verifyWithRetry attempts all fail immediately (rejected, not timed out)
-      // so it should resolve quickly without needing more timer advances
-      await jest.advanceTimersByTimeAsync(1000);
+      // but now waits for 2 retry delays of 1500ms each before final failure.
+      await jest.advanceTimersByTimeAsync(3000);
       await Promise.resolve();
       await Promise.resolve();
 

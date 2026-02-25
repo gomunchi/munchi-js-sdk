@@ -388,6 +388,7 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
 
   private static readonly VERIFY_TIMEOUT_MS = 10000;
   private static readonly VERIFY_MAX_RETRIES = 3;
+  private static readonly VERIFY_RETRY_DELAY_MS = 1500;
 
   private async verifyWithRetry(
     params: SdkPaymentRequest,
@@ -407,6 +408,18 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
             ),
           ),
         ]);
+        if (result.status === SdkPaymentStatus.PENDING) {
+          lastError = new Error("Verify returned pending status");
+          this.logger?.warn(
+            `verifyFinalStatus attempt ${attempt}/${MunchiPaymentSDK.VERIFY_MAX_RETRIES} returned pending status`,
+          );
+          if (attempt < MunchiPaymentSDK.VERIFY_MAX_RETRIES) {
+            await new Promise((resolve) =>
+              setTimeout(resolve, MunchiPaymentSDK.VERIFY_RETRY_DELAY_MS),
+            );
+          }
+          continue;
+        }
         return result;
       } catch (err) {
         lastError = err;
@@ -417,6 +430,11 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
           `verifyFinalStatus attempt ${attempt}/${MunchiPaymentSDK.VERIFY_MAX_RETRIES} failed`,
           { err },
         );
+        if (attempt < MunchiPaymentSDK.VERIFY_MAX_RETRIES) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, MunchiPaymentSDK.VERIFY_RETRY_DELAY_MS),
+          );
+        }
       }
     }
 

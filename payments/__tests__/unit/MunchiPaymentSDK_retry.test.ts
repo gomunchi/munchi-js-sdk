@@ -98,27 +98,26 @@ describe("MunchiPaymentSDK Verify Retry Logic", () => {
       expect(sdk.currentState).toBe(PaymentInteractionState.REQUIRES_INPUT);
 
       // 1. SDK timeout fires at 5s (before VivaStrategy's 10s polling start)
-      jest.advanceTimersByTime(5000);
+      await jest.advanceTimersByTimeAsync(5000);
       await flushPromises();
 
       // SDK stays in REQUIRES_INPUT (no VERIFYING transition on timeout)
       expect(sdk.currentState).toBe(PaymentInteractionState.REQUIRES_INPUT);
 
       // 2. Verify Attempt 1 hangs -> 10s verify timeout
-      jest.advanceTimersByTime(10000);
+      await jest.advanceTimersByTimeAsync(10000);
       await flushPromises();
 
       expect(sdk.currentState).toBe(PaymentInteractionState.REQUIRES_INPUT);
 
-      // 3. Verify Attempt 2 resolves after 500ms delay
-      jest.advanceTimersByTime(501);
+      // 3. Verify Attempt 2 starts after retry delay and resolves after 500ms
+      await jest.advanceTimersByTimeAsync(2001);
       await flushPromises();
-
-      expect(sdk.currentState).toBe(PaymentInteractionState.SUCCESS);
 
       const result = await txPromise;
       expect(result.success).toBe(true);
       expect(result.status).toBe(SdkPaymentStatus.SUCCESS);
+      expect(sdk.currentState).toBe(PaymentInteractionState.SUCCESS);
       
     } finally {
       jest.useRealTimers();
@@ -179,28 +178,108 @@ describe("MunchiPaymentSDK Verify Retry Logic", () => {
       expect(sdk.currentState).toBe(PaymentInteractionState.REQUIRES_INPUT);
 
       // 1. SDK timeout fires at 5s (before VivaStrategy's 10s polling start)
-      jest.advanceTimersByTime(5000);
+      await jest.advanceTimersByTimeAsync(5000);
       await flushPromises();
 
       expect(sdk.currentState).toBe(PaymentInteractionState.REQUIRES_INPUT);
 
       // 2. Verify Attempt 1 hangs -> 10s verify timeout
-      jest.advanceTimersByTime(10000);
+      await jest.advanceTimersByTimeAsync(10000);
       await flushPromises();
 
       expect(sdk.currentState).toBe(PaymentInteractionState.REQUIRES_INPUT);
 
-      // 3. Verify Attempt 2 resolves after 500ms delay with fail
-      jest.advanceTimersByTime(501);
+      // 3. Verify Attempt 2 starts after retry delay and resolves after 500ms with fail
+      await jest.advanceTimersByTimeAsync(2001);
       await flushPromises();
-
-      expect(sdk.currentState).toBe(PaymentInteractionState.FAILED);
 
       const result = await txPromise;
       expect(result.success).toBe(false);
+      expect(sdk.currentState).toBe(PaymentInteractionState.FAILED);
       
     } finally {
       jest.useRealTimers();
     }
   }, 10000);
+
+  it("should keep retrying when verify returns pending and eventually succeed", async () => {
+    jest.useFakeTimers();
+    try {
+      const orderRef = "order-retry-pending-to-success";
+      const sessionId = "session-retry-pending-to-success";
+
+      const mockProcessPayment = jest.fn().mockImplementation(
+        async (
+          _params: unknown,
+          onStateChange: (
+            state: PaymentInteractionState,
+            detail?: { sessionId?: string },
+          ) => void,
+        ) => {
+          onStateChange(PaymentInteractionState.REQUIRES_INPUT, { sessionId });
+          return new Promise(() => {});
+        },
+      );
+
+      const mockVerifyFinalStatus = jest
+        .fn()
+        .mockResolvedValueOnce({
+          success: false,
+          status: SdkPaymentStatus.PENDING,
+          orderId: orderRef,
+        })
+        .mockResolvedValueOnce({
+          success: false,
+          status: SdkPaymentStatus.PENDING,
+          orderId: orderRef,
+        })
+        .mockResolvedValueOnce({
+          success: true,
+          status: SdkPaymentStatus.SUCCESS,
+          orderId: orderRef,
+          transactionId: "tx-pending-win",
+        });
+
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig, {
+        timeoutMs: 5000,
+      });
+
+      (sdk as any).strategy = {
+        processPayment: mockProcessPayment,
+        verifyFinalStatus: mockVerifyFinalStatus,
+        abort: jest.fn(),
+        cancelTransaction: jest.fn(),
+        refundTransaction: jest.fn(),
+      };
+
+      const txPromise = sdk.initiateTransaction({
+        orderRef,
+        amountCents: 1200,
+        currency: "EUR",
+        displayId: "display-retry-pending",
+      });
+
+      await flushPromises();
+      expect(sdk.currentState).toBe(PaymentInteractionState.REQUIRES_INPUT);
+
+      jest.advanceTimersByTime(5000);
+      await flushPromises();
+      expect(mockVerifyFinalStatus).toHaveBeenCalledTimes(1);
+
+      jest.advanceTimersByTime(1500);
+      await flushPromises();
+      expect(mockVerifyFinalStatus).toHaveBeenCalledTimes(2);
+
+      jest.advanceTimersByTime(1500);
+      await flushPromises();
+      expect(mockVerifyFinalStatus).toHaveBeenCalledTimes(3);
+
+      const result = await txPromise;
+      expect(result.success).toBe(true);
+      expect(result.status).toBe(SdkPaymentStatus.SUCCESS);
+      expect(sdk.currentState).toBe(PaymentInteractionState.SUCCESS);
+    } finally {
+      jest.useRealTimers();
+    }
+  });
 });

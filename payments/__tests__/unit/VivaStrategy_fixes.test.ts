@@ -6,6 +6,7 @@ import {
 } from "@munchi_oy/core";
 import type { AxiosInstance } from "axios";
 import { VivaStrategy } from "../../src/strategies/VivaStrategy";
+import { SdkPaymentStatus } from "../../src/types/payment";
 import type { IMessagingAdapter } from "../../src/types/payment";
 import {
   createMockAxios,
@@ -106,7 +107,7 @@ describe("VivaStrategy Fixes Verification", () => {
       expect(result.errorMessage).toBe("Terminal timed out explicitly");
     });
 
-    it("should return TerminalTimeout error when payment status is Pending", async () => {
+    it("should return pending status when payment status is Pending", async () => {
       mockPaymentApi.getPaymentStatus.mockResolvedValue({
         data: {
           status: SimplePaymentStatus.Pending,
@@ -124,8 +125,9 @@ describe("VivaStrategy Fixes Verification", () => {
       const result = await strategy.verifyFinalStatus(params, "session-123");
 
       expect(result.success).toBe(false);
-      expect(result.errorCode).toBe(PaymentFailureCode.TerminalTimeout);
-      expect(result.errorMessage).toBe("Payment was not completed within the allowed time");
+      expect(result.status).toBe(SdkPaymentStatus.PENDING);
+      expect(result.errorCode).toBe("");
+      expect(result.errorMessage).toBe("");
     });
   });
 });
