@@ -511,11 +511,6 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
         this.transitionTo(state),
       );
 
-      // If cancellation failed (e.g. no active session) AND we are just verifying,
-      // we should probably revert to IDLE or FAILED to avoid getting stuck.
-      if (!result && this._currentState === PaymentInteractionState.VERIFYING) {
-        this.transitionTo(PaymentInteractionState.IDLE);
-      }
       return result;
     } catch (error) {
       this.logger?.error("Cancellation command failed", error);
