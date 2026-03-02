@@ -85,7 +85,9 @@ export const EntityTypeEnum = {
     Shift: 'shift',
     Employee: 'employee',
     Config: 'config',
-    Business: 'business'
+    Business: 'business',
+    Suboption: 'suboption',
+    Site: 'site'
 } as const;
 
 export type EntityTypeEnum = typeof EntityTypeEnum[keyof typeof EntityTypeEnum];
@@ -2752,31 +2754,6 @@ export interface CreateEmployeeAssignmentDto {
 /**
  * 
  * @export
- * @interface CreateEmployeeDto
- */
-export interface CreateEmployeeDto {
-    /**
-     * The employee\'s full name
-     * @type {string}
-     * @memberof CreateEmployeeDto
-     */
-    'name': string;
-    /**
-     * The ID of the merchant this employee belongs to
-     * @type {string}
-     * @memberof CreateEmployeeDto
-     */
-    'merchantId': string;
-    /**
-     * The 4-digit plain-text PIN for the employee
-     * @type {string}
-     * @memberof CreateEmployeeDto
-     */
-    'pin': string;
-}
-/**
- * 
- * @export
  * @interface CreateInvoiceCompanyDto
  */
 export interface CreateInvoiceCompanyDto {
@@ -3518,10 +3495,10 @@ export interface DeliveryDto {
     'selfDelivery': boolean | null;
     /**
      * Delivery note
-     * @type {string}
+     * @type {object}
      * @memberof DeliveryDto
      */
-    'note': string | null;
+    'note': object | null;
     /**
      * 
      * @type {DeliveryStatus}
@@ -3831,45 +3808,6 @@ export interface EmployeeAssignmentResponseDto {
 /**
  * 
  * @export
- * @interface EmployeeResponseDto
- */
-export interface EmployeeResponseDto {
-    /**
-     * 
-     * @type {string}
-     * @memberof EmployeeResponseDto
-     */
-    'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EmployeeResponseDto
-     */
-    'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof EmployeeResponseDto
-     */
-    'merchantId': string;
-    /**
-     * 
-     * @type {Status}
-     * @memberof EmployeeResponseDto
-     */
-    'status': Status;
-    /**
-     * The employee\'s plain-text, decrypted PIN
-     * @type {string}
-     * @memberof EmployeeResponseDto
-     */
-    'pin': string;
-}
-
-
-/**
- * 
- * @export
  * @interface EmployeeSessionResponseDto
  */
 export interface EmployeeSessionResponseDto {
@@ -4053,257 +3991,6 @@ export interface EmployeeShiftResponseDtoEmployee {
 /**
  * 
  * @export
- * @interface EndOfDayReportDto
- */
-export interface EndOfDayReportDto {
-    /**
-     * Report generated at
-     * @type {string}
-     * @memberof EndOfDayReportDto
-     */
-    'reportGeneratedAt': string;
-    /**
-     * Report date start
-     * @type {string}
-     * @memberof EndOfDayReportDto
-     */
-    'reportDateStart': string;
-    /**
-     * Report date end
-     * @type {string}
-     * @memberof EndOfDayReportDto
-     */
-    'reportDateEnd': string;
-    /**
-     * Business ID
-     * @type {number}
-     * @memberof EndOfDayReportDto
-     */
-    'businessId': number;
-    /**
-     * Payment reconciliation
-     * @type {Array<PaymentDetailsDto>}
-     * @memberof EndOfDayReportDto
-     */
-    'paymentMethodDetails': Array<PaymentDetailsDto>;
-    /**
-     * 
-     * @type {EndOfDayReportDtoSalesSummary}
-     * @memberof EndOfDayReportDto
-     */
-    'salesSummary': EndOfDayReportDtoSalesSummary;
-    /**
-     * 
-     * @type {EndOfDayReportDtoTaxBreakdown}
-     * @memberof EndOfDayReportDto
-     */
-    'taxBreakdown': EndOfDayReportDtoTaxBreakdown;
-    /**
-     * Item breakdown
-     * @type {Array<ItemBreakdownDto>}
-     * @memberof EndOfDayReportDto
-     */
-    'itemBreakdown': Array<ItemBreakdownDto>;
-}
-/**
- * Sales summary
- * @export
- * @interface EndOfDayReportDtoSalesSummary
- */
-export interface EndOfDayReportDtoSalesSummary {
-    /**
-     * Total number of orders
-     * @type {number}
-     * @memberof EndOfDayReportDtoSalesSummary
-     */
-    'totalOrders': number;
-    /**
-     * Total sales amount
-     * @type {number}
-     * @memberof EndOfDayReportDtoSalesSummary
-     */
-    'totalSales': number;
-    /**
-     * Net sales amount after adjustments
-     * @type {number}
-     * @memberof EndOfDayReportDtoSalesSummary
-     */
-    'netSales': number;
-    /**
-     * Total amount actually paid
-     * @type {number}
-     * @memberof EndOfDayReportDtoSalesSummary
-     */
-    'totalPaid': number;
-    /**
-     * Total difference
-     * @type {number}
-     * @memberof EndOfDayReportDtoSalesSummary
-     */
-    'totalDifference': number;
-    /**
-     * Total transactions
-     * @type {number}
-     * @memberof EndOfDayReportDtoSalesSummary
-     */
-    'totalTransactions': number;
-    /**
-     * Number of rejected orders
-     * @type {number}
-     * @memberof EndOfDayReportDtoSalesSummary
-     */
-    'rejectedOrders': number;
-    /**
-     * Total rejected sales amount
-     * @type {number}
-     * @memberof EndOfDayReportDtoSalesSummary
-     */
-    'rejectedSales': number;
-    /**
-     * Average sales per order
-     * @type {number}
-     * @memberof EndOfDayReportDtoSalesSummary
-     */
-    'averageSales': number;
-    /**
-     * Total number of items sold
-     * @type {number}
-     * @memberof EndOfDayReportDtoSalesSummary
-     */
-    'totalItemsCount': number;
-    /**
-     * Total refund amount
-     * @type {number}
-     * @memberof EndOfDayReportDtoSalesSummary
-     */
-    'totalRefunds': number;
-    /**
-     * Total discount amount given
-     * @type {number}
-     * @memberof EndOfDayReportDtoSalesSummary
-     */
-    'totalDiscounts': number;
-    /**
-     * Total voucher forfeited amount in cents
-     * @type {number}
-     * @memberof EndOfDayReportDtoSalesSummary
-     */
-    'totalVoucherForfeited': number;
-}
-/**
- * Tax breakdown
- * @export
- * @interface EndOfDayReportDtoTaxBreakdown
- */
-export interface EndOfDayReportDtoTaxBreakdown {
-    /**
-     * Standard tax amount
-     * @type {number}
-     * @memberof EndOfDayReportDtoTaxBreakdown
-     */
-    'standardTaxAmount': number;
-    /**
-     * Premium tax amount
-     * @type {number}
-     * @memberof EndOfDayReportDtoTaxBreakdown
-     */
-    'premiumTaxAmount': number;
-    /**
-     * Total tax amount
-     * @type {number}
-     * @memberof EndOfDayReportDtoTaxBreakdown
-     */
-    'totalTaxAmount': number;
-    /**
-     * Standard tax rate %
-     * @type {number}
-     * @memberof EndOfDayReportDtoTaxBreakdown
-     */
-    'standardTaxRate': number;
-    /**
-     * Premium tax rate %
-     * @type {number}
-     * @memberof EndOfDayReportDtoTaxBreakdown
-     */
-    'premiumTaxRate': number;
-}
-/**
- * 
- * @export
- * @interface EndOfDayReportDtoV3
- */
-export interface EndOfDayReportDtoV3 {
-    /**
-     * Report generated at
-     * @type {string}
-     * @memberof EndOfDayReportDtoV3
-     */
-    'reportGeneratedAt': string;
-    /**
-     * Report date start
-     * @type {string}
-     * @memberof EndOfDayReportDtoV3
-     */
-    'reportDateStart': string;
-    /**
-     * Report date end
-     * @type {string}
-     * @memberof EndOfDayReportDtoV3
-     */
-    'reportDateEnd': string;
-    /**
-     * Business ID
-     * @type {number}
-     * @memberof EndOfDayReportDtoV3
-     */
-    'businessId': number;
-    /**
-     * Payment reconciliation
-     * @type {Array<PaymentDetailsDto>}
-     * @memberof EndOfDayReportDtoV3
-     */
-    'paymentMethodDetails': Array<PaymentDetailsDto>;
-    /**
-     * 
-     * @type {EndOfDayReportDtoSalesSummary}
-     * @memberof EndOfDayReportDtoV3
-     */
-    'salesSummary': EndOfDayReportDtoSalesSummary;
-    /**
-     * 
-     * @type {EndOfDayReportDtoV3TaxBreakdown}
-     * @memberof EndOfDayReportDtoV3
-     */
-    'taxBreakdown': EndOfDayReportDtoV3TaxBreakdown;
-    /**
-     * Item breakdown
-     * @type {Array<ItemBreakdownDto>}
-     * @memberof EndOfDayReportDtoV3
-     */
-    'itemBreakdown': Array<ItemBreakdownDto>;
-}
-/**
- * Tax breakdown
- * @export
- * @interface EndOfDayReportDtoV3TaxBreakdown
- */
-export interface EndOfDayReportDtoV3TaxBreakdown {
-    /**
-     * Tax breakdown by rate
-     * @type {Array<TaxRateItem>}
-     * @memberof EndOfDayReportDtoV3TaxBreakdown
-     */
-    'taxRates': Array<TaxRateItem>;
-    /**
-     * Total tax amount
-     * @type {number}
-     * @memberof EndOfDayReportDtoV3TaxBreakdown
-     */
-    'totalTaxAmount': number;
-}
-/**
- * 
- * @export
  * @interface EndOfDayReportDtoV4
  */
 export interface EndOfDayReportDtoV4 {
@@ -4345,10 +4032,10 @@ export interface EndOfDayReportDtoV4 {
     'salesSummary': EndOfDayReportDtoV4SalesSummary;
     /**
      * 
-     * @type {EndOfDayReportDtoV3TaxBreakdown}
+     * @type {EndOfDayReportDtoV4TaxBreakdown}
      * @memberof EndOfDayReportDtoV4
      */
-    'taxBreakdown': EndOfDayReportDtoV3TaxBreakdown;
+    'taxBreakdown': EndOfDayReportDtoV4TaxBreakdown;
     /**
      * Item breakdown
      * @type {Array<ItemBreakdownDto>}
@@ -4448,6 +4135,25 @@ export interface EndOfDayReportDtoV4SalesSummary {
     'totalPaymentAmount': number;
 }
 /**
+ * Tax breakdown
+ * @export
+ * @interface EndOfDayReportDtoV4TaxBreakdown
+ */
+export interface EndOfDayReportDtoV4TaxBreakdown {
+    /**
+     * Tax breakdown by rate
+     * @type {Array<TaxRateItem>}
+     * @memberof EndOfDayReportDtoV4TaxBreakdown
+     */
+    'taxRates': Array<TaxRateItem>;
+    /**
+     * Total tax amount
+     * @type {number}
+     * @memberof EndOfDayReportDtoV4TaxBreakdown
+     */
+    'totalTaxAmount': number;
+}
+/**
  * 
  * @export
  * @enum {string}
@@ -4463,7 +4169,9 @@ export const EntityType = {
     Shift: 'shift',
     Employee: 'employee',
     Config: 'config',
-    Business: 'business'
+    Business: 'business',
+    Suboption: 'suboption',
+    Site: 'site'
 } as const;
 
 export type EntityType = typeof EntityType[keyof typeof EntityType];
@@ -7690,10 +7398,10 @@ export interface OrderHistoryPosResponseDtoV2Summary {
 export interface OrderHistoryResponseDto {
     /**
      * Order details
-     * @type {Array<OrderResponseDto>}
+     * @type {Array<UnifiedOrderResponseDto>}
      * @memberof OrderHistoryResponseDto
      */
-    'orders': Array<OrderResponseDto>;
+    'orders': Array<UnifiedOrderResponseDto>;
     /**
      * 
      * @type {OrderHistoryResponseDtoSummary}
@@ -7762,49 +7470,6 @@ export interface OrderHistoryResponseDtoSummary {
      * @memberof OrderHistoryResponseDtoSummary
      */
     'rejectedSales': number;
-}
-/**
- * 
- * @export
- * @interface OrderPaginationDto
- */
-export interface OrderPaginationDto {
-    /**
-     * Page number (starts from 1)
-     * @type {number}
-     * @memberof OrderPaginationDto
-     */
-    'page'?: number;
-    /**
-     * Number of items per page (max 100)
-     * @type {number}
-     * @memberof OrderPaginationDto
-     */
-    'limit'?: number;
-    /**
-     * Total number of items
-     * @type {number}
-     * @memberof OrderPaginationDto
-     */
-    'total': number;
-    /**
-     * Total number of pages
-     * @type {number}
-     * @memberof OrderPaginationDto
-     */
-    'totalPages': number;
-    /**
-     * Whether there is a next page
-     * @type {boolean}
-     * @memberof OrderPaginationDto
-     */
-    'hasNext': boolean;
-    /**
-     * Whether there is a previous page
-     * @type {boolean}
-     * @memberof OrderPaginationDto
-     */
-    'hasPrevious': boolean;
 }
 /**
  * 
@@ -8140,10 +7805,10 @@ export interface OrderResponseDtoDelivery {
     'selfDelivery': boolean | null;
     /**
      * Delivery note
-     * @type {string}
+     * @type {object}
      * @memberof OrderResponseDtoDelivery
      */
-    'note': string | null;
+    'note': object | null;
     /**
      * 
      * @type {DeliveryStatus}
@@ -8217,6 +7882,20 @@ export interface OrderResponseDtoPriceSummary {
      */
     'totalNet': number;
 }
+/**
+ * 
+ * @export
+ * @enum {string}
+ */
+
+export const OrderSource = {
+    Platform: 'PLATFORM',
+    Pos: 'POS'
+} as const;
+
+export type OrderSource = typeof OrderSource[keyof typeof OrderSource];
+
+
 /**
  * 
  * @export
@@ -8892,87 +8571,6 @@ export interface OrderingItemExtraSubOptionDto {
 /**
  * 
  * @export
- * @interface PaginatedEmployeesResponseDto
- */
-export interface PaginatedEmployeesResponseDto {
-    /**
-     * 
-     * @type {Array<EmployeeResponseDto>}
-     * @memberof PaginatedEmployeesResponseDto
-     */
-    'data': Array<EmployeeResponseDto>;
-    /**
-     * 
-     * @type {PaginationMetaDto}
-     * @memberof PaginatedEmployeesResponseDto
-     */
-    'pagination': PaginationMetaDto;
-}
-/**
- * 
- * @export
- * @interface PaginatedOrderResponseDto
- */
-export interface PaginatedOrderResponseDto {
-    /**
-     * Order details
-     * @type {Array<OrderResponseDto>}
-     * @memberof PaginatedOrderResponseDto
-     */
-    'orders': Array<OrderResponseDto>;
-    /**
-     * 
-     * @type {PaginatedOrderResponseDtoPagination}
-     * @memberof PaginatedOrderResponseDto
-     */
-    'pagination': PaginatedOrderResponseDtoPagination;
-}
-/**
- * Pagination details
- * @export
- * @interface PaginatedOrderResponseDtoPagination
- */
-export interface PaginatedOrderResponseDtoPagination {
-    /**
-     * Page number (starts from 1)
-     * @type {number}
-     * @memberof PaginatedOrderResponseDtoPagination
-     */
-    'page'?: number;
-    /**
-     * Number of items per page (max 100)
-     * @type {number}
-     * @memberof PaginatedOrderResponseDtoPagination
-     */
-    'limit'?: number;
-    /**
-     * Total number of items
-     * @type {number}
-     * @memberof PaginatedOrderResponseDtoPagination
-     */
-    'total': number;
-    /**
-     * Total number of pages
-     * @type {number}
-     * @memberof PaginatedOrderResponseDtoPagination
-     */
-    'totalPages': number;
-    /**
-     * Whether there is a next page
-     * @type {boolean}
-     * @memberof PaginatedOrderResponseDtoPagination
-     */
-    'hasNext': boolean;
-    /**
-     * Whether there is a previous page
-     * @type {boolean}
-     * @memberof PaginatedOrderResponseDtoPagination
-     */
-    'hasPrevious': boolean;
-}
-/**
- * 
- * @export
  * @interface PaginatedResponseDto
  */
 export interface PaginatedResponseDto {
@@ -9011,37 +8609,6 @@ export interface PaginationDto {
      * Total pages
      * @type {number}
      * @memberof PaginationDto
-     */
-    'totalPages': number;
-}
-/**
- * 
- * @export
- * @interface PaginationMetaDto
- */
-export interface PaginationMetaDto {
-    /**
-     * 
-     * @type {number}
-     * @memberof PaginationMetaDto
-     */
-    'total': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PaginationMetaDto
-     */
-    'page': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PaginationMetaDto
-     */
-    'limit': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PaginationMetaDto
      */
     'totalPages': number;
 }
@@ -10437,6 +10004,12 @@ export interface PosBusinessDto {
      * @type {string}
      * @memberof PosBusinessDto
      */
+    'logo': string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof PosBusinessDto
+     */
     'address': string | null;
     /**
      * 
@@ -11741,7 +11314,8 @@ export const PosPermission = {
     Shift: 'Shift::*',
     ShiftForceClockOut: 'Shift::ForceClockOut',
     Settings: 'Settings::*',
-    SettingsEditProfile: 'Settings::EditProfile'
+    SettingsEditProfile: 'Settings::EditProfile',
+    OpenOrdersDelete: 'OpenOrders::Delete'
 } as const;
 
 export type PosPermission = typeof PosPermission[keyof typeof PosPermission];
@@ -13644,91 +13218,6 @@ export interface RoleResponseDto {
 /**
  * 
  * @export
- * @interface SalesSummaryDto
- */
-export interface SalesSummaryDto {
-    /**
-     * Total number of orders
-     * @type {number}
-     * @memberof SalesSummaryDto
-     */
-    'totalOrders': number;
-    /**
-     * Total sales amount
-     * @type {number}
-     * @memberof SalesSummaryDto
-     */
-    'totalSales': number;
-    /**
-     * Net sales amount after adjustments
-     * @type {number}
-     * @memberof SalesSummaryDto
-     */
-    'netSales': number;
-    /**
-     * Total amount actually paid
-     * @type {number}
-     * @memberof SalesSummaryDto
-     */
-    'totalPaid': number;
-    /**
-     * Total difference
-     * @type {number}
-     * @memberof SalesSummaryDto
-     */
-    'totalDifference': number;
-    /**
-     * Total transactions
-     * @type {number}
-     * @memberof SalesSummaryDto
-     */
-    'totalTransactions': number;
-    /**
-     * Number of rejected orders
-     * @type {number}
-     * @memberof SalesSummaryDto
-     */
-    'rejectedOrders': number;
-    /**
-     * Total rejected sales amount
-     * @type {number}
-     * @memberof SalesSummaryDto
-     */
-    'rejectedSales': number;
-    /**
-     * Average sales per order
-     * @type {number}
-     * @memberof SalesSummaryDto
-     */
-    'averageSales': number;
-    /**
-     * Total number of items sold
-     * @type {number}
-     * @memberof SalesSummaryDto
-     */
-    'totalItemsCount': number;
-    /**
-     * Total refund amount
-     * @type {number}
-     * @memberof SalesSummaryDto
-     */
-    'totalRefunds': number;
-    /**
-     * Total discount amount given
-     * @type {number}
-     * @memberof SalesSummaryDto
-     */
-    'totalDiscounts': number;
-    /**
-     * Total voucher forfeited amount in cents
-     * @type {number}
-     * @memberof SalesSummaryDto
-     */
-    'totalVoucherForfeited': number;
-}
-/**
- * 
- * @export
  * @interface SalesSummaryDtoV2
  */
 export interface SalesSummaryDtoV2 {
@@ -13855,214 +13344,6 @@ export interface SearchUserInfoResponseDto {
      */
     'data': Array<UserWithLoyaltyDto>;
 }
-/**
- * 
- * @export
- * @interface SendPosOrderTicketDto
- */
-export interface SendPosOrderTicketDto {
-    /**
-     * 
-     * @type {SendPosOrderTicketDtoData}
-     * @memberof SendPosOrderTicketDto
-     */
-    'data': SendPosOrderTicketDtoData;
-    /**
-     * Business ID
-     * @type {string}
-     * @memberof SendPosOrderTicketDto
-     */
-    'businessId': string;
-    /**
-     * Send notification to the business
-     * @type {boolean}
-     * @memberof SendPosOrderTicketDto
-     */
-    'sendNotification'?: boolean;
-}
-/**
- * Order data
- * @export
- * @interface SendPosOrderTicketDtoData
- */
-export interface SendPosOrderTicketDtoData {
-    /**
-     * 
-     * @type {string}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'businessId': string;
-    /**
-     * 
-     * @type {CurrencyCode}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'currency': CurrencyCode;
-    /**
-     * 
-     * @type {PosBusinessDto}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'business': PosBusinessDto;
-    /**
-     * 
-     * @type {string}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'createdAt': string;
-    /**
-     * 
-     * @type {OrderStatusEnum}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'status': OrderStatusEnum;
-    /**
-     * 
-     * @type {string}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'updatedAt': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'orderNumber': string;
-    /**
-     * 
-     * @type {OrderTypePOS}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'orderType': OrderTypePOS;
-    /**
-     * 
-     * @type {string}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'spotNumber': string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'comments': string | null;
-    /**
-     * Id of the staff in shift
-     * @type {string}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'staffId': string | null;
-    /**
-     * Id of the shift
-     * @type {string}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'shiftId': string | null;
-    /**
-     * 
-     * @type {OrderRefundStatus}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'orderRefundStatus': OrderRefundStatus;
-    /**
-     * 
-     * @type {LocatorType}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'locatorType': LocatorType;
-    /**
-     * 
-     * @type {PosOrderPriceDto}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'basketPrice': PosOrderPriceDto;
-    /**
-     * 
-     * @type {Array<PosOrderItemDto>}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'items': Array<PosOrderItemDto>;
-    /**
-     * 
-     * @type {Array<PosDiscountDto>}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'discounts': Array<PosDiscountDto>;
-    /**
-     * 
-     * @type {PosCustomerDto}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'customer': PosCustomerDto | null;
-    /**
-     * 
-     * @type {Array<TransactionDto>}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'paymentEvents': Array<TransactionDto>;
-    /**
-     * 
-     * @type {Array<PaymentRefundDto>}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'refunds'?: Array<PaymentRefundDto>;
-    /**
-     * Data version code
-     * @type {string}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'version': string;
-    /**
-     * 
-     * @type {OrderFormat}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'orderFormat'?: OrderFormat;
-    /**
-     * The ID of the loyalty program active during this order.
-     * @type {string}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'loyaltyProgramId': string | null;
-    /**
-     * An array of loyalty transaction IDs related to this order.
-     * @type {Array<string>}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'loyaltyTransactionIds': Array<string>;
-    /**
-     * 
-     * @type {PosOrderDtoTaxSummary}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'taxSummary'?: PosOrderDtoTaxSummary;
-    /**
-     * Name of staff member who created the order
-     * @type {string}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'staffName'?: string | null;
-    /**
-     * 
-     * @type {PosOrderDtoInvoiceCompany}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'invoiceCompany'?: PosOrderDtoInvoiceCompany | null;
-    /**
-     * 
-     * @type {object}
-     * @memberof SendPosOrderTicketDtoData
-     */
-    'lastPaymentError'?: object;
-}
-
-
 /**
  * 
  * @export
@@ -14881,43 +14162,6 @@ export interface SyncTerminalDto {
 /**
  * 
  * @export
- * @interface TaxBreakdownDto
- */
-export interface TaxBreakdownDto {
-    /**
-     * Standard tax amount
-     * @type {number}
-     * @memberof TaxBreakdownDto
-     */
-    'standardTaxAmount': number;
-    /**
-     * Premium tax amount
-     * @type {number}
-     * @memberof TaxBreakdownDto
-     */
-    'premiumTaxAmount': number;
-    /**
-     * Total tax amount
-     * @type {number}
-     * @memberof TaxBreakdownDto
-     */
-    'totalTaxAmount': number;
-    /**
-     * Standard tax rate %
-     * @type {number}
-     * @memberof TaxBreakdownDto
-     */
-    'standardTaxRate': number;
-    /**
-     * Premium tax rate %
-     * @type {number}
-     * @memberof TaxBreakdownDto
-     */
-    'premiumTaxRate': number;
-}
-/**
- * 
- * @export
  * @interface TaxBreakdownDtoV3
  */
 export interface TaxBreakdownDtoV3 {
@@ -15368,6 +14612,185 @@ export type Type = typeof Type[keyof typeof Type];
 /**
  * 
  * @export
+ * @interface UnifiedBusinessDto
+ */
+export interface UnifiedBusinessDto {
+    /**
+     * Unique identifier of the business
+     * @type {string}
+     * @memberof UnifiedBusinessDto
+     */
+    'id': string;
+    /**
+     * Display name of the business
+     * @type {string}
+     * @memberof UnifiedBusinessDto
+     */
+    'name': string;
+    /**
+     * Logo URL of the business
+     * @type {string}
+     * @memberof UnifiedBusinessDto
+     */
+    'logo'?: string | null;
+    /**
+     * Contact email of the business
+     * @type {string}
+     * @memberof UnifiedBusinessDto
+     */
+    'email'?: string | null;
+    /**
+     * Physical address of the business
+     * @type {string}
+     * @memberof UnifiedBusinessDto
+     */
+    'address'?: string | null;
+    /**
+     * Contact phone number of the business
+     * @type {string}
+     * @memberof UnifiedBusinessDto
+     */
+    'phone'?: string | null;
+    /**
+     * Whether the business is currently enabled
+     * @type {boolean}
+     * @memberof UnifiedBusinessDto
+     */
+    'enabled'?: boolean | null;
+    /**
+     * Timezone of the business, e.g. Europe/Helsinki. POS only
+     * @type {string}
+     * @memberof UnifiedBusinessDto
+     */
+    'timezone'?: string | null;
+    /**
+     * BIC/SWIFT code of the business. POS only
+     * @type {string}
+     * @memberof UnifiedBusinessDto
+     */
+    'bic'?: string | null;
+    /**
+     * Legal company name of the business. POS only
+     * @type {string}
+     * @memberof UnifiedBusinessDto
+     */
+    'companyName'?: string | null;
+    /**
+     * Company phone number of the business. POS only
+     * @type {string}
+     * @memberof UnifiedBusinessDto
+     */
+    'companyPhone'?: string | null;
+    /**
+     * Ordering platform business ID. POS only
+     * @type {string}
+     * @memberof UnifiedBusinessDto
+     */
+    'orderingBusinessId'?: string | null;
+}
+/**
+ * 
+ * @export
+ * @interface UnifiedCustomerDto
+ */
+export interface UnifiedCustomerDto {
+    /**
+     * Unique identifier of the customer
+     * @type {string}
+     * @memberof UnifiedCustomerDto
+     */
+    'id': string;
+    /**
+     * Full name of the customer
+     * @type {string}
+     * @memberof UnifiedCustomerDto
+     */
+    'name'?: string | null;
+    /**
+     * Phone number of the customer
+     * @type {string}
+     * @memberof UnifiedCustomerDto
+     */
+    'phone'?: string | null;
+    /**
+     * Email address of the customer
+     * @type {string}
+     * @memberof UnifiedCustomerDto
+     */
+    'email'?: string | null;
+    /**
+     * Phone country code of the customer, e.g. +358. POS only
+     * @type {string}
+     * @memberof UnifiedCustomerDto
+     */
+    'countryCode'?: string | null;
+    /**
+     * Logo URL of the customer. POS only
+     * @type {string}
+     * @memberof UnifiedCustomerDto
+     */
+    'logo'?: string | null;
+}
+/**
+ * 
+ * @export
+ * @interface UnifiedDeliveryDto
+ */
+export interface UnifiedDeliveryDto {
+    /**
+     * Delivery fee amount in the order currency
+     * @type {number}
+     * @memberof UnifiedDeliveryDto
+     */
+    'deliveryFee': number;
+    /**
+     * 
+     * @type {DeliveryStatus}
+     * @memberof UnifiedDeliveryDto
+     */
+    'status': DeliveryStatus;
+    /**
+     * 
+     * @type {DeliveryType}
+     * @memberof UnifiedDeliveryDto
+     */
+    'type': DeliveryType;
+    /**
+     * Whether the business handles delivery themselves
+     * @type {boolean}
+     * @memberof UnifiedDeliveryDto
+     */
+    'selfDelivery'?: boolean | null;
+    /**
+     * Delivery note left by the customer
+     * @type {string}
+     * @memberof UnifiedDeliveryDto
+     */
+    'note'?: string | null;
+    /**
+     * Formatted delivery address
+     * @type {string}
+     * @memberof UnifiedDeliveryDto
+     */
+    'formattedAddress'?: string | null;
+    /**
+     * City of the delivery address
+     * @type {string}
+     * @memberof UnifiedDeliveryDto
+     */
+    'city'?: string | null;
+    /**
+     * Country of the delivery address
+     * @type {string}
+     * @memberof UnifiedDeliveryDto
+     */
+    'country'?: string | null;
+}
+
+
+/**
+ * 
+ * @export
  * @interface UnifiedDiscountsResponseDto
  */
 export interface UnifiedDiscountsResponseDto {
@@ -15383,6 +14806,1047 @@ export interface UnifiedDiscountsResponseDto {
      * @memberof UnifiedDiscountsResponseDto
      */
     'global': Array<BusinessDiscountDto>;
+}
+/**
+ * 
+ * @export
+ * @interface UnifiedLastPaymentErrorDto
+ */
+export interface UnifiedLastPaymentErrorDto {
+    /**
+     * 
+     * @type {PaymentFailureCode}
+     * @memberof UnifiedLastPaymentErrorDto
+     */
+    'code': PaymentFailureCode;
+    /**
+     * Human-readable error message from the payment provider
+     * @type {string}
+     * @memberof UnifiedLastPaymentErrorDto
+     */
+    'providerMessage': string;
+    /**
+     * Timestamp when the payment error occurred
+     * @type {string}
+     * @memberof UnifiedLastPaymentErrorDto
+     */
+    'timestamp': string;
+    /**
+     * Whether the payment can be retried after this error
+     * @type {boolean}
+     * @memberof UnifiedLastPaymentErrorDto
+     */
+    'retryable': boolean;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface UnifiedOptionDto
+ */
+export interface UnifiedOptionDto {
+    /**
+     * Unique identifier of the option
+     * @type {string}
+     * @memberof UnifiedOptionDto
+     */
+    'id': string;
+    /**
+     * External identifier of the option from the ordering platform
+     * @type {string}
+     * @memberof UnifiedOptionDto
+     */
+    'externalId': string;
+    /**
+     * Display name of the option
+     * @type {string}
+     * @memberof UnifiedOptionDto
+     */
+    'name': string;
+    /**
+     * Image URL for the option
+     * @type {string}
+     * @memberof UnifiedOptionDto
+     */
+    'image'?: string | null;
+    /**
+     * List of sub-options selected under this option
+     * @type {Array<UnifiedSubOptionDto>}
+     * @memberof UnifiedOptionDto
+     */
+    'subOptions': Array<UnifiedSubOptionDto>;
+}
+/**
+ * 
+ * @export
+ * @interface UnifiedOrderResponseDto
+ */
+export interface UnifiedOrderResponseDto {
+    /**
+     * 
+     * @type {OrderSource}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'source': OrderSource;
+    /**
+     * Unique identifier of the order
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'id': string;
+    /**
+     * Human-readable order number shown to staff and customers
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'orderNumber': string;
+    /**
+     * 
+     * @type {ProviderEnum}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'provider': ProviderEnum;
+    /**
+     * 
+     * @type {OrderStatusEnum}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'status': OrderStatusEnum;
+    /**
+     * Ordering platform business ID that owns this order
+     * @type {number}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'orderingBusinessId': number;
+    /**
+     * Timestamp when the order was created
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'createdAt': string;
+    /**
+     * Timestamp when the order was last updated
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'updatedAt': string;
+    /**
+     * 
+     * @type {OrderType}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'orderType': OrderType;
+    /**
+     * External order identifier from the delivery platform. Platform only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'externalId'?: string | null;
+    /**
+     * 
+     * @type {Type}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'type'?: Type | null;
+    /**
+     * 
+     * @type {PaymentStatus}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'paymentStatus'?: PaymentStatus | null;
+    /**
+     * 
+     * @type {PaymentTypeEnum}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'paymentType'?: PaymentTypeEnum | null;
+    /**
+     * Preparation time in minutes set when the order was accepted. Platform only
+     * @type {number}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'preparedIn'?: number | null;
+    /**
+     * Additional comment left by the customer. Platform only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'customerComment'?: string | null;
+    /**
+     * Dine-in table or seat number. Platform only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'dineInNumber'?: string | null;
+    /**
+     * Reason provided when the order was rejected. Platform only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'rejectedReason'?: string | null;
+    /**
+     * Timestamp when the order expires. Platform only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'expiryDate'?: string | null;
+    /**
+     * Timestamp when the order was accepted. Platform only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'acceptedAt'?: string | null;
+    /**
+     * Estimated customer pickup time. Platform only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'pickupEta'?: string | null;
+    /**
+     * Estimated delivery time to the customer. Platform only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'deliveryEta'?: string | null;
+    /**
+     * Firebase business document ID. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'businessId'?: string | null;
+    /**
+     * 
+     * @type {CurrencyCode}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'currency'?: CurrencyCode | null;
+    /**
+     * Spot or table number assigned to the order. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'spotNumber'?: string | null;
+    /**
+     * General comment on the order. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'comments'?: string | null;
+    /**
+     * ID of the staff member who created or handled the order. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'staffId'?: string | null;
+    /**
+     * ID of the shift during which the order was created. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'shiftId'?: string | null;
+    /**
+     * Name of the staff member who created the order. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'staffName'?: string | null;
+    /**
+     * Data schema version of the POS order document. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'version'?: string | null;
+    /**
+     * 
+     * @type {OrderRefundStatus}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'orderRefundStatus'?: OrderRefundStatus | null;
+    /**
+     * 
+     * @type {LocatorType}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'locatorType'?: LocatorType | null;
+    /**
+     * 
+     * @type {OrderFormat}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'orderFormat'?: OrderFormat | null;
+    /**
+     * ID of the loyalty program active during this order. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'loyaltyProgramId'?: string | null;
+    /**
+     * Array of loyalty transaction IDs linked to this order. POS only
+     * @type {Array<string>}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'loyaltyTransactionIds'?: Array<string>;
+    /**
+     * 
+     * @type {UnifiedOrderResponseDtoCustomer}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'customer'?: UnifiedOrderResponseDtoCustomer | null;
+    /**
+     * 
+     * @type {UnifiedOrderResponseDtoBusiness}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'business'?: UnifiedOrderResponseDtoBusiness | null;
+    /**
+     * List of refunds associated with this order
+     * @type {Array<UnifiedRefundDto>}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'refunds'?: Array<UnifiedRefundDto>;
+    /**
+     * 
+     * @type {UnifiedOrderResponseDtoDelivery}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'delivery'?: UnifiedOrderResponseDtoDelivery | null;
+    /**
+     * 
+     * @type {UnifiedOrderResponseDtoPreorder}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'preorder'?: UnifiedOrderResponseDtoPreorder | null;
+    /**
+     * 
+     * @type {UnifiedOrderResponseDtoPriceSummary}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'priceSummary'?: UnifiedOrderResponseDtoPriceSummary | null;
+    /**
+     * Discounts applied to the order. Platform only
+     * @type {Array<UnifiedPlatformDiscountDto>}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'discounts'?: Array<UnifiedPlatformDiscountDto>;
+    /**
+     * Products in the order. Platform only
+     * @type {Array<UnifiedProductDto>}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'products'?: Array<UnifiedProductDto>;
+    /**
+     * 
+     * @type {UnifiedOrderResponseDtoBasketPrice}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'basketPrice'?: UnifiedOrderResponseDtoBasketPrice | null;
+    /**
+     * Line items in the POS order. POS only
+     * @type {Array<PosOrderItemDto>}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'items'?: Array<PosOrderItemDto>;
+    /**
+     * Discounts applied in the POS order. POS only
+     * @type {Array<PosDiscountDto>}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'posDiscounts'?: Array<PosDiscountDto>;
+    /**
+     * Payment transactions recorded for the POS order. POS only
+     * @type {Array<TransactionDto>}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'paymentEvents'?: Array<TransactionDto>;
+    /**
+     * 
+     * @type {UnifiedOrderResponseDtoTaxSummary}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'taxSummary'?: UnifiedOrderResponseDtoTaxSummary | null;
+    /**
+     * 
+     * @type {UnifiedOrderResponseDtoInvoiceCompany}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'invoiceCompany'?: UnifiedOrderResponseDtoInvoiceCompany | null;
+    /**
+     * 
+     * @type {UnifiedOrderResponseDtoLastPaymentError}
+     * @memberof UnifiedOrderResponseDto
+     */
+    'lastPaymentError'?: UnifiedOrderResponseDtoLastPaymentError | null;
+}
+
+
+/**
+ * Full price breakdown including discounts and totals. POS only
+ * @export
+ * @interface UnifiedOrderResponseDtoBasketPrice
+ */
+export interface UnifiedOrderResponseDtoBasketPrice {
+    /**
+     * 
+     * @type {PriceBreakdownDto}
+     * @memberof UnifiedOrderResponseDtoBasketPrice
+     */
+    'priceBreakdown': PriceBreakdownDto;
+    /**
+     * 
+     * @type {MoneyDto}
+     * @memberof UnifiedOrderResponseDtoBasketPrice
+     */
+    'total': MoneyDto;
+}
+/**
+ * Business that received the order
+ * @export
+ * @interface UnifiedOrderResponseDtoBusiness
+ */
+export interface UnifiedOrderResponseDtoBusiness {
+    /**
+     * Unique identifier of the business
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoBusiness
+     */
+    'id': string;
+    /**
+     * Display name of the business
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoBusiness
+     */
+    'name': string;
+    /**
+     * Logo URL of the business
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoBusiness
+     */
+    'logo'?: string | null;
+    /**
+     * Contact email of the business
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoBusiness
+     */
+    'email'?: string | null;
+    /**
+     * Physical address of the business
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoBusiness
+     */
+    'address'?: string | null;
+    /**
+     * Contact phone number of the business
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoBusiness
+     */
+    'phone'?: string | null;
+    /**
+     * Whether the business is currently enabled
+     * @type {boolean}
+     * @memberof UnifiedOrderResponseDtoBusiness
+     */
+    'enabled'?: boolean | null;
+    /**
+     * Timezone of the business, e.g. Europe/Helsinki. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoBusiness
+     */
+    'timezone'?: string | null;
+    /**
+     * BIC/SWIFT code of the business. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoBusiness
+     */
+    'bic'?: string | null;
+    /**
+     * Legal company name of the business. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoBusiness
+     */
+    'companyName'?: string | null;
+    /**
+     * Company phone number of the business. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoBusiness
+     */
+    'companyPhone'?: string | null;
+    /**
+     * Ordering platform business ID. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoBusiness
+     */
+    'orderingBusinessId'?: string | null;
+}
+/**
+ * Customer who placed the order
+ * @export
+ * @interface UnifiedOrderResponseDtoCustomer
+ */
+export interface UnifiedOrderResponseDtoCustomer {
+    /**
+     * Unique identifier of the customer
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoCustomer
+     */
+    'id': string;
+    /**
+     * Full name of the customer
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoCustomer
+     */
+    'name'?: string | null;
+    /**
+     * Phone number of the customer
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoCustomer
+     */
+    'phone'?: string | null;
+    /**
+     * Email address of the customer
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoCustomer
+     */
+    'email'?: string | null;
+    /**
+     * Phone country code of the customer, e.g. +358. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoCustomer
+     */
+    'countryCode'?: string | null;
+    /**
+     * Logo URL of the customer. POS only
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoCustomer
+     */
+    'logo'?: string | null;
+}
+/**
+ * Delivery details for the order. Platform only
+ * @export
+ * @interface UnifiedOrderResponseDtoDelivery
+ */
+export interface UnifiedOrderResponseDtoDelivery {
+    /**
+     * Delivery fee amount in the order currency
+     * @type {number}
+     * @memberof UnifiedOrderResponseDtoDelivery
+     */
+    'deliveryFee': number;
+    /**
+     * 
+     * @type {DeliveryStatus}
+     * @memberof UnifiedOrderResponseDtoDelivery
+     */
+    'status': DeliveryStatus;
+    /**
+     * 
+     * @type {DeliveryType}
+     * @memberof UnifiedOrderResponseDtoDelivery
+     */
+    'type': DeliveryType;
+    /**
+     * Whether the business handles delivery themselves
+     * @type {boolean}
+     * @memberof UnifiedOrderResponseDtoDelivery
+     */
+    'selfDelivery'?: boolean | null;
+    /**
+     * Delivery note left by the customer
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoDelivery
+     */
+    'note'?: string | null;
+    /**
+     * Formatted delivery address
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoDelivery
+     */
+    'formattedAddress'?: string | null;
+    /**
+     * City of the delivery address
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoDelivery
+     */
+    'city'?: string | null;
+    /**
+     * Country of the delivery address
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoDelivery
+     */
+    'country'?: string | null;
+}
+
+
+/**
+ * Invoice company details attached to the POS order. POS only
+ * @export
+ * @interface UnifiedOrderResponseDtoInvoiceCompany
+ */
+export interface UnifiedOrderResponseDtoInvoiceCompany {
+    /**
+     * 
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoInvoiceCompany
+     */
+    'id': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof UnifiedOrderResponseDtoInvoiceCompany
+     */
+    'businessId': number;
+    /**
+     * 
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoInvoiceCompany
+     */
+    'name': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoInvoiceCompany
+     */
+    'email': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoInvoiceCompany
+     */
+    'countryCode': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoInvoiceCompany
+     */
+    'phone': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoInvoiceCompany
+     */
+    'bic'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoInvoiceCompany
+     */
+    'address'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoInvoiceCompany
+     */
+    'createdAt': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoInvoiceCompany
+     */
+    'updatedAt': string;
+}
+/**
+ * Details of the last payment error if the payment failed. POS only
+ * @export
+ * @interface UnifiedOrderResponseDtoLastPaymentError
+ */
+export interface UnifiedOrderResponseDtoLastPaymentError {
+    /**
+     * 
+     * @type {PaymentFailureCode}
+     * @memberof UnifiedOrderResponseDtoLastPaymentError
+     */
+    'code': PaymentFailureCode;
+    /**
+     * Human-readable error message from the payment provider
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoLastPaymentError
+     */
+    'providerMessage': string;
+    /**
+     * Timestamp when the payment error occurred
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoLastPaymentError
+     */
+    'timestamp': string;
+    /**
+     * Whether the payment can be retried after this error
+     * @type {boolean}
+     * @memberof UnifiedOrderResponseDtoLastPaymentError
+     */
+    'retryable': boolean;
+}
+
+
+/**
+ * Preorder scheduling details. Platform only
+ * @export
+ * @interface UnifiedOrderResponseDtoPreorder
+ */
+export interface UnifiedOrderResponseDtoPreorder {
+    /**
+     * Unique identifier of the preorder
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoPreorder
+     */
+    'id': string;
+    /**
+     * 
+     * @type {PreorderStatus}
+     * @memberof UnifiedOrderResponseDtoPreorder
+     */
+    'status': PreorderStatus;
+    /**
+     * Scheduled time for the preorder pickup or delivery
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoPreorder
+     */
+    'preorderTime'?: string | null;
+}
+
+
+/**
+ * Price summary of the order. Platform only
+ * @export
+ * @interface UnifiedOrderResponseDtoPriceSummary
+ */
+export interface UnifiedOrderResponseDtoPriceSummary {
+    /**
+     * Unique identifier of the price summary record
+     * @type {string}
+     * @memberof UnifiedOrderResponseDtoPriceSummary
+     */
+    'id': string;
+    /**
+     * Total net amount of the order
+     * @type {number}
+     * @memberof UnifiedOrderResponseDtoPriceSummary
+     */
+    'totalNet': number;
+}
+/**
+ * Tax breakdown summary for the POS order. POS only
+ * @export
+ * @interface UnifiedOrderResponseDtoTaxSummary
+ */
+export interface UnifiedOrderResponseDtoTaxSummary {
+    /**
+     * Tax breakdown by rate
+     * @type {Array<OrderTaxSummaryDto>}
+     * @memberof UnifiedOrderResponseDtoTaxSummary
+     */
+    'taxSummaries': Array<OrderTaxSummaryDto>;
+    /**
+     * Total without tax in cents
+     * @type {number}
+     * @memberof UnifiedOrderResponseDtoTaxSummary
+     */
+    'totalWithoutTax': number;
+    /**
+     * Total tax amount in cents
+     * @type {number}
+     * @memberof UnifiedOrderResponseDtoTaxSummary
+     */
+    'totalTax': number;
+    /**
+     * Grand total in cents
+     * @type {number}
+     * @memberof UnifiedOrderResponseDtoTaxSummary
+     */
+    'grandTotal': number;
+}
+/**
+ * 
+ * @export
+ * @interface UnifiedPlatformDiscountDto
+ */
+export interface UnifiedPlatformDiscountDto {
+    /**
+     * Unique identifier of the discount
+     * @type {string}
+     * @memberof UnifiedPlatformDiscountDto
+     */
+    'id': string;
+    /**
+     * Display name of the discount
+     * @type {string}
+     * @memberof UnifiedPlatformDiscountDto
+     */
+    'discountName': string;
+    /**
+     * Discount amount applied to the order
+     * @type {number}
+     * @memberof UnifiedPlatformDiscountDto
+     */
+    'discountAmount': number;
+    /**
+     * Timestamp when the discount was created
+     * @type {string}
+     * @memberof UnifiedPlatformDiscountDto
+     */
+    'createdAt': string;
+}
+/**
+ * 
+ * @export
+ * @interface UnifiedPreorderDto
+ */
+export interface UnifiedPreorderDto {
+    /**
+     * Unique identifier of the preorder
+     * @type {string}
+     * @memberof UnifiedPreorderDto
+     */
+    'id': string;
+    /**
+     * 
+     * @type {PreorderStatus}
+     * @memberof UnifiedPreorderDto
+     */
+    'status': PreorderStatus;
+    /**
+     * Scheduled time for the preorder pickup or delivery
+     * @type {string}
+     * @memberof UnifiedPreorderDto
+     */
+    'preorderTime'?: string | null;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface UnifiedPriceSummaryDto
+ */
+export interface UnifiedPriceSummaryDto {
+    /**
+     * Unique identifier of the price summary record
+     * @type {string}
+     * @memberof UnifiedPriceSummaryDto
+     */
+    'id': string;
+    /**
+     * Total net amount of the order
+     * @type {number}
+     * @memberof UnifiedPriceSummaryDto
+     */
+    'totalNet': number;
+}
+/**
+ * 
+ * @export
+ * @interface UnifiedProductDto
+ */
+export interface UnifiedProductDto {
+    /**
+     * Unique identifier of the product line item
+     * @type {string}
+     * @memberof UnifiedProductDto
+     */
+    'id': string;
+    /**
+     * External identifier of the product from the ordering platform
+     * @type {string}
+     * @memberof UnifiedProductDto
+     */
+    'externalId': string;
+    /**
+     * Display name of the product
+     * @type {string}
+     * @memberof UnifiedProductDto
+     */
+    'name': string;
+    /**
+     * Quantity of this product ordered
+     * @type {number}
+     * @memberof UnifiedProductDto
+     */
+    'quantity': number;
+    /**
+     * Unit price of the product
+     * @type {number}
+     * @memberof UnifiedProductDto
+     */
+    'unitPrice': number;
+    /**
+     * Actual paid price of the product
+     * @type {number}
+     * @memberof UnifiedProductDto
+     */
+    'paidPrice': number;
+    /**
+     * Special instruction or comment for this product
+     * @type {string}
+     * @memberof UnifiedProductDto
+     */
+    'comment'?: string | null;
+    /**
+     * Current kitchen preparation status of the product
+     * @type {string}
+     * @memberof UnifiedProductDto
+     */
+    'kitchenStatus'?: string | null;
+    /**
+     * List of options selected for this product
+     * @type {Array<UnifiedOptionDto>}
+     * @memberof UnifiedProductDto
+     */
+    'options': Array<UnifiedOptionDto>;
+}
+/**
+ * 
+ * @export
+ * @interface UnifiedRefundDto
+ */
+export interface UnifiedRefundDto {
+    /**
+     * Unique internal identifier of the refund record
+     * @type {string}
+     * @memberof UnifiedRefundDto
+     */
+    'id': string;
+    /**
+     * Refund transaction identifier
+     * @type {string}
+     * @memberof UnifiedRefundDto
+     */
+    'refundId': string;
+    /**
+     * 
+     * @type {PaymentProvider}
+     * @memberof UnifiedRefundDto
+     */
+    'paymentProvider': PaymentProvider;
+    /**
+     * Amount refunded in the smallest currency unit
+     * @type {number}
+     * @memberof UnifiedRefundDto
+     */
+    'amount': number;
+    /**
+     * ISO 4217 currency code of the refund, e.g. EUR
+     * @type {string}
+     * @memberof UnifiedRefundDto
+     */
+    'currency': string;
+    /**
+     * 
+     * @type {RefundStatusEnum}
+     * @memberof UnifiedRefundDto
+     */
+    'status': RefundStatusEnum;
+    /**
+     * Timestamp when the refund was processed
+     * @type {string}
+     * @memberof UnifiedRefundDto
+     */
+    'processedAt': string;
+    /**
+     * Reason provided for the refund
+     * @type {string}
+     * @memberof UnifiedRefundDto
+     */
+    'reason'?: string | null;
+    /**
+     * 
+     * @type {PaymentMethod}
+     * @memberof UnifiedRefundDto
+     */
+    'type'?: PaymentMethod | null;
+    /**
+     * Specific line items that were refunded
+     * @type {Array<UnifiedRefundedItemDto>}
+     * @memberof UnifiedRefundDto
+     */
+    'items'?: Array<UnifiedRefundedItemDto>;
+}
+
+
+/**
+ * 
+ * @export
+ * @interface UnifiedRefundedItemDto
+ */
+export interface UnifiedRefundedItemDto {
+    /**
+     * Reference to the unique line item from the original order
+     * @type {string}
+     * @memberof UnifiedRefundedItemDto
+     */
+    'lineItemId': string;
+    /**
+     * Reference to the general product ID, e.g. SKU or posId
+     * @type {string}
+     * @memberof UnifiedRefundedItemDto
+     */
+    'itemId': string;
+    /**
+     * Display name of the refunded product
+     * @type {string}
+     * @memberof UnifiedRefundedItemDto
+     */
+    'name': string;
+    /**
+     * Unit price of the refunded item at time of refund
+     * @type {number}
+     * @memberof UnifiedRefundedItemDto
+     */
+    'unitPrice': number;
+    /**
+     * Quantity refunded for this item
+     * @type {number}
+     * @memberof UnifiedRefundedItemDto
+     */
+    'quantity': number;
+    /**
+     * Total amount refunded for this line item
+     * @type {number}
+     * @memberof UnifiedRefundedItemDto
+     */
+    'amount': number;
+}
+/**
+ * 
+ * @export
+ * @interface UnifiedSubOptionDto
+ */
+export interface UnifiedSubOptionDto {
+    /**
+     * Unique identifier of the sub-option
+     * @type {string}
+     * @memberof UnifiedSubOptionDto
+     */
+    'id': string;
+    /**
+     * External identifier of the sub-option from the ordering platform
+     * @type {string}
+     * @memberof UnifiedSubOptionDto
+     */
+    'externalId': string;
+    /**
+     * Display name of the sub-option
+     * @type {string}
+     * @memberof UnifiedSubOptionDto
+     */
+    'name': string;
+    /**
+     * Unit price of the sub-option
+     * @type {number}
+     * @memberof UnifiedSubOptionDto
+     */
+    'unitPrice': number;
+    /**
+     * Actual paid price of the sub-option
+     * @type {number}
+     * @memberof UnifiedSubOptionDto
+     */
+    'paidPrice': number;
+    /**
+     * Quantity of this sub-option selected
+     * @type {number}
+     * @memberof UnifiedSubOptionDto
+     */
+    'quantity': number;
 }
 /**
  * 
@@ -20393,87 +20857,6 @@ export const EmployeesApiAxiosParamCreator = function (configuration?: Configura
                 options: localVarRequestOptions,
             };
         },
-        /**
-         * 
-         * @param {CreateEmployeeDto} createEmployeeDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createEmployee: async (createEmployeeDto: CreateEmployeeDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'createEmployeeDto' is not null or undefined
-            assertParamExists('createEmployee', 'createEmployeeDto', createEmployeeDto)
-            const localVarPath = `/api/v1/employees`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createEmployeeDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @param {string} merchantId 
-         * @param {number} [limit] 
-         * @param {number} [page] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getEmployees: async (merchantId: string, limit?: number, page?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'merchantId' is not null or undefined
-            assertParamExists('getEmployees', 'merchantId', merchantId)
-            const localVarPath = `/api/v1/employees`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (merchantId !== undefined) {
-                localVarQueryParameter['merchantId'] = merchantId;
-            }
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-            if (page !== undefined) {
-                localVarQueryParameter['page'] = page;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
     }
 };
 
@@ -20493,28 +20876,6 @@ export const EmployeesApiFp = function(configuration?: Configuration) {
          */
         async createAssignment(businessId: number, createEmployeeAssignmentDto: CreateEmployeeAssignmentDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EmployeeAssignmentResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.createAssignment(businessId, createEmployeeAssignmentDto, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @param {CreateEmployeeDto} createEmployeeDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async createEmployee(createEmployeeDto: CreateEmployeeDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EmployeeResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createEmployee(createEmployeeDto, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @param {string} merchantId 
-         * @param {number} [limit] 
-         * @param {number} [page] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getEmployees(merchantId: string, limit?: number, page?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedEmployeesResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getEmployees(merchantId, limit, page, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -20537,26 +20898,6 @@ export const EmployeesApiFactory = function (configuration?: Configuration, base
         createAssignment(businessId: number, createEmployeeAssignmentDto: CreateEmployeeAssignmentDto, options?: any): AxiosPromise<EmployeeAssignmentResponseDto> {
             return localVarFp.createAssignment(businessId, createEmployeeAssignmentDto, options).then((request) => request(axios, basePath));
         },
-        /**
-         * 
-         * @param {CreateEmployeeDto} createEmployeeDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        createEmployee(createEmployeeDto: CreateEmployeeDto, options?: any): AxiosPromise<EmployeeResponseDto> {
-            return localVarFp.createEmployee(createEmployeeDto, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @param {string} merchantId 
-         * @param {number} [limit] 
-         * @param {number} [page] 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getEmployees(merchantId: string, limit?: number, page?: number, options?: any): AxiosPromise<PaginatedEmployeesResponseDto> {
-            return localVarFp.getEmployees(merchantId, limit, page, options).then((request) => request(axios, basePath));
-        },
     };
 };
 
@@ -20575,26 +20916,6 @@ export interface EmployeesApiInterface {
      * @memberof EmployeesApiInterface
      */
     createAssignment(businessId: number, createEmployeeAssignmentDto: CreateEmployeeAssignmentDto, options?: AxiosRequestConfig): AxiosPromise<EmployeeAssignmentResponseDto>;
-
-    /**
-     * 
-     * @param {CreateEmployeeDto} createEmployeeDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof EmployeesApiInterface
-     */
-    createEmployee(createEmployeeDto: CreateEmployeeDto, options?: AxiosRequestConfig): AxiosPromise<EmployeeResponseDto>;
-
-    /**
-     * 
-     * @param {string} merchantId 
-     * @param {number} [limit] 
-     * @param {number} [page] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof EmployeesApiInterface
-     */
-    getEmployees(merchantId: string, limit?: number, page?: number, options?: AxiosRequestConfig): AxiosPromise<PaginatedEmployeesResponseDto>;
 
 }
 
@@ -20615,30 +20936,6 @@ export class EmployeesApi extends BaseAPI implements EmployeesApiInterface {
      */
     public createAssignment(businessId: number, createEmployeeAssignmentDto: CreateEmployeeAssignmentDto, options?: AxiosRequestConfig) {
         return EmployeesApiFp(this.configuration).createAssignment(businessId, createEmployeeAssignmentDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {CreateEmployeeDto} createEmployeeDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof EmployeesApi
-     */
-    public createEmployee(createEmployeeDto: CreateEmployeeDto, options?: AxiosRequestConfig) {
-        return EmployeesApiFp(this.configuration).createEmployee(createEmployeeDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @param {string} merchantId 
-     * @param {number} [limit] 
-     * @param {number} [page] 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof EmployeesApi
-     */
-    public getEmployees(merchantId: string, limit?: number, page?: number, options?: AxiosRequestConfig) {
-        return EmployeesApiFp(this.configuration).getEmployees(merchantId, limit, page, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
@@ -24857,53 +25154,6 @@ export const OrdersApiAxiosParamCreator = function (configuration?: Configuratio
             };
         },
         /**
-         * Returns paginated orders sorted by status-specific logic. Database and POS orders are combined and sorted before pagination is applied.
-         * @summary Get all orders across all statuses with pagination
-         * @param {string} businessIds Comma-separated list of business IDs
-         * @param {number} [limit] Number of items per page (max 100)
-         * @param {number} [page] Page number (starts from 1)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getAllOrdersV3: async (businessIds: string, limit?: number, page?: number, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'businessIds' is not null or undefined
-            assertParamExists('getAllOrdersV3', 'businessIds', businessIds)
-            const localVarPath = `/api/v3/orders`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-            if (page !== undefined) {
-                localVarQueryParameter['page'] = page;
-            }
-
-            if (businessIds !== undefined) {
-                localVarQueryParameter['businessIds'] = businessIds;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
          * 
          * @summary Get orders by status
          * @param {'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft'} status Order status filter
@@ -24930,67 +25180,6 @@ export const OrdersApiAxiosParamCreator = function (configuration?: Configuratio
             const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
-
-            if (posBusinessId !== undefined) {
-                localVarQueryParameter['posBusinessId'] = posBusinessId;
-            }
-
-            if (extraProvider !== undefined) {
-                localVarQueryParameter['extraProvider'] = extraProvider;
-            }
-
-            if (businessIds !== undefined) {
-                localVarQueryParameter['businessIds'] = businessIds;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * Returns paginated orders filtered by status and sorted by status-specific logic. Database and POS orders are combined and sorted before pagination is applied.
-         * @summary Get orders by status with pagination
-         * @param {'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft'} status Order status filter
-         * @param {string} businessIds Comma-separated list of business IDs
-         * @param {number} [limit] Number of items per page (max 100)
-         * @param {number} [page] Page number (starts from 1)
-         * @param {string} [posBusinessId] Id of the pos
-         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getOrdersV3: async (status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'status' is not null or undefined
-            assertParamExists('getOrdersV3', 'status', status)
-            // verify required parameter 'businessIds' is not null or undefined
-            assertParamExists('getOrdersV3', 'businessIds', businessIds)
-            const localVarPath = `/api/v3/orders/{status}`
-                .replace(`{${"status"}}`, encodeURIComponent(String(status)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (limit !== undefined) {
-                localVarQueryParameter['limit'] = limit;
-            }
-
-            if (page !== undefined) {
-                localVarQueryParameter['page'] = page;
-            }
 
             if (posBusinessId !== undefined) {
                 localVarQueryParameter['posBusinessId'] = posBusinessId;
@@ -25082,78 +25271,6 @@ export const OrdersApiAxiosParamCreator = function (configuration?: Configuratio
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(readyOrderDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Place an POS order
-         * @param {PosOrderPayloadDto} posOrderPayloadDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        placePosOrderV2: async (posOrderPayloadDto: PosOrderPayloadDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'posOrderPayloadDto' is not null or undefined
-            assertParamExists('placePosOrderV2', 'posOrderPayloadDto', posOrderPayloadDto)
-            const localVarPath = `/api/v2/orders/pos/place`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(posOrderPayloadDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Place an POS order
-         * @param {PosOrderPayloadDto} posOrderPayloadDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        placePosOrderV3: async (posOrderPayloadDto: PosOrderPayloadDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'posOrderPayloadDto' is not null or undefined
-            assertParamExists('placePosOrderV3', 'posOrderPayloadDto', posOrderPayloadDto)
-            const localVarPath = `/api/v3/orders/pos/place`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(posOrderPayloadDto, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -25270,42 +25387,6 @@ export const OrdersApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
-         * @summary Send a POS order ticket
-         * @param {SendPosOrderTicketDto} sendPosOrderTicketDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        sendPosOrderTicketV2: async (sendPosOrderTicketDto: SendPosOrderTicketDto, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'sendPosOrderTicketDto' is not null or undefined
-            assertParamExists('sendPosOrderTicketV2', 'sendPosOrderTicketDto', sendPosOrderTicketDto)
-            const localVarPath = `/api/v2/orders/pos/ticket`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(sendPosOrderTicketDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @summary Update a POS order status
          * @param {PosUpdateOrderDto} posUpdateOrderDto 
          * @param {*} [options] Override http request option.
@@ -25401,21 +25482,8 @@ export const OrdersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getAllOrdersV2(businessIds: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<OrderResponseDto>>> {
+        async getAllOrdersV2(businessIds: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UnifiedOrderResponseDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getAllOrdersV2(businessIds, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * Returns paginated orders sorted by status-specific logic. Database and POS orders are combined and sorted before pagination is applied.
-         * @summary Get all orders across all statuses with pagination
-         * @param {string} businessIds Comma-separated list of business IDs
-         * @param {number} [limit] Number of items per page (max 100)
-         * @param {number} [page] Page number (starts from 1)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getAllOrdersV3(businessIds: string, limit?: number, page?: number, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedOrderResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getAllOrdersV3(businessIds, limit, page, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -25428,24 +25496,8 @@ export const OrdersApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<OrderResponseDto>>> {
+        async getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<UnifiedOrderResponseDto>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.getOrdersV2(status, businessIds, posBusinessId, extraProvider, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * Returns paginated orders filtered by status and sorted by status-specific logic. Database and POS orders are combined and sorted before pagination is applied.
-         * @summary Get orders by status with pagination
-         * @param {'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft'} status Order status filter
-         * @param {string} businessIds Comma-separated list of business IDs
-         * @param {number} [limit] Number of items per page (max 100)
-         * @param {number} [page] Page number (starts from 1)
-         * @param {string} [posBusinessId] Id of the pos
-         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getOrdersV3(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PaginatedOrderResponseDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getOrdersV3(status, businessIds, limit, page, posBusinessId, extraProvider, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -25468,28 +25520,6 @@ export const OrdersApiFp = function(configuration?: Configuration) {
          */
         async markOrderAsReady(readyOrderDto: ReadyOrderDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrderStatusResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.markOrderAsReady(readyOrderDto, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Place an POS order
-         * @param {PosOrderPayloadDto} posOrderPayloadDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async placePosOrderV2(posOrderPayloadDto: PosOrderPayloadDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PosOrderDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.placePosOrderV2(posOrderPayloadDto, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Place an POS order
-         * @param {PosOrderPayloadDto} posOrderPayloadDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async placePosOrderV3(posOrderPayloadDto: PosOrderPayloadDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PosOrderDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.placePosOrderV3(posOrderPayloadDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -25523,17 +25553,6 @@ export const OrdersApiFp = function(configuration?: Configuration) {
          */
         async rejectOrder(rejectOrderDto: RejectOrderDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OrderStatusResponseDto>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.rejectOrder(rejectOrderDto, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Send a POS order ticket
-         * @param {SendPosOrderTicketDto} sendPosOrderTicketDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async sendPosOrderTicketV2(sendPosOrderTicketDto: SendPosOrderTicketDto, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PosOrderDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.sendPosOrderTicketV2(sendPosOrderTicketDto, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -25604,20 +25623,8 @@ export const OrdersApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAllOrdersV2(businessIds: string, options?: any): AxiosPromise<Array<OrderResponseDto>> {
+        getAllOrdersV2(businessIds: string, options?: any): AxiosPromise<Array<UnifiedOrderResponseDto>> {
             return localVarFp.getAllOrdersV2(businessIds, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Returns paginated orders sorted by status-specific logic. Database and POS orders are combined and sorted before pagination is applied.
-         * @summary Get all orders across all statuses with pagination
-         * @param {string} businessIds Comma-separated list of business IDs
-         * @param {number} [limit] Number of items per page (max 100)
-         * @param {number} [page] Page number (starts from 1)
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getAllOrdersV3(businessIds: string, limit?: number, page?: number, options?: any): AxiosPromise<PaginatedOrderResponseDto> {
-            return localVarFp.getAllOrdersV3(businessIds, limit, page, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -25629,23 +25636,8 @@ export const OrdersApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: any): AxiosPromise<Array<OrderResponseDto>> {
+        getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: any): AxiosPromise<Array<UnifiedOrderResponseDto>> {
             return localVarFp.getOrdersV2(status, businessIds, posBusinessId, extraProvider, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * Returns paginated orders filtered by status and sorted by status-specific logic. Database and POS orders are combined and sorted before pagination is applied.
-         * @summary Get orders by status with pagination
-         * @param {'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft'} status Order status filter
-         * @param {string} businessIds Comma-separated list of business IDs
-         * @param {number} [limit] Number of items per page (max 100)
-         * @param {number} [page] Page number (starts from 1)
-         * @param {string} [posBusinessId] Id of the pos
-         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getOrdersV3(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: any): AxiosPromise<PaginatedOrderResponseDto> {
-            return localVarFp.getOrdersV3(status, businessIds, limit, page, posBusinessId, extraProvider, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -25666,26 +25658,6 @@ export const OrdersApiFactory = function (configuration?: Configuration, basePat
          */
         markOrderAsReady(readyOrderDto: ReadyOrderDto, options?: any): AxiosPromise<OrderStatusResponseDto> {
             return localVarFp.markOrderAsReady(readyOrderDto, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Place an POS order
-         * @param {PosOrderPayloadDto} posOrderPayloadDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        placePosOrderV2(posOrderPayloadDto: PosOrderPayloadDto, options?: any): AxiosPromise<PosOrderDto> {
-            return localVarFp.placePosOrderV2(posOrderPayloadDto, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Place an POS order
-         * @param {PosOrderPayloadDto} posOrderPayloadDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        placePosOrderV3(posOrderPayloadDto: PosOrderPayloadDto, options?: any): AxiosPromise<PosOrderDto> {
-            return localVarFp.placePosOrderV3(posOrderPayloadDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -25716,16 +25688,6 @@ export const OrdersApiFactory = function (configuration?: Configuration, basePat
          */
         rejectOrder(rejectOrderDto: RejectOrderDto, options?: any): AxiosPromise<OrderStatusResponseDto> {
             return localVarFp.rejectOrder(rejectOrderDto, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Send a POS order ticket
-         * @param {SendPosOrderTicketDto} sendPosOrderTicketDto 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        sendPosOrderTicketV2(sendPosOrderTicketDto: SendPosOrderTicketDto, options?: any): AxiosPromise<PosOrderDto> {
-            return localVarFp.sendPosOrderTicketV2(sendPosOrderTicketDto, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -25794,19 +25756,7 @@ export interface OrdersApiInterface {
      * @throws {RequiredError}
      * @memberof OrdersApiInterface
      */
-    getAllOrdersV2(businessIds: string, options?: AxiosRequestConfig): AxiosPromise<Array<OrderResponseDto>>;
-
-    /**
-     * Returns paginated orders sorted by status-specific logic. Database and POS orders are combined and sorted before pagination is applied.
-     * @summary Get all orders across all statuses with pagination
-     * @param {string} businessIds Comma-separated list of business IDs
-     * @param {number} [limit] Number of items per page (max 100)
-     * @param {number} [page] Page number (starts from 1)
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApiInterface
-     */
-    getAllOrdersV3(businessIds: string, limit?: number, page?: number, options?: AxiosRequestConfig): AxiosPromise<PaginatedOrderResponseDto>;
+    getAllOrdersV2(businessIds: string, options?: AxiosRequestConfig): AxiosPromise<Array<UnifiedOrderResponseDto>>;
 
     /**
      * 
@@ -25819,22 +25769,7 @@ export interface OrdersApiInterface {
      * @throws {RequiredError}
      * @memberof OrdersApiInterface
      */
-    getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig): AxiosPromise<Array<OrderResponseDto>>;
-
-    /**
-     * Returns paginated orders filtered by status and sorted by status-specific logic. Database and POS orders are combined and sorted before pagination is applied.
-     * @summary Get orders by status with pagination
-     * @param {'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft'} status Order status filter
-     * @param {string} businessIds Comma-separated list of business IDs
-     * @param {number} [limit] Number of items per page (max 100)
-     * @param {number} [page] Page number (starts from 1)
-     * @param {string} [posBusinessId] Id of the pos
-     * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApiInterface
-     */
-    getOrdersV3(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig): AxiosPromise<PaginatedOrderResponseDto>;
+    getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig): AxiosPromise<Array<UnifiedOrderResponseDto>>;
 
     /**
      * 
@@ -25855,26 +25790,6 @@ export interface OrdersApiInterface {
      * @memberof OrdersApiInterface
      */
     markOrderAsReady(readyOrderDto: ReadyOrderDto, options?: AxiosRequestConfig): AxiosPromise<OrderStatusResponseDto>;
-
-    /**
-     * 
-     * @summary Place an POS order
-     * @param {PosOrderPayloadDto} posOrderPayloadDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApiInterface
-     */
-    placePosOrderV2(posOrderPayloadDto: PosOrderPayloadDto, options?: AxiosRequestConfig): AxiosPromise<PosOrderDto>;
-
-    /**
-     * 
-     * @summary Place an POS order
-     * @param {PosOrderPayloadDto} posOrderPayloadDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApiInterface
-     */
-    placePosOrderV3(posOrderPayloadDto: PosOrderPayloadDto, options?: AxiosRequestConfig): AxiosPromise<PosOrderDto>;
 
     /**
      * 
@@ -25905,16 +25820,6 @@ export interface OrdersApiInterface {
      * @memberof OrdersApiInterface
      */
     rejectOrder(rejectOrderDto: RejectOrderDto, options?: AxiosRequestConfig): AxiosPromise<OrderStatusResponseDto>;
-
-    /**
-     * 
-     * @summary Send a POS order ticket
-     * @param {SendPosOrderTicketDto} sendPosOrderTicketDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApiInterface
-     */
-    sendPosOrderTicketV2(sendPosOrderTicketDto: SendPosOrderTicketDto, options?: AxiosRequestConfig): AxiosPromise<PosOrderDto>;
 
     /**
      * 
@@ -25996,20 +25901,6 @@ export class OrdersApi extends BaseAPI implements OrdersApiInterface {
     }
 
     /**
-     * Returns paginated orders sorted by status-specific logic. Database and POS orders are combined and sorted before pagination is applied.
-     * @summary Get all orders across all statuses with pagination
-     * @param {string} businessIds Comma-separated list of business IDs
-     * @param {number} [limit] Number of items per page (max 100)
-     * @param {number} [page] Page number (starts from 1)
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApi
-     */
-    public getAllOrdersV3(businessIds: string, limit?: number, page?: number, options?: AxiosRequestConfig) {
-        return OrdersApiFp(this.configuration).getAllOrdersV3(businessIds, limit, page, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
      * 
      * @summary Get orders by status
      * @param {'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft'} status Order status filter
@@ -26022,23 +25913,6 @@ export class OrdersApi extends BaseAPI implements OrdersApiInterface {
      */
     public getOrdersV2(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig) {
         return OrdersApiFp(this.configuration).getOrdersV2(status, businessIds, posBusinessId, extraProvider, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * Returns paginated orders filtered by status and sorted by status-specific logic. Database and POS orders are combined and sorted before pagination is applied.
-     * @summary Get orders by status with pagination
-     * @param {'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft'} status Order status filter
-     * @param {string} businessIds Comma-separated list of business IDs
-     * @param {number} [limit] Number of items per page (max 100)
-     * @param {number} [page] Page number (starts from 1)
-     * @param {string} [posBusinessId] Id of the pos
-     * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [extraProvider] Extra attributes to get POS orders
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApi
-     */
-    public getOrdersV3(status: 'pending' | 'in_progress' | 'ready' | 'delivered' | 'rejected' | 'pick_up_by_driver' | 'preorder' | 'accept_by_driver' | 'parked' | 'refunded' | 'draft', businessIds: string, limit?: number, page?: number, posBusinessId?: string, extraProvider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig) {
-        return OrdersApiFp(this.configuration).getOrdersV3(status, businessIds, limit, page, posBusinessId, extraProvider, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -26063,30 +25937,6 @@ export class OrdersApi extends BaseAPI implements OrdersApiInterface {
      */
     public markOrderAsReady(readyOrderDto: ReadyOrderDto, options?: AxiosRequestConfig) {
         return OrdersApiFp(this.configuration).markOrderAsReady(readyOrderDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Place an POS order
-     * @param {PosOrderPayloadDto} posOrderPayloadDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApi
-     */
-    public placePosOrderV2(posOrderPayloadDto: PosOrderPayloadDto, options?: AxiosRequestConfig) {
-        return OrdersApiFp(this.configuration).placePosOrderV2(posOrderPayloadDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Place an POS order
-     * @param {PosOrderPayloadDto} posOrderPayloadDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApi
-     */
-    public placePosOrderV3(posOrderPayloadDto: PosOrderPayloadDto, options?: AxiosRequestConfig) {
-        return OrdersApiFp(this.configuration).placePosOrderV3(posOrderPayloadDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -26123,18 +25973,6 @@ export class OrdersApi extends BaseAPI implements OrdersApiInterface {
      */
     public rejectOrder(rejectOrderDto: RejectOrderDto, options?: AxiosRequestConfig) {
         return OrdersApiFp(this.configuration).rejectOrder(rejectOrderDto, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Send a POS order ticket
-     * @param {SendPosOrderTicketDto} sendPosOrderTicketDto 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof OrdersApi
-     */
-    public sendPosOrderTicketV2(sendPosOrderTicketDto: SendPosOrderTicketDto, options?: AxiosRequestConfig) {
-        return OrdersApiFp(this.configuration).sendPosOrderTicketV2(sendPosOrderTicketDto, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -30511,123 +30349,20 @@ export const ReportApiAxiosParamCreator = function (configuration?: Configuratio
     return {
         /**
          * 
-         * @summary Get end-of-day financial report for POS
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPOSEndOfDayReport: async (businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'businessIds' is not null or undefined
-            assertParamExists('getPOSEndOfDayReport', 'businessIds', businessIds)
-            const localVarPath = `/api/v1/report/pos/end-of-day`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (timeSpan !== undefined) {
-                localVarQueryParameter['timeSpan'] = timeSpan;
-            }
-
-            if (start !== undefined) {
-                localVarQueryParameter['start'] = start;
-            }
-
-            if (end !== undefined) {
-                localVarQueryParameter['end'] = end;
-            }
-
-            if (businessIds) {
-                localVarQueryParameter['businessIds'] = businessIds;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get end-of-day financial report for POS (V2)
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPOSEndOfDayReportV2: async (businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'businessIds' is not null or undefined
-            assertParamExists('getPOSEndOfDayReportV2', 'businessIds', businessIds)
-            const localVarPath = `/api/v2/report/pos/end-of-day`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (timeSpan !== undefined) {
-                localVarQueryParameter['timeSpan'] = timeSpan;
-            }
-
-            if (start !== undefined) {
-                localVarQueryParameter['start'] = start;
-            }
-
-            if (end !== undefined) {
-                localVarQueryParameter['end'] = end;
-            }
-
-            if (businessIds) {
-                localVarQueryParameter['businessIds'] = businessIds;
-            }
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Get end-of-day financial report for POS (V3)
+         * @summary Get end-of-day financial report (V5)
          * @param {Array<number>} businessIds Business ID selected
          * @param {TimeSpan} [timeSpan] Time span
          * @param {string} [start] Start date
          * @param {string} [end] End date
          * @param {string} [timezone] Timezone (default is \&quot;UTC\&quot;)
+         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [provider] Order source provider (default is MunchiPos)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPOSEndOfDayReportV3: async (businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, timezone?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        getEndOfDayReportV5: async (businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, timezone?: string, provider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'businessIds' is not null or undefined
-            assertParamExists('getPOSEndOfDayReportV3', 'businessIds', businessIds)
-            const localVarPath = `/api/v3/report/pos/end-of-day`;
+            assertParamExists('getEndOfDayReportV5', 'businessIds', businessIds)
+            const localVarPath = `/api/v5/report/end-of-day`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -30657,6 +30392,10 @@ export const ReportApiAxiosParamCreator = function (configuration?: Configuratio
 
             if (timezone !== undefined) {
                 localVarQueryParameter['timezone'] = timezone;
+            }
+
+            if (provider !== undefined) {
+                localVarQueryParameter['provider'] = provider;
             }
 
 
@@ -30729,187 +30468,6 @@ export const ReportApiAxiosParamCreator = function (configuration?: Configuratio
         },
         /**
          * 
-         * @summary Send end-of-day report via email
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {SendReportEmailDto} sendReportEmailDto 
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        sendReportEmail: async (businessIds: Array<number>, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'businessIds' is not null or undefined
-            assertParamExists('sendReportEmail', 'businessIds', businessIds)
-            // verify required parameter 'sendReportEmailDto' is not null or undefined
-            assertParamExists('sendReportEmail', 'sendReportEmailDto', sendReportEmailDto)
-            const localVarPath = `/api/v1/report/email`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (timeSpan !== undefined) {
-                localVarQueryParameter['timeSpan'] = timeSpan;
-            }
-
-            if (start !== undefined) {
-                localVarQueryParameter['start'] = start;
-            }
-
-            if (end !== undefined) {
-                localVarQueryParameter['end'] = end;
-            }
-
-            if (businessIds) {
-                localVarQueryParameter['businessIds'] = businessIds;
-            }
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(sendReportEmailDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Send end-of-day report via email (V2)
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {SendReportEmailDto} sendReportEmailDto 
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        sendReportEmailV2: async (businessIds: Array<number>, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'businessIds' is not null or undefined
-            assertParamExists('sendReportEmailV2', 'businessIds', businessIds)
-            // verify required parameter 'sendReportEmailDto' is not null or undefined
-            assertParamExists('sendReportEmailV2', 'sendReportEmailDto', sendReportEmailDto)
-            const localVarPath = `/api/v2/report/email`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (timeSpan !== undefined) {
-                localVarQueryParameter['timeSpan'] = timeSpan;
-            }
-
-            if (start !== undefined) {
-                localVarQueryParameter['start'] = start;
-            }
-
-            if (end !== undefined) {
-                localVarQueryParameter['end'] = end;
-            }
-
-            if (businessIds) {
-                localVarQueryParameter['businessIds'] = businessIds;
-            }
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(sendReportEmailDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Send end-of-day report via email (V3)
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {string} timezone 
-         * @param {SendReportEmailDto} sendReportEmailDto 
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        sendReportEmailV3: async (businessIds: Array<number>, timezone: string, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'businessIds' is not null or undefined
-            assertParamExists('sendReportEmailV3', 'businessIds', businessIds)
-            // verify required parameter 'timezone' is not null or undefined
-            assertParamExists('sendReportEmailV3', 'timezone', timezone)
-            // verify required parameter 'sendReportEmailDto' is not null or undefined
-            assertParamExists('sendReportEmailV3', 'sendReportEmailDto', sendReportEmailDto)
-            const localVarPath = `/api/v3/report/email`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            if (timeSpan !== undefined) {
-                localVarQueryParameter['timeSpan'] = timeSpan;
-            }
-
-            if (start !== undefined) {
-                localVarQueryParameter['start'] = start;
-            }
-
-            if (end !== undefined) {
-                localVarQueryParameter['end'] = end;
-            }
-
-            if (businessIds) {
-                localVarQueryParameter['businessIds'] = businessIds;
-            }
-
-            if (timezone !== undefined) {
-                localVarQueryParameter['timezone'] = timezone;
-            }
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(sendReportEmailDto, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
          * @summary Send end-of-day report via email (V4)
          * @param {Array<number>} businessIds Business ID selected
          * @param {string} timezone 
@@ -30973,6 +30531,76 @@ export const ReportApiAxiosParamCreator = function (configuration?: Configuratio
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Send end-of-day report via email (V5)
+         * @param {Array<number>} businessIds Business ID selected
+         * @param {string} timezone 
+         * @param {SendReportEmailDto} sendReportEmailDto 
+         * @param {TimeSpan} [timeSpan] Time span
+         * @param {string} [start] Start date
+         * @param {string} [end] End date
+         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [provider] Order source provider (default is MunchiPos)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        sendReportEmailV5: async (businessIds: Array<number>, timezone: string, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, provider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'businessIds' is not null or undefined
+            assertParamExists('sendReportEmailV5', 'businessIds', businessIds)
+            // verify required parameter 'timezone' is not null or undefined
+            assertParamExists('sendReportEmailV5', 'timezone', timezone)
+            // verify required parameter 'sendReportEmailDto' is not null or undefined
+            assertParamExists('sendReportEmailV5', 'sendReportEmailDto', sendReportEmailDto)
+            const localVarPath = `/api/v5/report/email`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            if (timeSpan !== undefined) {
+                localVarQueryParameter['timeSpan'] = timeSpan;
+            }
+
+            if (start !== undefined) {
+                localVarQueryParameter['start'] = start;
+            }
+
+            if (end !== undefined) {
+                localVarQueryParameter['end'] = end;
+            }
+
+            if (businessIds) {
+                localVarQueryParameter['businessIds'] = businessIds;
+            }
+
+            if (timezone !== undefined) {
+                localVarQueryParameter['timezone'] = timezone;
+            }
+
+            if (provider !== undefined) {
+                localVarQueryParameter['provider'] = provider;
+            }
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(sendReportEmailDto, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -30985,45 +30613,18 @@ export const ReportApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Get end-of-day financial report for POS
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getPOSEndOfDayReport(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EndOfDayReportDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPOSEndOfDayReport(businessIds, timeSpan, start, end, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Get end-of-day financial report for POS (V2)
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async getPOSEndOfDayReportV2(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EndOfDayReportDto>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPOSEndOfDayReportV2(businessIds, timeSpan, start, end, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Get end-of-day financial report for POS (V3)
+         * @summary Get end-of-day financial report (V5)
          * @param {Array<number>} businessIds Business ID selected
          * @param {TimeSpan} [timeSpan] Time span
          * @param {string} [start] Start date
          * @param {string} [end] End date
          * @param {string} [timezone] Timezone (default is \&quot;UTC\&quot;)
+         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [provider] Order source provider (default is MunchiPos)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getPOSEndOfDayReportV3(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, timezone?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EndOfDayReportDtoV3>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getPOSEndOfDayReportV3(businessIds, timeSpan, start, end, timezone, options);
+        async getEndOfDayReportV5(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, timezone?: string, provider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EndOfDayReportDtoV4>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getEndOfDayReportV5(businessIds, timeSpan, start, end, timezone, provider, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -31043,52 +30644,6 @@ export const ReportApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Send end-of-day report via email
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {SendReportEmailDto} sendReportEmailDto 
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async sendReportEmail(businessIds: Array<number>, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.sendReportEmail(businessIds, sendReportEmailDto, timeSpan, start, end, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Send end-of-day report via email (V2)
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {SendReportEmailDto} sendReportEmailDto 
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async sendReportEmailV2(businessIds: Array<number>, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.sendReportEmailV2(businessIds, sendReportEmailDto, timeSpan, start, end, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
-         * @summary Send end-of-day report via email (V3)
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {string} timezone 
-         * @param {SendReportEmailDto} sendReportEmailDto 
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async sendReportEmailV3(businessIds: Array<number>, timezone: string, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.sendReportEmailV3(businessIds, timezone, sendReportEmailDto, timeSpan, start, end, options);
-            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
-        },
-        /**
-         * 
          * @summary Send end-of-day report via email (V4)
          * @param {Array<number>} businessIds Business ID selected
          * @param {string} timezone 
@@ -31103,6 +30658,23 @@ export const ReportApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.sendReportEmailV4(businessIds, timezone, sendReportEmailDto, timeSpan, start, end, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
+        /**
+         * 
+         * @summary Send end-of-day report via email (V5)
+         * @param {Array<number>} businessIds Business ID selected
+         * @param {string} timezone 
+         * @param {SendReportEmailDto} sendReportEmailDto 
+         * @param {TimeSpan} [timeSpan] Time span
+         * @param {string} [start] Start date
+         * @param {string} [end] End date
+         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [provider] Order source provider (default is MunchiPos)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async sendReportEmailV5(businessIds: Array<number>, timezone: string, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, provider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.sendReportEmailV5(businessIds, timezone, sendReportEmailDto, timeSpan, start, end, provider, options);
+            return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
+        },
     }
 };
 
@@ -31115,43 +30687,18 @@ export const ReportApiFactory = function (configuration?: Configuration, basePat
     return {
         /**
          * 
-         * @summary Get end-of-day financial report for POS
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPOSEndOfDayReport(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, options?: any): AxiosPromise<EndOfDayReportDto> {
-            return localVarFp.getPOSEndOfDayReport(businessIds, timeSpan, start, end, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get end-of-day financial report for POS (V2)
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        getPOSEndOfDayReportV2(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, options?: any): AxiosPromise<EndOfDayReportDto> {
-            return localVarFp.getPOSEndOfDayReportV2(businessIds, timeSpan, start, end, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Get end-of-day financial report for POS (V3)
+         * @summary Get end-of-day financial report (V5)
          * @param {Array<number>} businessIds Business ID selected
          * @param {TimeSpan} [timeSpan] Time span
          * @param {string} [start] Start date
          * @param {string} [end] End date
          * @param {string} [timezone] Timezone (default is \&quot;UTC\&quot;)
+         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [provider] Order source provider (default is MunchiPos)
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getPOSEndOfDayReportV3(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, timezone?: string, options?: any): AxiosPromise<EndOfDayReportDtoV3> {
-            return localVarFp.getPOSEndOfDayReportV3(businessIds, timeSpan, start, end, timezone, options).then((request) => request(axios, basePath));
+        getEndOfDayReportV5(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, timezone?: string, provider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: any): AxiosPromise<EndOfDayReportDtoV4> {
+            return localVarFp.getEndOfDayReportV5(businessIds, timeSpan, start, end, timezone, provider, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -31169,49 +30716,6 @@ export const ReportApiFactory = function (configuration?: Configuration, basePat
         },
         /**
          * 
-         * @summary Send end-of-day report via email
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {SendReportEmailDto} sendReportEmailDto 
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        sendReportEmail(businessIds: Array<number>, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: any): AxiosPromise<void> {
-            return localVarFp.sendReportEmail(businessIds, sendReportEmailDto, timeSpan, start, end, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Send end-of-day report via email (V2)
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {SendReportEmailDto} sendReportEmailDto 
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        sendReportEmailV2(businessIds: Array<number>, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: any): AxiosPromise<void> {
-            return localVarFp.sendReportEmailV2(businessIds, sendReportEmailDto, timeSpan, start, end, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Send end-of-day report via email (V3)
-         * @param {Array<number>} businessIds Business ID selected
-         * @param {string} timezone 
-         * @param {SendReportEmailDto} sendReportEmailDto 
-         * @param {TimeSpan} [timeSpan] Time span
-         * @param {string} [start] Start date
-         * @param {string} [end] End date
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        sendReportEmailV3(businessIds: Array<number>, timezone: string, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: any): AxiosPromise<void> {
-            return localVarFp.sendReportEmailV3(businessIds, timezone, sendReportEmailDto, timeSpan, start, end, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @summary Send end-of-day report via email (V4)
          * @param {Array<number>} businessIds Business ID selected
          * @param {string} timezone 
@@ -31225,6 +30729,22 @@ export const ReportApiFactory = function (configuration?: Configuration, basePat
         sendReportEmailV4(businessIds: Array<number>, timezone: string, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: any): AxiosPromise<void> {
             return localVarFp.sendReportEmailV4(businessIds, timezone, sendReportEmailDto, timeSpan, start, end, options).then((request) => request(axios, basePath));
         },
+        /**
+         * 
+         * @summary Send end-of-day report via email (V5)
+         * @param {Array<number>} businessIds Business ID selected
+         * @param {string} timezone 
+         * @param {SendReportEmailDto} sendReportEmailDto 
+         * @param {TimeSpan} [timeSpan] Time span
+         * @param {string} [start] Start date
+         * @param {string} [end] End date
+         * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [provider] Order source provider (default is MunchiPos)
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        sendReportEmailV5(businessIds: Array<number>, timezone: string, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, provider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: any): AxiosPromise<void> {
+            return localVarFp.sendReportEmailV5(businessIds, timezone, sendReportEmailDto, timeSpan, start, end, provider, options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -31236,43 +30756,18 @@ export const ReportApiFactory = function (configuration?: Configuration, basePat
 export interface ReportApiInterface {
     /**
      * 
-     * @summary Get end-of-day financial report for POS
-     * @param {Array<number>} businessIds Business ID selected
-     * @param {TimeSpan} [timeSpan] Time span
-     * @param {string} [start] Start date
-     * @param {string} [end] End date
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ReportApiInterface
-     */
-    getPOSEndOfDayReport(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig): AxiosPromise<EndOfDayReportDto>;
-
-    /**
-     * 
-     * @summary Get end-of-day financial report for POS (V2)
-     * @param {Array<number>} businessIds Business ID selected
-     * @param {TimeSpan} [timeSpan] Time span
-     * @param {string} [start] Start date
-     * @param {string} [end] End date
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ReportApiInterface
-     */
-    getPOSEndOfDayReportV2(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig): AxiosPromise<EndOfDayReportDto>;
-
-    /**
-     * 
-     * @summary Get end-of-day financial report for POS (V3)
+     * @summary Get end-of-day financial report (V5)
      * @param {Array<number>} businessIds Business ID selected
      * @param {TimeSpan} [timeSpan] Time span
      * @param {string} [start] Start date
      * @param {string} [end] End date
      * @param {string} [timezone] Timezone (default is \&quot;UTC\&quot;)
+     * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [provider] Order source provider (default is MunchiPos)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportApiInterface
      */
-    getPOSEndOfDayReportV3(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, timezone?: string, options?: AxiosRequestConfig): AxiosPromise<EndOfDayReportDtoV3>;
+    getEndOfDayReportV5(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, timezone?: string, provider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig): AxiosPromise<EndOfDayReportDtoV4>;
 
     /**
      * 
@@ -31290,49 +30785,6 @@ export interface ReportApiInterface {
 
     /**
      * 
-     * @summary Send end-of-day report via email
-     * @param {Array<number>} businessIds Business ID selected
-     * @param {SendReportEmailDto} sendReportEmailDto 
-     * @param {TimeSpan} [timeSpan] Time span
-     * @param {string} [start] Start date
-     * @param {string} [end] End date
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ReportApiInterface
-     */
-    sendReportEmail(businessIds: Array<number>, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig): AxiosPromise<void>;
-
-    /**
-     * 
-     * @summary Send end-of-day report via email (V2)
-     * @param {Array<number>} businessIds Business ID selected
-     * @param {SendReportEmailDto} sendReportEmailDto 
-     * @param {TimeSpan} [timeSpan] Time span
-     * @param {string} [start] Start date
-     * @param {string} [end] End date
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ReportApiInterface
-     */
-    sendReportEmailV2(businessIds: Array<number>, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig): AxiosPromise<void>;
-
-    /**
-     * 
-     * @summary Send end-of-day report via email (V3)
-     * @param {Array<number>} businessIds Business ID selected
-     * @param {string} timezone 
-     * @param {SendReportEmailDto} sendReportEmailDto 
-     * @param {TimeSpan} [timeSpan] Time span
-     * @param {string} [start] Start date
-     * @param {string} [end] End date
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ReportApiInterface
-     */
-    sendReportEmailV3(businessIds: Array<number>, timezone: string, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig): AxiosPromise<void>;
-
-    /**
-     * 
      * @summary Send end-of-day report via email (V4)
      * @param {Array<number>} businessIds Business ID selected
      * @param {string} timezone 
@@ -31346,6 +30798,22 @@ export interface ReportApiInterface {
      */
     sendReportEmailV4(businessIds: Array<number>, timezone: string, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig): AxiosPromise<void>;
 
+    /**
+     * 
+     * @summary Send end-of-day report via email (V5)
+     * @param {Array<number>} businessIds Business ID selected
+     * @param {string} timezone 
+     * @param {SendReportEmailDto} sendReportEmailDto 
+     * @param {TimeSpan} [timeSpan] Time span
+     * @param {string} [start] Start date
+     * @param {string} [end] End date
+     * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [provider] Order source provider (default is MunchiPos)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ReportApiInterface
+     */
+    sendReportEmailV5(businessIds: Array<number>, timezone: string, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, provider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig): AxiosPromise<void>;
+
 }
 
 /**
@@ -31357,48 +30825,19 @@ export interface ReportApiInterface {
 export class ReportApi extends BaseAPI implements ReportApiInterface {
     /**
      * 
-     * @summary Get end-of-day financial report for POS
-     * @param {Array<number>} businessIds Business ID selected
-     * @param {TimeSpan} [timeSpan] Time span
-     * @param {string} [start] Start date
-     * @param {string} [end] End date
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ReportApi
-     */
-    public getPOSEndOfDayReport(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig) {
-        return ReportApiFp(this.configuration).getPOSEndOfDayReport(businessIds, timeSpan, start, end, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get end-of-day financial report for POS (V2)
-     * @param {Array<number>} businessIds Business ID selected
-     * @param {TimeSpan} [timeSpan] Time span
-     * @param {string} [start] Start date
-     * @param {string} [end] End date
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ReportApi
-     */
-    public getPOSEndOfDayReportV2(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig) {
-        return ReportApiFp(this.configuration).getPOSEndOfDayReportV2(businessIds, timeSpan, start, end, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Get end-of-day financial report for POS (V3)
+     * @summary Get end-of-day financial report (V5)
      * @param {Array<number>} businessIds Business ID selected
      * @param {TimeSpan} [timeSpan] Time span
      * @param {string} [start] Start date
      * @param {string} [end] End date
      * @param {string} [timezone] Timezone (default is \&quot;UTC\&quot;)
+     * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [provider] Order source provider (default is MunchiPos)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ReportApi
      */
-    public getPOSEndOfDayReportV3(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, timezone?: string, options?: AxiosRequestConfig) {
-        return ReportApiFp(this.configuration).getPOSEndOfDayReportV3(businessIds, timeSpan, start, end, timezone, options).then((request) => request(this.axios, this.basePath));
+    public getEndOfDayReportV5(businessIds: Array<number>, timeSpan?: TimeSpan, start?: string, end?: string, timezone?: string, provider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig) {
+        return ReportApiFp(this.configuration).getEndOfDayReportV5(businessIds, timeSpan, start, end, timezone, provider, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -31419,55 +30858,6 @@ export class ReportApi extends BaseAPI implements ReportApiInterface {
 
     /**
      * 
-     * @summary Send end-of-day report via email
-     * @param {Array<number>} businessIds Business ID selected
-     * @param {SendReportEmailDto} sendReportEmailDto 
-     * @param {TimeSpan} [timeSpan] Time span
-     * @param {string} [start] Start date
-     * @param {string} [end] End date
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ReportApi
-     */
-    public sendReportEmail(businessIds: Array<number>, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig) {
-        return ReportApiFp(this.configuration).sendReportEmail(businessIds, sendReportEmailDto, timeSpan, start, end, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Send end-of-day report via email (V2)
-     * @param {Array<number>} businessIds Business ID selected
-     * @param {SendReportEmailDto} sendReportEmailDto 
-     * @param {TimeSpan} [timeSpan] Time span
-     * @param {string} [start] Start date
-     * @param {string} [end] End date
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ReportApi
-     */
-    public sendReportEmailV2(businessIds: Array<number>, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig) {
-        return ReportApiFp(this.configuration).sendReportEmailV2(businessIds, sendReportEmailDto, timeSpan, start, end, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Send end-of-day report via email (V3)
-     * @param {Array<number>} businessIds Business ID selected
-     * @param {string} timezone 
-     * @param {SendReportEmailDto} sendReportEmailDto 
-     * @param {TimeSpan} [timeSpan] Time span
-     * @param {string} [start] Start date
-     * @param {string} [end] End date
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ReportApi
-     */
-    public sendReportEmailV3(businessIds: Array<number>, timezone: string, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig) {
-        return ReportApiFp(this.configuration).sendReportEmailV3(businessIds, timezone, sendReportEmailDto, timeSpan, start, end, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @summary Send end-of-day report via email (V4)
      * @param {Array<number>} businessIds Business ID selected
      * @param {string} timezone 
@@ -31481,6 +30871,24 @@ export class ReportApi extends BaseAPI implements ReportApiInterface {
      */
     public sendReportEmailV4(businessIds: Array<number>, timezone: string, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, options?: AxiosRequestConfig) {
         return ReportApiFp(this.configuration).sendReportEmailV4(businessIds, timezone, sendReportEmailDto, timeSpan, start, end, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Send end-of-day report via email (V5)
+     * @param {Array<number>} businessIds Business ID selected
+     * @param {string} timezone 
+     * @param {SendReportEmailDto} sendReportEmailDto 
+     * @param {TimeSpan} [timeSpan] Time span
+     * @param {string} [start] Start date
+     * @param {string} [end] End date
+     * @param {'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront'} [provider] Order source provider (default is MunchiPos)
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof ReportApi
+     */
+    public sendReportEmailV5(businessIds: Array<number>, timezone: string, sendReportEmailDto: SendReportEmailDto, timeSpan?: TimeSpan, start?: string, end?: string, provider?: 'Wolt' | 'MunchiOnline' | 'MunchiKiosk' | 'MunchiPos' | 'UberEats' | 'Foodora' | 'Bolt' | 'MunchiKioskV2' | 'Kiosk' | 'WoltStorefront', options?: AxiosRequestConfig) {
+        return ReportApiFp(this.configuration).sendReportEmailV5(businessIds, timezone, sendReportEmailDto, timeSpan, start, end, provider, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
