@@ -658,6 +658,34 @@ describe("MunchiPaymentSDK", () => {
       expect(cancelResult).toBe(false);
     });
 
+    it("should keep IDLE when cancel is called after reset without an active session", async () => {
+      setupSuccessfulPaymentMocks(
+        "order-cancel-after-reset",
+        "session-cancel-after-reset",
+        mockMessaging,
+      );
+      const sdk = new MunchiPaymentSDK(mockAxios, mockMessaging, mockConfig);
+      const states: PaymentInteractionState[] = [];
+      sdk.subscribe((state) => states.push(state));
+
+      await sdk.initiateTransaction({
+        orderRef: "order-cancel-after-reset",
+        amountCents: 1000,
+        currency: "EUR",
+        displayId: "display-123",
+      });
+
+      sdk.reset();
+      expect(sdk.currentState).toBe(PaymentInteractionState.IDLE);
+
+      const cancelResult = await sdk.cancel();
+
+      expect(cancelResult).toBe(false);
+      expect(sdk.currentState).toBe(PaymentInteractionState.IDLE);
+      expect(states[states.length - 1]).toBe(PaymentInteractionState.IDLE);
+      expect(states).not.toContain(PaymentInteractionState.VERIFYING);
+    });
+
     it("should recover and succeed if cancel fails with 409 Conflict (e.g. late cancel)", async () => {
       const orderRef = "order-conflict-409";
       

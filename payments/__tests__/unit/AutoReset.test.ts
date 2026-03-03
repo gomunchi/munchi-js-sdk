@@ -175,7 +175,8 @@ describe("MunchiPaymentSDK Auto-Reset", () => {
     (sdk as any).strategy = {
         processPayment: jest.fn().mockRejectedValue(new Error("Aborted")),
         cancelTransaction: jest.fn().mockResolvedValue(true),
-        verifyFinalStatus: jest.fn().mockResolvedValue({ success: false, status: "CANCELLED" }) // Verification confirms cancellation
+        verifyFinalStatus: jest.fn().mockResolvedValue({ success: false, status: "CANCELLED" }), // Verification confirms cancellation
+        abort: jest.fn(),
     };
 
     // Start transaction

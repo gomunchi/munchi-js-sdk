@@ -502,6 +502,16 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
       return false;
     }
 
+    if (
+      !this._currentSessionId &&
+      this._currentState === PaymentInteractionState.IDLE
+    ) {
+      this.logger?.warn("Cannot cancel: No active session to cancel", {
+        state: this._currentState,
+      });
+      return false;
+    }
+
     this._cancellationIntent = true;
 
     this.transitionTo(PaymentInteractionState.VERIFYING);
@@ -524,6 +534,8 @@ export class MunchiPaymentSDK implements IMunchiPaymentSDK {
 
   public reset = (): void => {
     if (MunchiPaymentSDK.TERMINAL_STATES.includes(this._currentState)) {
+      this._currentSessionId = undefined;
+      this._cancellationIntent = false;
       this.transitionTo(PaymentInteractionState.IDLE);
     }
   };
